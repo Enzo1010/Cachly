@@ -1,12 +1,58 @@
 # Questly
 
 O Questly é uma plataforma educacional gamificada para o estudo de Sistemas
-Digitais e Arquitetura de Computadores. O objetivo é permitir que estudantes
-pratiquem conteúdos por meio de questões de múltipla escolha, recebam a correção
-das respostas e acompanhem seu desempenho e sua progressão.
+Digitais e Arquitetura de Computadores. O projeto busca tornar a prática desses
+conteúdos mais acessível por meio de questões de múltipla escolha, correções
+explicadas e acompanhamento do progresso do estudante.
 
-O projeto está em desenvolvimento acadêmico por uma equipe de quatro pessoas:
-duas responsáveis pelo frontend, uma pelo backend e uma pela documentação.
+## Objetivo
+
+O objetivo principal é permitir que estudantes pratiquem conteúdos técnicos,
+recebam retorno imediato sobre suas respostas e acompanhem sua evolução ao
+longo do tempo.
+
+Os conteúdos poderão incluir:
+
+- sistemas de numeração e conversão de bases;
+- álgebra booleana e portas lógicas;
+- tabelas verdade e circuitos digitais;
+- CPU, ULA e registradores;
+- memória, cache e barramentos;
+- pipeline e assembly.
+
+## Funcionalidades planejadas
+
+- questões de múltipla escolha organizadas por categoria e dificuldade;
+- correção imediata acompanhada de explicação;
+- histórico de questões respondidas;
+- desempenho por categoria;
+- experiência, níveis e progressão;
+- repetição de questões com redução da pontuação;
+- ranking e ligas semanais baseadas no XP obtido pelo estudante.
+
+## Perfis de usuário
+
+### Aluno
+
+Poderá criar sua conta, responder questões e acompanhar desempenho, experiência
+e progressão.
+
+### Administrador
+
+Será responsável pelo gerenciamento de categorias, questões, alternativas e
+explicações. Conteúdos deixam de ser exibidos por desativação, preservando o
+histórico do sistema.
+
+## Arquitetura
+
+O Questly utiliza uma arquitetura cliente-servidor:
+
+- o backend concentra regras de negócio, persistência e API REST;
+- o frontend concentra telas, navegação e interação com o usuário;
+- o PostgreSQL armazena os dados da aplicação;
+- frontend e backend se comunicam por JSON através da API;
+- uma versão Android poderá ser criada futuramente com Capacitor, reutilizando
+  a aplicação Angular.
 
 ## Tecnologias
 
@@ -16,7 +62,6 @@ duas responsáveis pelo frontend, uma pelo backend e uma pela documentação.
 - Spring Boot 4.1
 - Maven
 - Spring Data JPA
-- Bean Validation
 - PostgreSQL
 - Flyway
 - API REST
@@ -26,185 +71,33 @@ duas responsáveis pelo frontend, uma pelo backend e uma pela documentação.
 - Angular 21
 - TypeScript
 - npm
-- Capacitor planejado para uma futura versão Android
+- Capacitor planejado para Android
 
-## Estrutura do projeto
+## Estrutura do repositório
 
 ```text
 Questly/
 ├── backend/    # API REST, regras de negócio e acesso ao banco
 ├── frontend/   # Aplicação Angular
-└── README.md
+└── README.md   # Visão geral do projeto
 ```
 
-O pacote base do backend é:
+As instruções de configuração e execução estão separadas por aplicação:
 
-```text
-br.com.questly.backend
-```
+- [Documentação do backend](backend/README.md)
+- [Documentação do frontend](frontend/README.md)
 
-## Pré-requisitos
+## Estado atual
 
-Para executar o projeto localmente, instale:
+O projeto está em desenvolvimento. No backend já estão disponíveis:
 
-- Git
-- Java 21
-- PostgreSQL
-- Node.js e npm
-- IntelliJ IDEA ou outra IDE compatível com Java e Maven
+- conexão com PostgreSQL e versionamento do banco com Flyway;
+- modelo inicial de usuários, categorias, questões, alternativas e tentativas;
+- health check da aplicação;
+- gerenciamento de categorias;
+- gerenciamento de questões;
+- validações e respostas de erro padronizadas;
+- testes automatizados das regras e endpoints implementados.
 
-## Clonando o repositório
-
-```bash
-git clone https://git.uricer.edu.br/112963/Questly.git
-cd Questly
-```
-
-## Configuração do PostgreSQL
-
-Crie um banco vazio chamado `questly`:
-
-```sql
-CREATE DATABASE questly;
-```
-
-Não é necessário criar as tabelas manualmente. Ao iniciar o backend, o Flyway
-executa as migrations e prepara o schema automaticamente.
-
-O backend aceita as seguintes variáveis de ambiente:
-
-| Variável | Valor padrão |
-| --- | --- |
-| `DB_URL` | `jdbc:postgresql://localhost:5432/questly` |
-| `DB_USERNAME` | `postgres` |
-| `DB_PASSWORD` | `postgres` |
-
-Exemplo para configurar somente a senha no PowerShell:
-
-```powershell
-$env:DB_PASSWORD="sua_senha"
-```
-
-No IntelliJ IDEA, essas variáveis podem ser adicionadas em **Run > Edit
-Configurations > Environment variables**. Credenciais pessoais não devem ser
-adicionadas ao Git.
-
-## Executando o backend
-
-No PowerShell ou Prompt de Comando do Windows:
-
-```powershell
-cd backend
-.\mvnw.cmd spring-boot:run
-```
-
-No Git Bash, Linux ou macOS:
-
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-
-Para executar os testes no Windows:
-
-```powershell
-.\mvnw.cmd test
-```
-
-Com a aplicação iniciada, o health check estará disponível em:
-
-```text
-GET http://localhost:8080/api/health
-```
-
-Resposta esperada:
-
-```json
-{
-  "status": "UP",
-  "application": "Questly"
-}
-```
-
-## Executando o frontend
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-Por padrão, a aplicação Angular ficará disponível em:
-
-```text
-http://localhost:4200
-```
-
-## Migrations do banco
-
-As migrations ficam em:
-
-```text
-backend/src/main/resources/db/migration
-```
-
-Migrations existentes:
-
-| Versão | Estrutura criada |
-| --- | --- |
-| `V1` | Categorias |
-| `V2` | Usuários |
-| `V3` | Questões |
-| `V4` | Alternativas |
-| `V5` | Tentativas de questão |
-
-Uma migration que já foi aplicada não deve ser alterada. Mudanças futuras no
-banco devem ser feitas em um novo arquivo versionado, como
-`V6__descricao_da_alteracao.sql`.
-
-## API disponível atualmente
-
-### Categorias
-
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/api/categorias` | Cadastra uma categoria |
-| `GET` | `/api/categorias` | Lista categorias ativas |
-| `GET` | `/api/categorias/{id}` | Busca uma categoria pelo ID |
-| `PUT` | `/api/categorias/{id}` | Atualiza uma categoria |
-| `PATCH` | `/api/categorias/{id}/desativar` | Desativa uma categoria |
-
-Exemplo de corpo para cadastro ou atualização:
-
-```json
-{
-  "nome": "Álgebra Booleana",
-  "descricao": "Questões sobre expressões e operações booleanas"
-}
-```
-
-O backend utiliza respostas HTTP padronizadas para validação, recurso não
-encontrado e conflito de dados. A autenticação ainda não foi implementada.
-
-## Modelo inicial de dados
-
-O banco possui inicialmente as tabelas:
-
-- `usuarios`
-- `categorias`
-- `questoes`
-- `alternativas`
-- `tentativas_questao`
-
-As tentativas registram a questão respondida, a alternativa escolhida, o
-resultado e o XP concedido. As regras de repetição, progressão e competições
-serão implementadas em etapas futuras.
-
-## Próximas etapas do backend
-
-1. Adicionar testes automatizados ao módulo de categorias.
-2. Implementar o gerenciamento de questões e alternativas.
-3. Implementar cadastro de alunos e autenticação.
-4. Registrar respostas e calcular XP.
-5. Calcular desempenho e progressão.
-6. Implementar ranking e ligas semanais.
+As próximas etapas incluem o gerenciamento de alternativas, o cadastro de
+alunos, a autenticação, o registro de respostas e as regras de progressão.
