@@ -1,0 +1,272 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.pagina-login {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: minmax(380px, 0.92fr) minmax(520px, 1.08fr);
+  background: var(--azul-nevoa);
+}
+
+.painel-marca {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  align-items: center;
+  padding: clamp(2.5rem, 5vw, 5.5rem);
+  color: var(--branco);
+  background:
+    radial-gradient(circle at 78% 17%, rgba(27, 152, 224, 0.34), transparent 32%),
+    radial-gradient(circle at 12% 86%, rgba(36, 123, 160, 0.38), transparent 34%),
+    var(--azul-profundo);
+}
+
+.painel-marca__conteudo {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 34rem);
+}
+
+.recorte-logo {
+  overflow: hidden;
+  background: #f7fbfc url('/questly-logo.jpg') center / 100% auto no-repeat;
+}
+
+.recorte-logo--desktop {
+  width: min(100%, 22rem);
+  height: 6rem;
+  margin-bottom: clamp(3.25rem, 7vh, 5.5rem);
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.18);
+}
+
+.recorte-logo--mobile {
+  display: none;
+}
+
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: #9bdcff;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-size: clamp(2.75rem, 5vw, 4.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.painel-marca__conteudo > p {
+  max-width: 33rem;
+  margin: 1.5rem 0 0;
+  color: rgba(232, 241, 242, 0.78);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.beneficios {
+  display: grid;
+  gap: 0.85rem;
+  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.beneficios li {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.95rem;
+}
+
+.beneficios span {
+  display: grid;
+  width: 2.3rem;
+  height: 2.3rem;
+  place-items: center;
+  border: 1px solid rgba(155, 220, 255, 0.28);
+  border-radius: 0.7rem;
+  color: #9bdcff;
+  background: rgba(27, 152, 224, 0.08);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.painel-acesso {
+  display: flex;
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 6rem);
+  background: linear-gradient(rgba(232, 241, 242, 0.88), rgba(232, 241, 242, 0.96));
+}
+
+.cartao-login {
+  width: min(100%, 29rem);
+}
+
+.cabecalho-login__apoio {
+  color: var(--azul-safira);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0.7rem 0 0;
+  color: var(--azul-profundo);
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.cabecalho-login p {
+  margin: 0.85rem 0 0;
+  color: var(--texto-secundario);
+  line-height: 1.6;
+}
+
+form {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 2.5rem;
+}
+
+.campo {
+  display: grid;
+}
+
+.campo label {
+  margin-bottom: 0.55rem;
+  color: var(--azul-profundo);
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.campo input {
+  width: 100%;
+  height: 3.5rem;
+  border: 1px solid #bfd0d7;
+  border-radius: 0.9rem;
+  padding: 0 1rem;
+  color: var(--texto-principal);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.campo input::placeholder {
+  color: #8aa0aa;
+}
+
+.campo input:focus {
+  border-color: var(--azul-carolina);
+  outline: none;
+  background: var(--branco);
+  box-shadow: 0 0 0 4px rgba(27, 152, 224, 0.12);
+}
+
+.campo input[aria-invalid='true'] {
+  border-color: var(--erro);
+}
+
+.campo-senha {
+  position: relative;
+}
+
+.campo-senha input {
+  padding-right: 5.5rem;
+}
+
+.botao-visibilidade {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  border: 0;
+  padding: 0.4rem 0.3rem;
+  color: var(--azul-safira);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+  transform: translateY(-50%);
+}
+
+.mensagem-campo {
+  min-height: 1.65rem;
+  padding: 0.35rem 0.2rem 0;
+  color: var(--erro);
+  font-size: 0.78rem;
+}
+
+.botao-entrar {
+  display: flex;
+  height: 3.6rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.4rem;
+  border: 0;
+  border-radius: 0.9rem;
+  color: var(--branco);
+  background: linear-gradient(105deg, var(--azul-safira), var(--azul-carolina));
+  box-shadow: 0 0.9rem 1.8rem rgba(0, 100, 148, 0.2);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.aviso-prototipo {
+  margin: 0.8rem 0 0;
+  color: #234b60;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.criar-conta {
+  margin: 2rem 0 0;
+  color: var(--texto-secundario);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.criar-conta span {
+  color: var(--azul-safira);
+  font-weight: 750;
+}
+
+@media (max-width: 800px) {
+  .pagina-login {
+    display: block;
+  }
+
+  .painel-marca {
+    display: none;
+  }
+
+  .painel-acesso {
+    min-height: 100dvh;
+    padding: clamp(1.5rem, 6vw, 3rem);
+  }
+
+  .recorte-logo--mobile {
+    display: block;
+    width: 12rem;
+    height: 3.5rem;
+    margin-bottom: 2.75rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.8rem 2rem rgba(3, 41, 61, 0.08);
+  }
+
+  .cartao-login {
+    margin: auto 0;
+  }
+}

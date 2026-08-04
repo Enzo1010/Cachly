@@ -1,1 +1,48 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --azul-profundo: #03293d;
+  --azul-safira: #006494;
+  --azul-celadon: #247ba0;
+  --azul-carolina: #1b98e0;
+  --azul-nevoa: #e8f1f2;
+  --branco: #ffffff;
+  --texto-principal: #102a3a;
+  --texto-secundario: #526a78;
+  --erro: #b42318;
+  --fonte-principal: Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--azul-nevoa);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100dvh;
+  margin: 0;
+  color: var(--texto-principal);
+  font-family: var(--fonte-principal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--azul-carolina) 45%, transparent);
+  outline-offset: 2px;
+}

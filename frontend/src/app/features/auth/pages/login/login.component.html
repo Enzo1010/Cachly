@@ -1,0 +1,120 @@
+<main class="pagina-login">
+  <section class="painel-marca" aria-labelledby="titulo-marca">
+    <div class="painel-marca__conteudo">
+      <div class="recorte-logo recorte-logo--desktop" role="img" aria-label="Questly"></div>
+
+      <span class="etiqueta">Aprendizado que evolui com você</span>
+      <h1 id="titulo-marca">Aprenda. Pratique. Evolua.</h1>
+      <p>
+        Transforme Sistemas Digitais e Arquitetura de Computadores em uma jornada de conquistas.
+      </p>
+
+      <ul class="beneficios" aria-label="Recursos da plataforma">
+        <li><span aria-hidden="true">01</span> Questões com explicações</li>
+        <li><span aria-hidden="true">02</span> Progresso por categoria</li>
+        <li><span aria-hidden="true">03</span> XP, níveis e competições</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="painel-acesso" aria-labelledby="titulo-login">
+    <div class="cartao-login">
+      <div class="recorte-logo recorte-logo--mobile" role="img" aria-label="Questly"></div>
+
+      <header class="cabecalho-login">
+        <span class="cabecalho-login__apoio">Bem-vindo de volta</span>
+        <h2 id="titulo-login">Entre na sua conta</h2>
+        <p>Continue seus estudos de onde parou.</p>
+      </header>
+
+      <form [formGroup]="formularioLogin" (ngSubmit)="entrar()" novalidate>
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="seuemail@exemplo.com"
+            [attr.aria-invalid]="
+              formularioLogin.controls.email.invalid && formularioLogin.controls.email.touched
+            "
+            aria-describedby="erro-email"
+          />
+          <div class="mensagem-campo" id="erro-email" aria-live="polite">
+            @if (
+              formularioLogin.controls.email.touched &&
+              formularioLogin.controls.email.hasError('required')
+            ) {
+              Informe seu e-mail.
+            } @else if (
+              formularioLogin.controls.email.touched &&
+              formularioLogin.controls.email.hasError('email')
+            ) {
+              Informe um e-mail válido.
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="senha">Senha</label>
+          <div class="campo-senha">
+            <input
+              id="senha"
+              [type]="senhaVisivel() ? 'text' : 'password'"
+              formControlName="senha"
+              autocomplete="current-password"
+              placeholder="Digite sua senha"
+              [attr.aria-invalid]="
+                formularioLogin.controls.senha.invalid && formularioLogin.controls.senha.touched
+              "
+              aria-describedby="erro-senha"
+            />
+            <button
+              class="botao-visibilidade"
+              type="button"
+              (click)="alternarVisibilidadeSenha()"
+              [attr.aria-label]="senhaVisivel() ? 'Ocultar senha' : 'Mostrar senha'"
+              [attr.aria-pressed]="senhaVisivel()"
+            >
+              @if (senhaVisivel()) {
+                Ocultar
+              } @else {
+                Mostrar
+              }
+            </button>
+          </div>
+          <div class="mensagem-campo" id="erro-senha" aria-live="polite">
+            @if (
+              formularioLogin.controls.senha.touched &&
+              formularioLogin.controls.senha.hasError('required')
+            ) {
+              Informe sua senha.
+            } @else if (
+              formularioLogin.controls.senha.touched &&
+              formularioLogin.controls.senha.hasError('minlength')
+            ) {
+              A senha deve ter pelo menos 6 caracteres.
+            }
+          </div>
+        </div>
+
+        <button class="botao-entrar" type="submit">
+          Entrar
+          <span aria-hidden="true">→</span>
+        </button>
+
+        @if (formularioEnviado()) {
+          <p class="aviso-prototipo" role="status">
+            Interface validada. A conexão com o backend será adicionada no card de autenticação.
+          </p>
+        }
+      </form>
+
+      <p class="criar-conta">
+        Ainda não tem uma conta?
+        <span>O cadastro será disponibilizado em breve.</span>
+      </p>
+    </div>
+  </section>
+</main>
