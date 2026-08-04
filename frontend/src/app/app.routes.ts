@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { autenticacaoGuard } from './core/autenticacao/autenticacao.guard';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -12,6 +14,7 @@ export const routes: Routes = [
       import('./core/layout/layout-principal.component').then(
         (componente) => componente.LayoutPrincipalComponent,
       ),
+    canActivate: [autenticacaoGuard],
     children: [
       {
         path: 'dashboard',

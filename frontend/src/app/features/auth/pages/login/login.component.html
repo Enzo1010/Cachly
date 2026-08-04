@@ -37,6 +37,7 @@
             formControlName="email"
             autocomplete="email"
             placeholder="seuemail@exemplo.com"
+            [readOnly]="carregando()"
             [attr.aria-invalid]="
               formularioLogin.controls.email.invalid && formularioLogin.controls.email.touched
             "
@@ -70,6 +71,7 @@
               formControlName="senha"
               autocomplete="current-password"
               placeholder="Digite sua senha"
+              [readOnly]="carregando()"
               [attr.aria-invalid]="
                 formularioLogin.controls.senha.invalid && formularioLogin.controls.senha.touched
               "
@@ -116,9 +118,17 @@
           <button class="link-esqueci-senha" type="button">Esqueci minha senha</button>
         </div>
 
-        <button pButton class="botao-entrar" type="submit">
-          <span pButtonLabel>Entrar</span>
-          <i pButtonIcon class="pi pi-arrow-right" aria-hidden="true"></i>
+        @if (erroLogin()) {
+          <p class="mensagem-login" role="alert">{{ erroLogin() }}</p>
+        }
+
+        <button pButton class="botao-entrar" type="submit" [disabled]="carregando()">
+          <span pButtonLabel>{{ carregando() ? 'Entrando...' : 'Entrar' }}</span>
+          <i
+            pButtonIcon
+            [class]="carregando() ? 'pi pi-spin pi-spinner' : 'pi pi-arrow-right'"
+            aria-hidden="true"
+          ></i>
         </button>
       </form>
 

@@ -1,6 +1,7 @@
 package br.com.questly.backend.usuario;
 
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
+import br.com.questly.backend.comum.erro.CredenciaisInvalidasException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,28 @@ public class UsuarioService {
         usuario.setAtivo(true);
 
         return converterParaResponse(usuarioRepository.save(usuario));
+    }
+
+    public UsuarioAutenticadoResponse autenticar(AutenticacaoRequest request) {
+        Usuario usuario = usuarioRepository
+                .findByEmailIgnoreCase(normalizarEmail(request.email()))
+                .filter(Usuario::getAtivo)
+                .filter(usuarioEncontrado -> codificadorSenha.matches(
+                        request.senha(),
+                        usuarioEncontrado.getSenhaHash()
+                ))
+                .orElseThrow(() -> new CredenciaisInvalidasException(
+                        "E-mail ou senha inválidos"
+                ));
+
+        return new UsuarioAutenticadoResponse(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getPerfil(),
+                usuario.getXpTotal(),
+                usuario.getNivel()
+        );
     }
 
     private String normalizarEmail(String email) {

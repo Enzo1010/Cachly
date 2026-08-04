@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ButtonDirective } from 'primeng/button';
+
+import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 
 interface IndicadorDashboard {
   readonly destaque: string;
@@ -15,6 +17,8 @@ interface IndicadorDashboard {
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
+  protected readonly sessao = inject(SessaoService);
+
   protected readonly indicadores: readonly IndicadorDashboard[] = [
     {
       destaque: '351',

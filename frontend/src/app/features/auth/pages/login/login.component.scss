@@ -224,6 +224,17 @@ form {
   margin: -0.15rem 0 0.45rem;
 }
 
+.mensagem-login {
+  margin: 0 0 0.3rem;
+  border: 1px solid color-mix(in srgb, var(--erro) 35%, transparent);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  color: var(--erro);
+  background: color-mix(in srgb, var(--erro) 8%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
 .lembrar-login {
   display: inline-flex;
   align-items: center;
@@ -267,6 +278,11 @@ form {
 .botao-entrar:hover {
   border-color: transparent;
   background: linear-gradient(105deg, #00547d, #1689ca);
+}
+
+.botao-entrar:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .botao-entrar .pi {

@@ -34,14 +34,16 @@
       class="resumo-perfil"
       routerLink="/dashboard/perfil"
       routerLinkActive="resumo-perfil--ativo"
-      aria-label="Abrir perfil de Luis"
+      [attr.aria-label]="'Abrir perfil de ' + (sessao.usuario()?.nome ?? 'usuário')"
       (click)="fecharMenu()"
     >
       <div class="perfil">
-        <span class="perfil__avatar" aria-hidden="true">L</span>
+        <span class="perfil__avatar" aria-hidden="true">{{
+          (sessao.usuario()?.nome ?? 'U').charAt(0).toUpperCase()
+        }}</span>
         <div>
-          <strong>Luis</strong>
-          <span>Nível 12</span>
+          <strong>{{ sessao.usuario()?.nome }}</strong>
+          <span>Nível {{ sessao.usuario()?.nivel }}</span>
         </div>
       </div>
       <dl class="indicadores-perfil">
@@ -51,7 +53,7 @@
         </div>
         <div>
           <dt><i class="pi pi-star-fill" aria-hidden="true"></i> XP</dt>
-          <dd>1590</dd>
+          <dd>{{ sessao.usuario()?.xpTotal }}</dd>
         </div>
       </dl>
     </a>

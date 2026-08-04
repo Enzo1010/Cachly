@@ -1,6 +1,7 @@
 package br.com.questly.backend.usuario;
 
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
+import br.com.questly.backend.comum.erro.CredenciaisInvalidasException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -10,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -95,5 +97,92 @@ class UsuarioServiceTest {
 
         verify(codificadorSenha, never()).encode(any(String.class));
         verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void deveAutenticarUsuarioAtivoComCredenciaisValidas() {
+        Usuario usuario = criarUsuarioAtivo();
+        when(usuarioRepository.findByEmailIgnoreCase("ana.silva@exemplo.com"))
+                .thenReturn(Optional.of(usuario));
+        when(codificadorSenha.matches("senha-segura", "hash-bcrypt"))
+                .thenReturn(true);
+
+        UsuarioAutenticadoResponse response = usuarioService.autenticar(
+                new AutenticacaoRequest(
+                        "  Ana.Silva@Exemplo.com  ",
+                        "senha-segura"
+                )
+        );
+
+        assertEquals(1L, response.id());
+        assertEquals("Ana Silva", response.nome());
+        assertEquals("ana.silva@exemplo.com", response.email());
+        assertEquals(PerfilUsuario.ALUNO, response.perfil());
+        assertEquals(0, response.xpTotal());
+        assertEquals(1, response.nivel());
+    }
+
+    @Test
+    void deveRecusarAutenticacaoQuandoEmailNaoExistir() {
+        when(usuarioRepository.findByEmailIgnoreCase("inexistente@exemplo.com"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                CredenciaisInvalidasException.class,
+                () -> usuarioService.autenticar(new AutenticacaoRequest(
+                        "inexistente@exemplo.com",
+                        "senha-segura"
+                ))
+        );
+
+        verify(codificadorSenha, never()).matches(any(String.class), any(String.class));
+    }
+
+    @Test
+    void deveRecusarAutenticacaoQuandoSenhaEstiverIncorreta() {
+        Usuario usuario = criarUsuarioAtivo();
+        when(usuarioRepository.findByEmailIgnoreCase("ana.silva@exemplo.com"))
+                .thenReturn(Optional.of(usuario));
+        when(codificadorSenha.matches("senha-incorreta", "hash-bcrypt"))
+                .thenReturn(false);
+
+        assertThrows(
+                CredenciaisInvalidasException.class,
+                () -> usuarioService.autenticar(new AutenticacaoRequest(
+                        "ana.silva@exemplo.com",
+                        "senha-incorreta"
+                ))
+        );
+    }
+
+    @Test
+    void deveRecusarAutenticacaoQuandoUsuarioEstiverInativo() {
+        Usuario usuario = criarUsuarioAtivo();
+        usuario.setAtivo(false);
+        when(usuarioRepository.findByEmailIgnoreCase("ana.silva@exemplo.com"))
+                .thenReturn(Optional.of(usuario));
+
+        assertThrows(
+                CredenciaisInvalidasException.class,
+                () -> usuarioService.autenticar(new AutenticacaoRequest(
+                        "ana.silva@exemplo.com",
+                        "senha-segura"
+                ))
+        );
+
+        verify(codificadorSenha, never()).matches(any(String.class), any(String.class));
+    }
+
+    private Usuario criarUsuarioAtivo() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setNome("Ana Silva");
+        usuario.setEmail("ana.silva@exemplo.com");
+        usuario.setSenhaHash("hash-bcrypt");
+        usuario.setPerfil(PerfilUsuario.ALUNO);
+        usuario.setXpTotal(0);
+        usuario.setNivel(1);
+        usuario.setAtivo(true);
+        return usuario;
     }
 }

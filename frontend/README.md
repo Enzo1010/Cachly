@@ -73,7 +73,11 @@ As regras completas de desenvolvimento do frontend estão documentadas no arquiv
 
 ## Estado atual
 
-O frontend possui a tela inicial de login responsiva, com validação local do formulário. A conexão
-com a autenticação do backend e o cadastro de alunos ainda serão implementados em cards próprios.
+O frontend possui uma tela de login responsiva integrada ao endpoint `POST /api/auth/login`. A
+sessão do usuário protege o dashboard no navegador e pode durar apenas durante a aba ou persistir
+quando a opção "Lembrar login" estiver marcada. Durante o desenvolvimento, `npm start` encaminha
+as requisições `/api` para o backend em `http://localhost:8080`.
+
+O cadastro de alunos ainda será integrado ao frontend em uma atividade própria.
 
 O projeto poderá ser utilizado futuramente como base para um aplicativo Android com Capacitor.

@@ -12,6 +12,8 @@ import {
 import { ButtonDirective } from 'primeng/button';
 import { filter } from 'rxjs';
 
+import { SessaoService } from '../autenticacao/sessao.service';
+
 interface ItemNavegacao {
   readonly icone: string;
   readonly rotulo: string;
@@ -28,6 +30,7 @@ export class LayoutPrincipalComponent {
   private readonly router = inject(Router);
   private readonly rotaAtiva = inject(ActivatedRoute);
   private readonly destruir = inject(DestroyRef);
+  protected readonly sessao = inject(SessaoService);
 
   protected readonly menuAberto = signal(false);
   protected readonly tituloPagina = signal('Visão Geral');
@@ -39,7 +42,6 @@ export class LayoutPrincipalComponent {
     { icone: 'pi pi-trophy', rotulo: 'Liga Semanal', rota: '/dashboard/liga-semanal' },
     { icone: 'pi pi-verified', rotulo: 'Conquistas', rota: '/dashboard/conquistas' },
   ];
-
 
   constructor() {
     this.atualizarTituloPagina();
@@ -62,6 +64,7 @@ export class LayoutPrincipalComponent {
 
   protected sair(): void {
     this.fecharMenu();
+    this.sessao.encerrar();
     void this.router.navigateByUrl('/login');
   }
 
