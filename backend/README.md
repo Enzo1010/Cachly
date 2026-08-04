@@ -121,12 +121,13 @@ src/main/resources/db/migration
 | `V3` | Questões |
 | `V4` | Alternativas |
 | `V5` | Tentativas de questão |
+| `V6` | Campo de ativação das alternativas |
 
 Uma migration aplicada não deve ser modificada. Mudanças futuras no banco devem
 ser criadas em um novo arquivo versionado, como:
 
 ```text
-V6__descricao_da_alteracao.sql
+V7__descricao_da_alteracao.sql
 ```
 
 O Hibernate está configurado com `ddl-auto: validate`, portanto valida o schema
@@ -168,6 +169,16 @@ Resposta esperada:
 | `GET` | `/api/questoes/{id}` | Busca uma questão pelo ID |
 | `PUT` | `/api/questoes/{id}` | Atualiza uma questão |
 | `PATCH` | `/api/questoes/{id}/desativar` | Desativa uma questão |
+
+### Alternativas
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `POST` | `/api/questoes/{questaoId}/alternativas` | Cadastra uma alternativa |
+| `GET` | `/api/questoes/{questaoId}/alternativas` | Lista alternativas ativas em ordem |
+| `GET` | `/api/questoes/{questaoId}/alternativas/{id}` | Busca uma alternativa pelo ID |
+| `PUT` | `/api/questoes/{questaoId}/alternativas/{id}` | Atualiza uma alternativa |
+| `PATCH` | `/api/questoes/{questaoId}/alternativas/{id}/desativar` | Desativa uma alternativa |
 
 As respostas de erro seguem um formato comum para validação, recurso não
 encontrado e conflito de dados. A autenticação ainda não foi implementada.
