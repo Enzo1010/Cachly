@@ -1,9 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, InputText, ButtonDirective, ButtonIcon, ButtonLabel],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

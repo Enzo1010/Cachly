@@ -162,6 +162,7 @@ form {
   padding: 0 1rem;
   color: var(--texto-principal);
   background: rgba(255, 255, 255, 0.88);
+  box-shadow: none;
 }
 
 .campo input::placeholder {
@@ -201,6 +202,15 @@ form {
   transform: translateY(-50%);
 }
 
+.botao-visibilidade:hover {
+  color: var(--azul-profundo);
+  background: transparent;
+}
+
+.botao-visibilidade .pi {
+  font-size: 0.95rem;
+}
+
 .mensagem-campo {
   min-height: 1.65rem;
   padding: 0.35rem 0.2rem 0;
@@ -222,6 +232,15 @@ form {
   box-shadow: 0 0.9rem 1.8rem rgba(0, 100, 148, 0.2);
   cursor: pointer;
   font-weight: 800;
+}
+
+.botao-entrar:hover {
+  border-color: transparent;
+  background: linear-gradient(105deg, #00547d, #1689ca);
+}
+
+.botao-entrar .pi {
+  font-size: 0.9rem;
 }
 
 .aviso-prototipo {
@@ -268,5 +287,20 @@ form {
 
   .cartao-login {
     margin: auto 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .texto-visibilidade {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .campo-senha input {
+    padding-right: 3.5rem;
   }
 }

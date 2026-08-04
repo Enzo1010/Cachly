@@ -31,12 +31,16 @@
         <div class="campo">
           <label for="email">E-mail</label>
           <input
+            pInputText
             id="email"
             type="email"
             formControlName="email"
             autocomplete="email"
             placeholder="seuemail@exemplo.com"
             [attr.aria-invalid]="
+              formularioLogin.controls.email.invalid && formularioLogin.controls.email.touched
+            "
+            [invalid]="
               formularioLogin.controls.email.invalid && formularioLogin.controls.email.touched
             "
             aria-describedby="erro-email"
@@ -60,6 +64,7 @@
           <label for="senha">Senha</label>
           <div class="campo-senha">
             <input
+              pInputText
               id="senha"
               [type]="senhaVisivel() ? 'text' : 'password'"
               formControlName="senha"
@@ -68,20 +73,31 @@
               [attr.aria-invalid]="
                 formularioLogin.controls.senha.invalid && formularioLogin.controls.senha.touched
               "
+              [invalid]="
+                formularioLogin.controls.senha.invalid && formularioLogin.controls.senha.touched
+              "
               aria-describedby="erro-senha"
             />
             <button
+              pButton
               class="botao-visibilidade"
               type="button"
               (click)="alternarVisibilidadeSenha()"
               [attr.aria-label]="senhaVisivel() ? 'Ocultar senha' : 'Mostrar senha'"
               [attr.aria-pressed]="senhaVisivel()"
             >
-              @if (senhaVisivel()) {
-                Ocultar
-              } @else {
-                Mostrar
-              }
+              <i
+                pButtonIcon
+                [class]="senhaVisivel() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                aria-hidden="true"
+              ></i>
+              <span pButtonLabel class="texto-visibilidade">
+                @if (senhaVisivel()) {
+                  Ocultar
+                } @else {
+                  Mostrar
+                }
+              </span>
             </button>
           </div>
           <div class="mensagem-campo" id="erro-senha" aria-live="polite">
@@ -99,9 +115,9 @@
           </div>
         </div>
 
-        <button class="botao-entrar" type="submit">
-          Entrar
-          <span aria-hidden="true">→</span>
+        <button pButton class="botao-entrar" type="submit">
+          <span pButtonLabel>Entrar</span>
+          <i pButtonIcon class="pi pi-arrow-right" aria-hidden="true"></i>
         </button>
 
         @if (formularioEnviado()) {

@@ -71,6 +71,9 @@ O Questly utiliza uma arquitetura cliente-servidor:
 - Angular 21
 - TypeScript
 - npm
+- PrimeNG Community
+- PrimeIcons
+- SCSS
 - Capacitor planejado para Android
 
 ## Estrutura do repositório

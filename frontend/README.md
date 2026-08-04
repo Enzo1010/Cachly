@@ -1,59 +1,79 @@
-# QuestlyFrontend
+# Frontend do Questly
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
+Aplicação web do Questly, uma plataforma educacional gamificada para o estudo de Sistemas Digitais
+e Arquitetura de Computadores. O frontend concentra as telas, a navegação e a interação do usuário
+com a API REST do backend.
 
-## Development server
+## Tecnologias
 
-To start a local development server, run:
+- Angular 21 com componentes standalone;
+- TypeScript em modo estrito;
+- Angular Router;
+- formulários reativos;
+- PrimeNG Community 21;
+- PrimeIcons;
+- SCSS;
+- Vitest para testes unitários.
 
-```bash
-ng serve
-```
+O PrimeNG é a biblioteca visual padrão. Sua adoção deve ser gradual, utilizando somente os
+componentes necessários para cada funcionalidade. O tema global parte do preset Aura e aplica a
+paleta visual do Questly.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Pré-requisitos
 
-## Code scaffolding
+- Node.js compatível com Angular 21;
+- npm.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Instalação
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+Dentro da pasta `frontend`, instale as dependências:
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Executando localmente
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+A aplicação ficará disponível em `http://localhost:4200/`.
 
-For end-to-end (e2e) testing, run:
+## Testes
+
+Para executar os testes uma única vez:
 
 ```bash
-ng e2e
+npm test -- --watch=false
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Build de produção
 
-## Additional Resources
+```bash
+npm run build
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Os arquivos gerados serão armazenados em `dist/questly-frontend/`.
+
+## Organização do código
+
+```text
+src/app/
+├── core/       # Configurações e recursos globais únicos
+├── features/   # Funcionalidades organizadas por domínio
+├── app.config.ts
+└── app.routes.ts
+```
+
+A autenticação inicial está em `features/auth/`. O tema do PrimeNG está centralizado em
+`core/config/tema-questly.ts` e é registrado globalmente no `app.config.ts`.
+
+As regras completas de desenvolvimento do frontend estão documentadas no arquivo `AGENTS.md`.
+
+## Estado atual
+
+O frontend possui a tela inicial de login responsiva, com validação local do formulário. A conexão
+com a autenticação do backend e o cadastro de alunos ainda serão implementados em cards próprios.
+
+O projeto poderá ser utilizado futuramente como base para um aplicativo Android com Capacitor.
