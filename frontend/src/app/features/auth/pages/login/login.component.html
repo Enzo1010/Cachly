@@ -3,7 +3,7 @@
     <div class="painel-marca__conteudo">
       <div class="recorte-logo recorte-logo--desktop" role="img" aria-label="Questly"></div>
 
-      <span class="etiqueta">Aprendizado que evolui com você</span>
+      <!-- <span class="etiqueta">Aprendizado que evolui com você</span> -->
       <h1 id="titulo-marca">Aprenda. Pratique. Evolua.</h1>
       <p>
         Transforme Sistemas Digitais e Arquitetura de Computadores em uma jornada de conquistas.
@@ -91,13 +91,6 @@
                 [class]="senhaVisivel() ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 aria-hidden="true"
               ></i>
-              <span pButtonLabel class="texto-visibilidade">
-                @if (senhaVisivel()) {
-                  Ocultar
-                } @else {
-                  Mostrar
-                }
-              </span>
             </button>
           </div>
           <div class="mensagem-campo" id="erro-senha" aria-live="polite">
@@ -115,21 +108,23 @@
           </div>
         </div>
 
+        <div class="opcoes-login">
+          <label class="lembrar-login" for="lembrar-login">
+            <p-checkbox inputId="lembrar-login" formControlName="lembrarLogin" [binary]="true" />
+            <span>Lembrar login</span>
+          </label>
+          <button class="link-esqueci-senha" type="button">Esqueci minha senha</button>
+        </div>
+
         <button pButton class="botao-entrar" type="submit">
           <span pButtonLabel>Entrar</span>
           <i pButtonIcon class="pi pi-arrow-right" aria-hidden="true"></i>
         </button>
-
-        @if (formularioEnviado()) {
-          <p class="aviso-prototipo" role="status">
-            Interface validada. A conexão com o backend será adicionada no card de autenticação.
-          </p>
-        }
       </form>
 
       <p class="criar-conta">
         Ainda não tem uma conta?
-        <span>O cadastro será disponibilizado em breve.</span>
+        <button class="link-esqueci-senha" type="button">Cadastre-se.</button>
       </p>
     </div>
   </section>

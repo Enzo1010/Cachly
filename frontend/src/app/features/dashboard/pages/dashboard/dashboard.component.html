@@ -1,0 +1,51 @@
+<section class="dashboard" aria-labelledby="titulo-dashboard">
+  <section class="boas-vindas" aria-labelledby="titulo-dashboard">
+    <div>
+      <h2 id="titulo-dashboard">Olá, Luis! <span aria-hidden="true">👋</span></h2>
+      <p>Pronto para manter a sua ofensiva hoje?</p>
+    </div>
+    <div class="cartao-sequencia" aria-label="Sequência de estudos: 12 dias">
+      <i class="pi pi-fire" aria-hidden="true"></i>
+      <strong>12 dias</strong>
+      <span>Sequência de estudos</span>
+    </div>
+  </section>
+
+  <section class="objetivo" aria-labelledby="titulo-objetivo">
+    <div class="objetivo__conteudo">
+      <p class="objetivo__apoio">
+        <i class="pi pi-bullseye" aria-hidden="true"></i> Algoritmo de recomendação
+      </p>
+      <h2 id="titulo-objetivo">Seu próximo objetivo</h2>
+      <p class="objetivo__texto">
+        Analisamos seu desempenho recente. Você apresenta dificuldade em
+        <strong>Pipeline e ULA</strong>. Aqui está sua trilha recomendada para hoje:
+      </p>
+      <div class="objetivo__acoes">
+        <button pButton class="botao-revisao" type="button">
+          <i class="pi pi-play" aria-hidden="true"></i>
+          <span>Iniciar Revisão</span>
+        </button>
+        <button pButton class="botao-desafio" type="button">Desafio Aleatório</button>
+      </div>
+    </div>
+    <i class="objetivo__ornamento pi pi-microchip-ai" aria-hidden="true"></i>
+  </section>
+
+  <section class="indicadores" aria-label="Resumo do desempenho">
+    @for (indicador of indicadores; track indicador.descricao) {
+      <article class="indicador">
+        <span class="indicador__icone"><i [class]="indicador.icone" aria-hidden="true"></i></span>
+        <div>
+          <strong>{{ indicador.destaque }}</strong>
+          <span
+            >{{ indicador.descricao }}
+            @if (indicador.variacao) {
+              <i [class]="indicador.variacao" aria-hidden="true"></i>
+            }
+          </span>
+        </div>
+      </article>
+    }
+  </section>
+</section>

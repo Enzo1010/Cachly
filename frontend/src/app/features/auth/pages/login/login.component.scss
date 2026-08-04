@@ -30,16 +30,13 @@
 }
 
 .recorte-logo {
-  overflow: hidden;
-  background: #f7fbfc url('/questly-logo.jpg') center / 100% auto no-repeat;
+  background: url('/questly-logo-branco-transparente.png') center / contain no-repeat;
 }
 
 .recorte-logo--desktop {
   width: min(100%, 22rem);
   height: 6rem;
   margin-bottom: clamp(3.25rem, 7vh, 5.5rem);
-  border-radius: 1rem;
-  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.18);
 }
 
 .recorte-logo--mobile {
@@ -204,6 +201,7 @@ form {
 
 .botao-visibilidade:hover {
   color: var(--azul-profundo);
+  border: 0;
   background: transparent;
 }
 
@@ -216,6 +214,38 @@ form {
   padding: 0.35rem 0.2rem 0;
   color: var(--erro);
   font-size: 0.78rem;
+}
+
+.opcoes-login {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -0.15rem 0 0.45rem;
+}
+
+.lembrar-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--texto-secundario);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.link-esqueci-senha {
+  border: 0;
+  padding: 0;
+  color: var(--azul-safira);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.link-esqueci-senha:hover {
+  color: var(--azul-profundo);
+  text-decoration: underline;
 }
 
 .botao-entrar {
@@ -243,23 +273,11 @@ form {
   font-size: 0.9rem;
 }
 
-.aviso-prototipo {
-  margin: 0.8rem 0 0;
-  color: #234b60;
-  font-size: 0.82rem;
-  line-height: 1.45;
-}
-
 .criar-conta {
   margin: 2rem 0 0;
   color: var(--texto-secundario);
   font-size: 0.88rem;
   text-align: center;
-}
-
-.criar-conta span {
-  color: var(--azul-safira);
-  font-weight: 750;
 }
 
 @media (max-width: 800px) {
@@ -281,12 +299,16 @@ form {
     width: 12rem;
     height: 3.5rem;
     margin-bottom: 2.75rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 0.8rem 2rem rgba(3, 41, 61, 0.08);
   }
 
   .cartao-login {
     margin: auto 0;
+  }
+
+  .opcoes-login {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.7rem;
   }
 }
 

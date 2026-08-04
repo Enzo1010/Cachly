@@ -1,0 +1,259 @@
+:host {
+  display: block;
+}
+
+.dashboard {
+  display: grid;
+  width: min(100%, 62rem);
+  gap: 1.5rem;
+  margin: 1rem auto;
+}
+
+.boas-vindas,
+.indicador {
+  border: 1px solid #e5edef;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 0.45rem 1.1rem rgba(20, 64, 79, 0.04);
+}
+
+.boas-vindas {
+  display: flex;
+  min-height: 12.2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.boas-vindas h2,
+.objetivo h2 {
+  margin: 0;
+  color: #102e45;
+  letter-spacing: -0.04em;
+}
+
+.boas-vindas h2 {
+  font-size: clamp(1.8rem, 4vw, 2.25rem);
+}
+
+.boas-vindas p {
+  margin: 0.65rem 0 0;
+  color: #667d8c;
+  font-size: 1rem;
+}
+
+.cartao-sequencia {
+  display: grid;
+  width: 12rem;
+  min-height: 8.1rem;
+  place-items: center;
+  align-content: center;
+  border: 1px solid #f9eadc;
+  border-radius: 1rem;
+  color: #f76c14;
+  background: #fff7ef;
+}
+
+.cartao-sequencia .pi {
+  font-size: 2.25rem;
+}
+
+.cartao-sequencia strong {
+  margin-top: 0.25rem;
+  font-size: 1.45rem;
+  letter-spacing: -0.04em;
+}
+
+.cartao-sequencia span {
+  color: #e48b43;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.objetivo {
+  position: relative;
+  overflow: hidden;
+  min-height: 17rem;
+  border-radius: 1rem;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  color: #f7fcff;
+  background: linear-gradient(105deg, #112f46, #006fa0);
+  box-shadow: 0 0.8rem 1.4rem rgba(3, 41, 61, 0.15);
+}
+
+.objetivo__conteudo {
+  position: relative;
+  z-index: 1;
+  max-width: 43rem;
+}
+
+.objetivo__apoio {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  color: #239fda;
+  font-size: 0.77rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.objetivo h2 {
+  margin-top: 1rem;
+  color: #fff;
+  font-size: clamp(1.6rem, 3vw, 2rem);
+}
+
+.objetivo__texto {
+  max-width: 40rem;
+  margin: 0.9rem 0 0;
+  color: #d9e8ef;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.objetivo__texto strong {
+  padding: 0.08rem 0.3rem;
+  color: #fff;
+  background: rgba(0, 54, 87, 0.34);
+}
+
+.objetivo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.3rem;
+}
+
+.objetivo__acoes button {
+  min-height: 3rem;
+  border: 0;
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.35rem;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.botao-revisao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #fff;
+  background: #1d9edf;
+}
+
+.botao-desafio {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.objetivo__ornamento {
+  position: absolute;
+  right: -1.25rem;
+  bottom: -1.1rem;
+  color: rgba(119, 208, 246, 0.16);
+  font-size: 8rem;
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.indicador {
+  display: flex;
+  min-height: 8rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.3rem;
+}
+
+.indicador__icone {
+  display: grid;
+  width: 3.4rem;
+  height: 3.4rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: #19aa62;
+  background: #ddfae9;
+  font-size: 1.35rem;
+}
+
+.indicador:nth-child(2) .indicador__icone {
+  color: #237cc5;
+  background: #dfeafa;
+}
+
+.indicador:nth-child(3) .indicador__icone {
+  color: #516272;
+  background: #e6ecf2;
+}
+
+.indicador strong,
+.indicador div > span {
+  display: block;
+}
+
+.indicador strong {
+  color: #102e45;
+  font-size: clamp(1.35rem, 2.3vw, 1.85rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.indicador div > span {
+  margin-top: 0.25rem;
+  color: #667d8c;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 720px) {
+  .dashboard {
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .boas-vindas {
+    min-height: 0;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .cartao-sequencia {
+    width: 100%;
+    min-height: 6.25rem;
+    grid-template-columns: auto auto;
+    column-gap: 0.65rem;
+  }
+
+  .cartao-sequencia .pi {
+    grid-row: span 2;
+  }
+
+  .cartao-sequencia strong,
+  .cartao-sequencia span {
+    justify-self: start;
+  }
+
+  .indicadores {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .objetivo__acoes {
+    display: grid;
+  }
+
+  .objetivo__acoes button {
+    width: 100%;
+  }
+}
