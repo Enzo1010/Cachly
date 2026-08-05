@@ -5,8 +5,11 @@ import { autenticacaoGuard } from './core/autenticacao/autenticacao.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    loadChildren: () =>
-      import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_AUTENTICACAO),
+    loadChildren: () => import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_LOGIN),
+  },
+  {
+    path: 'cadastro',
+    loadChildren: () => import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_CADASTRO),
   },
   {
     path: '',

@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import { MessageService } from 'primeng/api';
 
 import { TEMA_QUESTLY } from './core/config/tema-questly';
 import { routes } from './app.routes';
@@ -11,6 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(),
     provideRouter(routes),
+    MessageService,
     providePrimeNG({
       ripple: true,
       theme: {

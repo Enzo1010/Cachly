@@ -1,0 +1,177 @@
+<main class="pagina-login">
+  <section class="painel-marca" aria-labelledby="titulo-marca">
+    <div class="painel-marca__conteudo">
+      <div class="recorte-logo recorte-logo--desktop" role="img" aria-label="Questly"></div>
+
+      <h1 id="titulo-marca">Sua jornada começa agora.</h1>
+      <p>
+        Crie sua conta e transforme o estudo de Sistemas Digitais em uma experiência de evolução.
+      </p>
+
+      <ul class="beneficios" aria-label="Benefícios de criar uma conta">
+        <li><span aria-hidden="true">01</span> Aprenda no seu ritmo</li>
+        <li><span aria-hidden="true">02</span> Acompanhe cada conquista</li>
+        <li><span aria-hidden="true">03</span> Evolua com desafios</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="painel-acesso" aria-labelledby="titulo-cadastro">
+    <div class="cartao-login">
+      <div class="recorte-logo recorte-logo--mobile" role="img" aria-label="Questly"></div>
+
+      <header class="cabecalho-login">
+        <span class="cabecalho-login__apoio">Crie sua conta</span>
+        <h2 id="titulo-cadastro">Vamos começar?</h2>
+        <p>Preencha seus dados para iniciar sua jornada no Questly.</p>
+      </header>
+
+      <form [formGroup]="formularioCadastro" (ngSubmit)="cadastrar()" novalidate>
+        <div class="campo">
+          <label for="nome">Nome</label>
+          <input
+            pInputText
+            id="nome"
+            type="text"
+            formControlName="nome"
+            autocomplete="name"
+            placeholder="Como você quer ser chamado?"
+            [readOnly]="carregando()"
+            [attr.aria-invalid]="
+              formularioCadastro.controls.nome.invalid && formularioCadastro.controls.nome.touched
+            "
+            [invalid]="
+              formularioCadastro.controls.nome.invalid && formularioCadastro.controls.nome.touched
+            "
+            aria-describedby="erro-nome"
+          />
+          <div class="mensagem-campo" id="erro-nome" aria-live="polite">
+            @if (
+              formularioCadastro.controls.nome.touched &&
+              formularioCadastro.controls.nome.hasError('required')
+            ) {
+              Informe seu nome.
+            } @else if (
+              formularioCadastro.controls.nome.touched &&
+              formularioCadastro.controls.nome.hasError('maxlength')
+            ) {
+              O nome deve ter no máximo 100 caracteres.
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="seuemail@exemplo.com"
+            [readOnly]="carregando()"
+            [attr.aria-invalid]="
+              formularioCadastro.controls.email.invalid && formularioCadastro.controls.email.touched
+            "
+            [invalid]="
+              formularioCadastro.controls.email.invalid && formularioCadastro.controls.email.touched
+            "
+            aria-describedby="erro-email"
+          />
+          <div class="mensagem-campo" id="erro-email" aria-live="polite">
+            @if (
+              formularioCadastro.controls.email.touched &&
+              formularioCadastro.controls.email.hasError('required')
+            ) {
+              Informe seu e-mail.
+            } @else if (
+              formularioCadastro.controls.email.touched &&
+              formularioCadastro.controls.email.hasError('email')
+            ) {
+              Informe um e-mail válido.
+            } @else if (
+              formularioCadastro.controls.email.touched &&
+              formularioCadastro.controls.email.hasError('maxlength')
+            ) {
+              O e-mail deve ter no máximo 150 caracteres.
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="senha">Senha</label>
+          <div class="campo-senha">
+            <input
+              pInputText
+              id="senha"
+              [type]="senhaVisivel() ? 'text' : 'password'"
+              formControlName="senha"
+              autocomplete="new-password"
+              placeholder="Crie uma senha segura"
+              [readOnly]="carregando()"
+              [attr.aria-invalid]="
+                formularioCadastro.controls.senha.invalid &&
+                formularioCadastro.controls.senha.touched
+              "
+              [invalid]="
+                formularioCadastro.controls.senha.invalid &&
+                formularioCadastro.controls.senha.touched
+              "
+              aria-describedby="erro-senha"
+            />
+            <button
+              pButton
+              class="botao-visibilidade"
+              type="button"
+              (click)="alternarVisibilidadeSenha()"
+              [attr.aria-label]="senhaVisivel() ? 'Ocultar senha' : 'Mostrar senha'"
+              [attr.aria-pressed]="senhaVisivel()"
+            >
+              <i
+                pButtonIcon
+                [class]="senhaVisivel() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                aria-hidden="true"
+              ></i>
+            </button>
+          </div>
+          <div class="mensagem-campo" id="erro-senha" aria-live="polite">
+            @if (
+              formularioCadastro.controls.senha.touched &&
+              formularioCadastro.controls.senha.hasError('required')
+            ) {
+              Informe uma senha.
+            } @else if (
+              formularioCadastro.controls.senha.touched &&
+              formularioCadastro.controls.senha.hasError('minlength')
+            ) {
+              A senha deve ter entre 8 e 72 caracteres.
+            } @else if (
+              formularioCadastro.controls.senha.touched &&
+              formularioCadastro.controls.senha.hasError('maxlength')
+            ) {
+              A senha deve ter entre 8 e 72 caracteres.
+            }
+          </div>
+        </div>
+
+        @if (erroCadastro()) {
+          <p class="mensagem-login" role="alert">{{ erroCadastro() }}</p>
+        }
+
+        <button pButton class="botao-entrar" type="submit" [disabled]="carregando()">
+          <span pButtonLabel>{{ carregando() ? 'Criando conta...' : 'Criar conta' }}</span>
+          <i
+            pButtonIcon
+            [class]="carregando() ? 'pi pi-spin pi-spinner' : 'pi pi-user-plus'"
+            aria-hidden="true"
+          ></i>
+        </button>
+      </form>
+
+      <p class="criar-conta">
+        Já possui uma conta?
+        <a class="link-esqueci-senha" routerLink="/login">Entre.</a>
+      </p>
+    </div>
+  </section>
+</main>
