@@ -2,22 +2,33 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { InputText } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, InputText, Checkbox, ButtonDirective, ButtonIcon, ButtonLabel],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    InputText,
+    Checkbox,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private readonly router = inject(Router);
   private readonly sessao = inject(SessaoService);
+  private readonly notificacoes = inject(MessageService);
 
   protected readonly senhaVisivel = signal(false);
   protected readonly carregando = signal(false);
@@ -54,8 +65,19 @@ export class LoginComponent {
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
         next: () => void this.router.navigateByUrl('/dashboard'),
-        error: (erro: unknown) => this.erroLogin.set(this.obterMensagemErro(erro)),
+        error: (erro: unknown) => this.exibirErroLogin(erro),
       });
+  }
+
+  private exibirErroLogin(erro: unknown): void {
+    const mensagem = this.obterMensagemErro(erro);
+    this.erroLogin.set(mensagem);
+    this.notificacoes.add({
+      severity: 'error',
+      summary: 'Não foi possível entrar',
+      detail: mensagem,
+      life: 5000,
+    });
   }
 
   private obterMensagemErro(erro: unknown): string {

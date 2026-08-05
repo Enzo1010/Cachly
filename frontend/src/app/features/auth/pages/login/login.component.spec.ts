@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 import { configurarArmazenamentosTeste } from '../../../../../testing/armazenamento-teste';
 import { LoginComponent } from './login.component';
@@ -14,7 +15,12 @@ describe('LoginComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        MessageService,
+      ],
     }).compileComponents();
   });
 
@@ -50,6 +56,18 @@ describe('LoginComponent', () => {
     expect(conteudo.textContent).toContain('Esqueci minha senha');
   });
 
+  it('deve disponibilizar o link para a tela de cadastro', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector(
+      'a[routerLink="/cadastro"]',
+    ) as HTMLAnchorElement;
+
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toBe('/cadastro');
+  });
+
   it('deve autenticar e navegar para o dashboard', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     const router = TestBed.inject(Router);
@@ -76,6 +94,8 @@ describe('LoginComponent', () => {
   it('deve exibir o erro devolvido pelo backend', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     const http = TestBed.inject(HttpTestingController);
+    const notificacoes = TestBed.inject(MessageService);
+    const notificar = vi.spyOn(notificacoes, 'add');
     fixture.detectChanges();
 
     preencherFormulario(fixture.nativeElement as HTMLElement);
@@ -92,6 +112,12 @@ describe('LoginComponent', () => {
 
     const mensagem = fixture.nativeElement.querySelector('.mensagem-login') as HTMLElement;
     expect(mensagem.textContent).toContain('E-mail ou senha inválidos');
+    expect(notificar).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Não foi possível entrar',
+      detail: 'E-mail ou senha inválidos',
+      life: 5000,
+    });
   });
 
   it('nao deve chamar a API quando o formulario estiver invalido', () => {
