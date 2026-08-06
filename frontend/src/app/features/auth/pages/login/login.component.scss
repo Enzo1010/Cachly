@@ -14,8 +14,8 @@
   position: relative;
   display: flex;
   min-height: 100dvh;
-  align-items: center;
-  padding: clamp(2.5rem, 5vw, 5.5rem);
+  align-items: flex-start;
+  padding: 3.5rem clamp(2.5rem, 5vw, 5.5rem) clamp(2.5rem, 5vw, 5.5rem);
   color: var(--branco);
   background:
     radial-gradient(circle at 78% 17%, rgba(27, 152, 224, 0.34), transparent 32%),
@@ -35,8 +35,8 @@
 
 .recorte-logo--desktop {
   width: min(100%, 22rem);
-  height: 6rem;
-  margin-bottom: clamp(3.25rem, 7vh, 5.5rem);
+  height: 4rem;
+  margin-bottom: clamp(3rem, 7vh, 3rem);
 }
 
 .recorte-logo--mobile {
@@ -57,7 +57,7 @@
 h1 {
   max-width: 10ch;
   margin: 0;
-  font-size: clamp(2.75rem, 5vw, 4.8rem);
+  font-size: clamp(2.75rem, 5vw, 4rem);
   line-height: 0.98;
   letter-spacing: -0.055em;
 }
@@ -104,7 +104,7 @@ h1 {
   min-height: 100dvh;
   align-items: center;
   justify-content: center;
-  padding: clamp(2rem, 6vw, 6rem);
+  padding: clamp(2rem, 6vw, 3rem);
   background: linear-gradient(rgba(232, 241, 242, 0.88), rgba(232, 241, 242, 0.96));
 }
 
