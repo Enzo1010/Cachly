@@ -11,6 +11,8 @@ public interface AlternativaRepository extends JpaRepository<Alternativa, Long> 
 
     Optional<Alternativa> findByIdAndQuestaoId(Long id, Long questaoId);
 
+    Optional<Alternativa> findByIdAndQuestaoIdAndAtivaTrue(Long id, Long questaoId);
+
     boolean existsByQuestaoIdAndOrdem(Long questaoId, Short ordem);
 
     boolean existsByQuestaoIdAndOrdemAndIdNot(Long questaoId, Short ordem, Long id);
