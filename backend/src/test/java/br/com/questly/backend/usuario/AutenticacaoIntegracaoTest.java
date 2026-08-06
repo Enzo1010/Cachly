@@ -57,4 +57,43 @@ class AutenticacaoIntegracaoTest {
                 .andExpect(jsonPath("$.senha").doesNotExist())
                 .andExpect(jsonPath("$.senhaHash").doesNotExist());
     }
+
+    @Test
+    void deveConsultarDadosDaPropriaSessaoAutenticada() throws Exception {
+        String email = "login.integracao.%s@questly.local".formatted(UUID.randomUUID());
+
+        Usuario usuario = new Usuario();
+        usuario.setNome("Usuário Sessão Teste");
+        usuario.setEmail(email);
+        usuario.setSenhaHash(codificadorSenha.encode("senha-me-endpoint"));
+        usuario.setPerfil(PerfilUsuario.ALUNO);
+        usuario.setXpTotal(120);
+        usuario.setNivel(3);
+        usuario.setAtivo(true);
+        usuarioRepository.saveAndFlush(usuario);
+
+        String responseContent = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "%s",
+                                  "senha": "senha-me-endpoint"
+                                }
+                                """.formatted(email)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        String token = mapper.readTree(responseContent).get("token").asText();
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/auth/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(usuario.getId()))
+                .andExpect(jsonPath("$.nome").value("Usuário Sessão Teste"))
+                .andExpect(jsonPath("$.email").value(email))
+                .andExpect(jsonPath("$.perfil").value("ALUNO"))
+                .andExpect(jsonPath("$.xpTotal").value(120))
+                .andExpect(jsonPath("$.nivel").value(3));
+    }
 }

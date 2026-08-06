@@ -2,6 +2,7 @@ package br.com.questly.backend.usuario;
 
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.comum.erro.CredenciaisInvalidasException;
+import br.com.questly.backend.seguranca.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder codificadorSenha;
+    private final TokenService tokenService;
 
     @Transactional
     public AlunoResponse cadastrarAluno(AlunoCadastroRequest request) {
@@ -49,13 +51,16 @@ public class UsuarioService {
                         "E-mail ou senha inválidos"
                 ));
 
+        String token = tokenService.gerarToken(usuario);
+
         return new UsuarioAutenticadoResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getPerfil(),
                 usuario.getXpTotal(),
-                usuario.getNivel()
+                usuario.getNivel(),
+                token
         );
     }
 

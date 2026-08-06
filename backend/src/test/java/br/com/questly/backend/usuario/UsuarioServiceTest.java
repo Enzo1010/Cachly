@@ -2,6 +2,7 @@ package br.com.questly.backend.usuario;
 
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.comum.erro.CredenciaisInvalidasException;
+import br.com.questly.backend.seguranca.TokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,6 +31,9 @@ class UsuarioServiceTest {
 
     @Mock
     private PasswordEncoder codificadorSenha;
+
+    @Mock
+    private TokenService tokenService;
 
     @InjectMocks
     private UsuarioService usuarioService;
@@ -106,6 +110,8 @@ class UsuarioServiceTest {
                 .thenReturn(Optional.of(usuario));
         when(codificadorSenha.matches("senha-segura", "hash-bcrypt"))
                 .thenReturn(true);
+        when(tokenService.gerarToken(usuario))
+                .thenReturn("falso-jwt-token");
 
         UsuarioAutenticadoResponse response = usuarioService.autenticar(
                 new AutenticacaoRequest(
@@ -120,6 +126,7 @@ class UsuarioServiceTest {
         assertEquals(PerfilUsuario.ALUNO, response.perfil());
         assertEquals(0, response.xpTotal());
         assertEquals(1, response.nivel());
+        assertEquals("falso-jwt-token", response.token());
     }
 
     @Test

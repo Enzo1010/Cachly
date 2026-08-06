@@ -1,12 +1,11 @@
 package br.com.questly.backend.usuario;
 
-public record UsuarioAutenticadoResponse(
+public record UsuarioSessaoResponse(
         Long id,
         String nome,
         String email,
         PerfilUsuario perfil,
         Integer xpTotal,
-        Integer nivel,
-        String token
+        Integer nivel
 ) {
 }

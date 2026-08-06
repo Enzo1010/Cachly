@@ -2,6 +2,8 @@ package br.com.questly.backend.usuario;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,5 +21,18 @@ public class AutenticacaoController {
             @Valid @RequestBody AutenticacaoRequest request
     ) {
         return usuarioService.autenticar(request);
+    }
+
+    @GetMapping("/me")
+    public UsuarioSessaoResponse obterUsuarioAutenticado() {
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new UsuarioSessaoResponse(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getPerfil(),
+                usuario.getXpTotal(),
+                usuario.getNivel()
+        );
     }
 }

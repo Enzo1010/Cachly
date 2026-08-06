@@ -5,16 +5,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AutenticacaoController.class)
+@ActiveProfiles("test")
 class AutenticacaoControllerTest {
 
     @Autowired
@@ -22,6 +25,33 @@ class AutenticacaoControllerTest {
 
     @MockitoBean
     private UsuarioService usuarioService;
+
+    @Test
+    void deveRetornarUsuarioAutenticado() throws Exception {
+        Usuario usuarioMock = new Usuario();
+        usuarioMock.setId(1L);
+        usuarioMock.setNome("Ana Silva");
+        usuarioMock.setEmail("ana.silva@exemplo.com");
+        usuarioMock.setPerfil(PerfilUsuario.ALUNO);
+        usuarioMock.setXpTotal(0);
+        usuarioMock.setNivel(1);
+
+        var auth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                usuarioMock, null, java.util.List.of()
+        );
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
+
+        mockMvc.perform(get("/api/auth/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.nome").value("Ana Silva"))
+                .andExpect(jsonPath("$.email").value("ana.silva@exemplo.com"))
+                .andExpect(jsonPath("$.perfil").value("ALUNO"))
+                .andExpect(jsonPath("$.xpTotal").value(0))
+                .andExpect(jsonPath("$.nivel").value(1));
+
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+    }
 
     @Test
     void deveAutenticarUsuarioComCredenciaisValidas() throws Exception {
@@ -32,7 +62,8 @@ class AutenticacaoControllerTest {
                         "ana.silva@exemplo.com",
                         PerfilUsuario.ALUNO,
                         0,
-                        1
+                        1,
+                        "falso-jwt-token"
                 ));
 
         mockMvc.perform(post("/api/auth/login")
