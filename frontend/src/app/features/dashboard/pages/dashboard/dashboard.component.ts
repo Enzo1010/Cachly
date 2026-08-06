@@ -33,7 +33,7 @@ export class DashboardComponent {
     {
       destaque: 'Liga Prata',
       descricao: 'Ver Posição',
-      icone: 'pi pi-medal',
+      icone: 'pi pi-crown',
       variacao: 'pi pi-arrow-right',
     },
   ];
