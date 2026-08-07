@@ -1,10 +1,13 @@
 package br.com.questly.backend.questao;
 
+import br.com.questly.backend.alternativa.Alternativa;
+import br.com.questly.backend.alternativa.AlternativaRepository;
 import br.com.questly.backend.categoria.Categoria;
 import br.com.questly.backend.categoria.CategoriaRepository;
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.comum.erro.RecursoNaoEncontradoException;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -31,6 +34,9 @@ class QuestaoServiceTest {
 
     @Mock
     private CategoriaRepository categoriaRepository;
+
+    @Mock
+    private AlternativaRepository alternativaRepository;
 
     @InjectMocks
     private QuestaoService questaoService;
@@ -105,6 +111,45 @@ class QuestaoServiceTest {
         assertEquals(2, resultado.size());
         assertEquals("Primeira questão", resultado.get(0).enunciado());
         assertEquals("Segunda questão", resultado.get(1).enunciado());
+    }
+
+    @Test
+    void deveListarQuestoesParaEstudoSemRevelarAAlternativaCorreta() {
+        Categoria categoria = criarCategoria(1L, true);
+        Questao questao = criarQuestao(1L, categoria, "O que é um bit?", true);
+        
+        Alternativa altCorreta = new Alternativa();
+        altCorreta.setId(10L);
+        altCorreta.setTexto("0 ou 1");
+        altCorreta.setCorreta(true);
+        altCorreta.setOrdem((short) 1);
+        
+        Alternativa altIncorreta = new Alternativa();
+        altIncorreta.setId(11L);
+        altIncorreta.setTexto("8 bytes");
+        altIncorreta.setCorreta(false);
+        altIncorreta.setOrdem((short) 2);
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        when(questaoRepository.findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(1L, pageRequest))
+                .thenReturn(List.of(questao));
+                
+        when(alternativaRepository.findAllByQuestaoIdAndAtivaTrueOrderByOrdemAsc(1L))
+                .thenReturn(List.of(altCorreta, altIncorreta));
+
+        List<QuestaoEstudoResponse> resultado = questaoService.listarParaEstudo(1L, 10);
+
+        assertEquals(1, resultado.size());
+        QuestaoEstudoResponse response = resultado.get(0);
+        assertEquals(1L, response.id());
+        assertEquals("O que é um bit?", response.enunciado());
+        
+        assertEquals(2, response.alternativas().size());
+        assertEquals(10L, response.alternativas().get(0).id());
+        assertEquals("0 ou 1", response.alternativas().get(0).texto());
+        
+        assertEquals(11L, response.alternativas().get(1).id());
+        assertEquals("8 bytes", response.alternativas().get(1).texto());
     }
 
     @Test

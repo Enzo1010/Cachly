@@ -4,7 +4,10 @@ import br.com.questly.backend.categoria.Categoria;
 import br.com.questly.backend.categoria.CategoriaRepository;
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.comum.erro.RecursoNaoEncontradoException;
+import br.com.questly.backend.alternativa.Alternativa;
+import br.com.questly.backend.alternativa.AlternativaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,7 @@ public class QuestaoService {
 
     private final QuestaoRepository questaoRepository;
     private final CategoriaRepository categoriaRepository;
+    private final AlternativaRepository alternativaRepository;
 
     @Transactional
     public QuestaoResponse cadastrar(QuestaoRequest request) {
@@ -33,6 +37,33 @@ public class QuestaoService {
                 .stream()
                 .map(this::converterParaResponse)
                 .toList();
+    }
+
+    public List<QuestaoEstudoResponse> listarParaEstudo(Long categoriaId, Integer limite) {
+        if (limite == null || limite <= 0) {
+            limite = 10;
+        }
+        PageRequest pageRequest = PageRequest.of(0, limite);
+        List<Questao> questoes = categoriaId != null
+                ? questaoRepository.findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(categoriaId, pageRequest)
+                : questaoRepository.findAllByAtivaTrueOrderByIdAsc(pageRequest);
+
+        return questoes.stream().map(questao -> {
+            List<Alternativa> alternativas = alternativaRepository
+                    .findAllByQuestaoIdAndAtivaTrueOrderByOrdemAsc(questao.getId());
+            
+            List<AlternativaEstudoResponse> alternativasResponse = alternativas.stream()
+                    .map(alt -> new AlternativaEstudoResponse(alt.getId(), alt.getTexto(), alt.getOrdem()))
+                    .toList();
+            
+            return new QuestaoEstudoResponse(
+                    questao.getId(),
+                    questao.getEnunciado(),
+                    questao.getDificuldade(),
+                    questao.getXpBase(),
+                    alternativasResponse
+            );
+        }).toList();
     }
 
     public QuestaoResponse buscarPorId(Long id) {

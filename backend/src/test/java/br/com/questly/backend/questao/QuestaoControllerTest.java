@@ -65,6 +65,31 @@ class QuestaoControllerTest {
     }
 
     @Test
+    void deveListarQuestoesParaEstudoERetornarStatusOk() throws Exception {
+        AlternativaEstudoResponse alt1 = new AlternativaEstudoResponse(10L, "0 ou 1", (short) 1);
+        AlternativaEstudoResponse alt2 = new AlternativaEstudoResponse(11L, "8 bytes", (short) 2);
+        
+        QuestaoEstudoResponse questao = new QuestaoEstudoResponse(
+                1L,
+                "O que é um bit?",
+                DificuldadeQuestao.FACIL,
+                10,
+                List.of(alt1, alt2)
+        );
+
+        when(questaoService.listarParaEstudo(eq(1L), eq(10))).thenReturn(List.of(questao));
+
+        mockMvc.perform(get("/api/questoes/estudo?categoriaId=1&limite=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].enunciado").value("O que é um bit?"))
+                .andExpect(jsonPath("$[0].alternativas.length()").value(2))
+                .andExpect(jsonPath("$[0].alternativas[0].id").value(10))
+                .andExpect(jsonPath("$[0].alternativas[0].texto").value("0 ou 1"));
+    }
+
+    @Test
     void deveBuscarQuestaoPorIdERetornarStatusOk() throws Exception {
         when(questaoService.buscarPorId(1L)).thenReturn(criarResponse(1L, true));
 
