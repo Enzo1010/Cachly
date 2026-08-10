@@ -78,6 +78,6 @@ sessão do usuário protege o dashboard no navegador e pode durar apenas durante
 quando a opção "Lembrar login" estiver marcada. Durante o desenvolvimento, `npm start` encaminha
 as requisições `/api` para o backend em `http://localhost:8080`.
 
-O cadastro de alunos ainda será integrado ao frontend em uma atividade própria.
+O backend já expõe os endpoints para **cadastro de alunos**, **gerenciamento de sessões de estudo (quiz)** e **respostas**, que serão integrados ao frontend nas próximas etapas.
 
 O projeto poderá ser utilizado futuramente como base para um aplicativo Android com Capacitor.

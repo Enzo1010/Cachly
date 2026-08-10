@@ -166,6 +166,7 @@ Resposta esperada:
 | --- | --- | --- |
 | `POST` | `/api/questoes` | Cadastra uma questão |
 | `GET` | `/api/questoes` | Lista questões ativas |
+| `GET` | `/api/questoes/estudo` | Busca um lote de questões ativas (com alternativas sem resposta) |
 | `GET` | `/api/questoes/{id}` | Busca uma questão pelo ID |
 | `PUT` | `/api/questoes/{id}` | Atualiza uma questão |
 | `PATCH` | `/api/questoes/{id}/desativar` | Desativa uma questão |
@@ -180,5 +181,24 @@ Resposta esperada:
 | `PUT` | `/api/questoes/{questaoId}/alternativas/{id}` | Atualiza uma alternativa |
 | `PATCH` | `/api/questoes/{questaoId}/alternativas/{id}/desativar` | Desativa uma alternativa |
 
+### Alunos
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `POST` | `/api/alunos` | Cadastra um novo aluno |
+| `GET` | `/api/alunos/me` | Busca os dados do aluno autenticado |
+
+### Autenticação
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `POST` | `/api/auth/login` | Realiza o login e retorna o token JWT |
+
+### Respostas
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `POST` | `/api/respostas` | Registra a tentativa de resposta e retorna a correção |
+
 As respostas de erro seguem um formato comum para validação, recurso não
-encontrado e conflito de dados. A autenticação ainda não foi implementada.
+encontrado e conflito de dados. A autenticação é stateless baseada em JWT.
