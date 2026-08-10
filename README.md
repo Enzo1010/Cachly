@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="frontend/public/questly-logo-sem-fundo.png" alt="Questly Logo" width="300"/>
+</div>
+
 # Questly
 
 O Questly é uma plataforma educacional gamificada para o estudo de Sistemas
@@ -92,15 +96,12 @@ As instruções de configuração e execução estão separadas por aplicação:
 
 ## Estado atual
 
-O projeto está em desenvolvimento. No backend já estão disponíveis:
+O projeto está em desenvolvimento contínuo. No backend já estão concluídos:
 
-- conexão com PostgreSQL e versionamento do banco com Flyway;
-- modelo inicial de usuários, categorias, questões, alternativas e tentativas;
-- health check da aplicação;
-- gerenciamento de categorias;
-- gerenciamento de questões;
-- validações e respostas de erro padronizadas;
-- testes automatizados das regras e endpoints implementados.
+- **Infraestrutura e Dados:** Conexão com PostgreSQL, versionamento do banco com Flyway e health check da aplicação.
+- **Domínio Principal (CRUD):** Gerenciamento completo de usuários, categorias, questões e alternativas, com validações e respostas de erro padronizadas.
+- **Segurança:** Autenticação stateless via JWT com perfis baseados em Role (futuro RBAC).
+- **Core Business:** Fluxo de respostas, registro de tentativas e um endpoint otimizado para busca de lotes de questões para sessões de estudo (escondendo as respostas corretas do lado do cliente).
+- **Qualidade:** Cobertura de testes automatizados unitários e de integração para todas as regras implementadas.
 
-As próximas etapas incluem o gerenciamento de alternativas, o cadastro de
-alunos, a autenticação, o registro de respostas e as regras de progressão.
+As próximas etapas incluem as regras de progressão (XP e Níveis), histórico, estatísticas e o sistema de Ranking.
