@@ -4,6 +4,7 @@ import br.com.questly.backend.alternativa.Alternativa;
 import br.com.questly.backend.alternativa.AlternativaRepository;
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.comum.erro.RecursoNaoEncontradoException;
+import br.com.questly.backend.questao.DificuldadeQuestao;
 import br.com.questly.backend.questao.Questao;
 import br.com.questly.backend.questao.QuestaoRepository;
 import br.com.questly.backend.usuario.PerfilUsuario;
@@ -38,6 +39,9 @@ class RespostaServiceTest {
     @Mock
     private TentativaQuestaoRepository tentativaQuestaoRepository;
 
+    @Mock
+    private XpService xpService;
+
     @InjectMocks
     private RespostaService respostaService;
 
@@ -54,11 +58,15 @@ class RespostaServiceTest {
         usuario.setEmail("aluno@teste.com");
         usuario.setPerfil(PerfilUsuario.ALUNO);
         usuario.setAtivo(true);
+        usuario.setXpTotal(0);
+        usuario.setNivel(1);
 
         questao = new Questao();
         questao.setId(1L);
         questao.setEnunciado("O que é um bit?");
         questao.setExplicacao("Bit é a menor unidade de informação em computação.");
+        questao.setDificuldade(DificuldadeQuestao.FACIL);
+        questao.setXpBase(10);
         questao.setAtiva(true);
 
         alternativaCorreta = new Alternativa();
@@ -77,10 +85,13 @@ class RespostaServiceTest {
     }
 
     @Test
-    void deveRegistrarRespostaCorretaESalvarTentativa() {
+    void deveRegistrarRespostaCorretaEConcederXp() {
         when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(100L, 1L)).thenReturn(Optional.of(alternativaCorreta));
+        when(xpService.calcularXpGanho(questao)).thenReturn(10);
+        when(xpService.calcularNivel(10)).thenReturn(1);
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
         TentativaQuestao tentativaSalva = new TentativaQuestao();
         tentativaSalva.setId(500L);
@@ -93,21 +104,26 @@ class RespostaServiceTest {
         assertEquals(500L, response.tentativaId());
         assertTrue(response.correta());
         assertEquals("Bit é a menor unidade de informação em computação.", response.explicacao());
-        assertEquals(0, response.xpConcedido());
+        assertEquals(10, response.xpConcedido());
+        assertEquals(1, response.nivelAtual());
+        assertEquals(10, response.xpTotal());
 
         ArgumentCaptor<TentativaQuestao> captor = ArgumentCaptor.forClass(TentativaQuestao.class);
         verify(tentativaQuestaoRepository).save(captor.capture());
-
         TentativaQuestao capturada = captor.getValue();
         assertEquals(usuario, capturada.getUsuario());
         assertEquals(questao, capturada.getQuestao());
         assertEquals(alternativaCorreta, capturada.getAlternativa());
         assertTrue(capturada.getCorreta());
-        assertEquals(0, capturada.getXpConcedido());
+        assertEquals(10, capturada.getXpConcedido());
+
+        verify(usuarioRepository).save(usuario);
+        assertEquals(10, usuario.getXpTotal());
+        assertEquals(1, usuario.getNivel());
     }
 
     @Test
-    void deveRegistrarRespostaIncorretaESalvarTentativa() {
+    void deveRegistrarRespostaIncorretaSemConcederXp() {
         when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(101L, 1L)).thenReturn(Optional.of(alternativaIncorreta));
@@ -124,6 +140,34 @@ class RespostaServiceTest {
         assertFalse(response.correta());
         assertEquals("Bit é a menor unidade de informação em computação.", response.explicacao());
         assertEquals(0, response.xpConcedido());
+        assertEquals(1, response.nivelAtual());
+        assertEquals(0, response.xpTotal());
+
+        verify(xpService, never()).calcularXpGanho(any());
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void deveSubirDeNivelQuandoXpAtingirOLimiar() {
+        usuario.setXpTotal(90);
+        usuario.setNivel(1);
+
+        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
+        when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(100L, 1L)).thenReturn(Optional.of(alternativaCorreta));
+        when(xpService.calcularXpGanho(questao)).thenReturn(10);
+        when(xpService.calcularNivel(100)).thenReturn(2);
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        TentativaQuestao tentativaSalva = new TentativaQuestao();
+        tentativaSalva.setId(502L);
+        when(tentativaQuestaoRepository.save(any(TentativaQuestao.class))).thenReturn(tentativaSalva);
+
+        RespostaResponse response = respostaService.responder(1L, new RespostaRequest(100L), usuario);
+
+        assertEquals(2, response.nivelAtual());
+        assertEquals(100, response.xpTotal());
+        assertEquals(10, response.xpConcedido());
     }
 
     @Test

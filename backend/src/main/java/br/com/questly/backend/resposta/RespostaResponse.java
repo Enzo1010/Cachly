@@ -4,6 +4,8 @@ public record RespostaResponse(
         Long tentativaId,
         Boolean correta,
         String explicacao,
-        Integer xpConcedido
+        Integer xpConcedido,
+        Integer nivelAtual,
+        Integer xpTotal
 ) {
 }

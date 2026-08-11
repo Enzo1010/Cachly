@@ -48,7 +48,7 @@ class RespostaControllerTest {
     @Test
     void deveResponderQuestaoERetornarStatusOk() throws Exception {
         when(respostaService.responder(eq(1L), any(RespostaRequest.class), any(Usuario.class)))
-                .thenReturn(new RespostaResponse(100L, true, "Explicação da questão", 0));
+                .thenReturn(new RespostaResponse(100L, true, "Explicação da questão", 10, 1, 10));
 
         mockMvc.perform(post("/api/questoes/1/respostas")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,7 +61,9 @@ class RespostaControllerTest {
                 .andExpect(jsonPath("$.tentativaId").value(100))
                 .andExpect(jsonPath("$.correta").value(true))
                 .andExpect(jsonPath("$.explicacao").value("Explicação da questão"))
-                .andExpect(jsonPath("$.xpConcedido").value(0));
+                .andExpect(jsonPath("$.xpConcedido").value(10))
+                .andExpect(jsonPath("$.nivelAtual").value(1))
+                .andExpect(jsonPath("$.xpTotal").value(10));
     }
 
     @Test

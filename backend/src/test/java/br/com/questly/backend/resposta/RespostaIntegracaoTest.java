@@ -130,7 +130,9 @@ class RespostaIntegracaoTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correta").value(true))
                 .andExpect(jsonPath("$.explicacao").value("A porta AND resulta em 1 apenas quando todas as entradas forem 1."))
-                .andExpect(jsonPath("$.xpConcedido").value(0));
+                .andExpect(jsonPath("$.xpConcedido").value(10))
+                .andExpect(jsonPath("$.nivelAtual").value(1))
+                .andExpect(jsonPath("$.xpTotal").value(10));
 
         // 7. Verificar banco de dados
         assertEquals(1, tentativaQuestaoRepository.count());
@@ -139,7 +141,12 @@ class RespostaIntegracaoTest {
         assertEquals(questao.getId(), tentativa.getQuestao().getId());
         assertEquals(altCorreta.getId(), tentativa.getAlternativa().getId());
         assertTrue(tentativa.getCorreta());
-        assertEquals(0, tentativa.getXpConcedido());
+        assertEquals(10, tentativa.getXpConcedido());
         assertNotNull(tentativa.getRespondidaEm());
+
+        // 8. Verificar que xpTotal e nivel do aluno foram atualizados
+        Usuario alunoAtualizado = usuarioRepository.findById(aluno.getId()).orElseThrow();
+        assertEquals(10, alunoAtualizado.getXpTotal());
+        assertEquals(1, alunoAtualizado.getNivel());
     }
 }

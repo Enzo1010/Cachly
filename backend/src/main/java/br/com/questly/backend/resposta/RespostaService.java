@@ -20,6 +20,7 @@ public class RespostaService {
     private final AlternativaRepository alternativaRepository;
     private final UsuarioRepository usuarioRepository;
     private final TentativaQuestaoRepository tentativaQuestaoRepository;
+    private final XpService xpService;
 
     @Transactional
     public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuarioAutenticado) {
@@ -48,12 +49,20 @@ public class RespostaService {
 
         boolean correta = Boolean.TRUE.equals(alternativa.getCorreta());
 
+        int xpGanho = 0;
+        if (correta) {
+            xpGanho = xpService.calcularXpGanho(questao);
+            usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
+            usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
+            usuarioRepository.save(usuario);
+        }
+
         TentativaQuestao tentativa = new TentativaQuestao();
         tentativa.setUsuario(usuario);
         tentativa.setQuestao(questao);
         tentativa.setAlternativa(alternativa);
         tentativa.setCorreta(correta);
-        tentativa.setXpConcedido(0);
+        tentativa.setXpConcedido(xpGanho);
 
         TentativaQuestao salva = tentativaQuestaoRepository.save(tentativa);
 
@@ -61,7 +70,9 @@ public class RespostaService {
                 salva.getId(),
                 correta,
                 questao.getExplicacao(),
-                0
+                xpGanho,
+                usuario.getNivel(),
+                usuario.getXpTotal()
         );
     }
 }
