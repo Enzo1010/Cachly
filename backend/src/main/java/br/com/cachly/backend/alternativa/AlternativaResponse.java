@@ -6,7 +6,6 @@ public record AlternativaResponse(
         Long id,
         Long questaoId,
         String texto,
-        String explicacao,
         Boolean correta,
         Short ordem,
         Boolean ativa,
