@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +25,7 @@ public class CategoriaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CategoriaResponse cadastrar(@Valid @RequestBody CategoriaRequest request) {
         return categoriaService.cadastrar(request);
     }
@@ -39,6 +41,7 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CategoriaResponse atualizar(
             @PathVariable Long id,
             @Valid @RequestBody CategoriaRequest request
@@ -47,6 +50,7 @@ public class CategoriaController {
     }
 
     @PatchMapping("/{id}/desativar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CategoriaResponse desativar(@PathVariable Long id) {
         return categoriaService.desativar(id);
     }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ public class QuestaoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public QuestaoResponse cadastrar(@Valid @RequestBody QuestaoRequest request) {
         return questaoService.cadastrar(request);
     }
@@ -48,6 +50,7 @@ public class QuestaoController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public QuestaoResponse atualizar(
             @PathVariable Long id,
             @Valid @RequestBody QuestaoRequest request
@@ -56,6 +59,7 @@ public class QuestaoController {
     }
 
     @PatchMapping("/{id}/desativar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public QuestaoResponse desativar(@PathVariable Long id) {
         return questaoService.desativar(id);
     }

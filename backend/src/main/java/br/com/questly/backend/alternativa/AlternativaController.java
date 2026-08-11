@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +25,7 @@ public class AlternativaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public AlternativaResponse cadastrar(
             @PathVariable Long questaoId,
             @Valid @RequestBody AlternativaRequest request
@@ -45,6 +47,7 @@ public class AlternativaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public AlternativaResponse atualizar(
             @PathVariable Long questaoId,
             @PathVariable Long id,
@@ -54,6 +57,7 @@ public class AlternativaController {
     }
 
     @PatchMapping("/{id}/desativar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public AlternativaResponse desativar(
             @PathVariable Long questaoId,
             @PathVariable Long id
