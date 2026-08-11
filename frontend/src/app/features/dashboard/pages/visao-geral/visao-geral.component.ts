@@ -3,7 +3,7 @@ import { ButtonDirective } from 'primeng/button';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 
-interface IndicadorDashboard {
+interface IndicadorVisaoGeral {
   readonly destaque: string;
   readonly descricao: string;
   readonly icone: string;
@@ -11,15 +11,15 @@ interface IndicadorDashboard {
 }
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-visao-geral',
   imports: [ButtonDirective],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss',
+  templateUrl: './visao-geral.component.html',
+  styleUrl: './visao-geral.component.scss',
 })
-export class DashboardComponent {
+export class VisaoGeralComponent {
   protected readonly sessao = inject(SessaoService);
 
-  protected readonly indicadores: readonly IndicadorDashboard[] = [
+  protected readonly indicadores: readonly IndicadorVisaoGeral[] = [
     {
       destaque: '351',
       descricao: 'Questões Corretas',

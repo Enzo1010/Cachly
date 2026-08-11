@@ -37,10 +37,10 @@ export class LayoutPrincipalComponent {
 
   protected readonly navegacaoPrincipal: readonly ItemNavegacao[] = [
     { icone: 'pi pi-home', rotulo: 'Início', rota: '/dashboard' },
-    { icone: 'pi pi-book', rotulo: 'Estudar', rota: '/dashboard/estudar' },
-    { icone: 'pi pi-chart-pie', rotulo: 'Desempenho', rota: '/dashboard/desempenho' },
-    { icone: 'pi pi-trophy', rotulo: 'Liga Semanal', rota: '/dashboard/liga-semanal' },
-    { icone: 'pi pi-verified', rotulo: 'Conquistas', rota: '/dashboard/conquistas' },
+    { icone: 'pi pi-book', rotulo: 'Estudar', rota: '/estudar' },
+    { icone: 'pi pi-chart-pie', rotulo: 'Desempenho', rota: '/desempenho' },
+    { icone: 'pi pi-trophy', rotulo: 'Liga Semanal', rota: '/liga-semanal' },
+    { icone: 'pi pi-verified', rotulo: 'Conquistas', rota: '/conquistas' },
   ];
 
   constructor() {

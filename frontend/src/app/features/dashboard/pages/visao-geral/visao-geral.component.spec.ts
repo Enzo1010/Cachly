@@ -2,14 +2,14 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
-import { DashboardComponent } from './dashboard.component';
+import { VisaoGeralComponent } from './visao-geral.component';
 
-describe('DashboardComponent', () => {
-  let fixture: ComponentFixture<DashboardComponent>;
+describe('VisaoGeralComponent', () => {
+  let fixture: ComponentFixture<VisaoGeralComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardComponent],
+      imports: [VisaoGeralComponent],
       providers: [
         {
           provide: SessaoService,
@@ -28,11 +28,11 @@ describe('DashboardComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DashboardComponent);
+    fixture = TestBed.createComponent(VisaoGeralComponent);
     fixture.detectChanges();
   });
 
-  it('should display the dashboard summary', () => {
+  it('deve exibir o resumo da visao geral', () => {
     const conteudo = fixture.nativeElement as HTMLElement;
 
     expect(conteudo.querySelector('h2')?.textContent).toContain('Olá, Ana Silva!');
