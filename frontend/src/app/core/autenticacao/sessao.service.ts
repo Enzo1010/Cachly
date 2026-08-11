@@ -69,7 +69,10 @@ export class SessaoService {
       'xpTotal' in valor &&
       typeof valor.xpTotal === 'number' &&
       'nivel' in valor &&
-      typeof valor.nivel === 'number'
+      typeof valor.nivel === 'number' &&
+      'token' in valor &&
+      typeof valor.token === 'string' &&
+      valor.token.length > 0
     );
   }
 }
