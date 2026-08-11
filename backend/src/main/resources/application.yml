@@ -2,7 +2,7 @@ spring:
   application:
     name: backend
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/questly}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/cachly}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
   jpa:
@@ -14,5 +14,5 @@ spring:
 api:
   security:
     token:
-      secret: ${JWT_SECRET:segredo-padrao-de-desenvolvimento-local-do-questly-com-tamanho-suficiente-para-hmac-sha}
+      secret: ${JWT_SECRET:segredo-padrao-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente-para-hmac-sha}
       expiration-hours: ${JWT_EXPIRATION_HOURS:24}

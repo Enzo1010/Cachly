@@ -1,8 +1,8 @@
-# AGENTS.md — Questly Backend
+# AGENTS.md — Cachly Backend
 
 ## Sobre o projeto
 
-O Questly é uma plataforma educacional para auxiliar no estudo de Sistemas Digitais e Arquitetura de Computadores.
+O Cachly é uma plataforma educacional para auxiliar no estudo de Sistemas Digitais e Arquitetura de Computadores.
 
 Este repositório contém o backend da aplicação, desenvolvido com Java, Spring Boot e PostgreSQL.
 

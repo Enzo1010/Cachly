@@ -1,6 +1,6 @@
-# Questly Backend
+# Cachly Backend
 
-Backend da plataforma Questly, responsável pela API REST, regras de negócio,
+Backend da plataforma Cachly, responsável pela API REST, regras de negócio,
 persistência, validações e integração com o PostgreSQL.
 
 ## Tecnologias
@@ -16,7 +16,7 @@ persistência, validações e integração com o PostgreSQL.
 O pacote base da aplicação é:
 
 ```text
-br.com.questly.backend
+br.com.cachly.backend
 ```
 
 ## Pré-requisitos
@@ -30,10 +30,10 @@ Para executar o backend localmente, instale:
 
 ## Configuração do PostgreSQL
 
-Crie um banco vazio chamado `questly`:
+Crie um banco vazio chamado `cachly`:
 
 ```sql
-CREATE DATABASE questly;
+CREATE DATABASE cachly;
 ```
 
 As tabelas não precisam ser criadas manualmente. O Flyway executa as migrations
@@ -43,7 +43,7 @@ automaticamente quando o backend é iniciado.
 
 | Variável | Valor padrão |
 | --- | --- |
-| `DB_URL` | `jdbc:postgresql://localhost:5432/questly` |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/cachly` |
 | `DB_USERNAME` | `postgres` |
 | `DB_PASSWORD` | `postgres` |
 
@@ -144,7 +144,7 @@ Resposta esperada:
 ```json
 {
   "status": "UP",
-  "application": "Questly"
+  "application": "Cachly"
 }
 ```
 
