@@ -8,6 +8,6 @@ export const ROTAS_ESTUDAR: Routes = [
         (componente) => componente.PaginaTituloComponent,
       ),
     data: { titulo: 'Estudar' },
-    title: 'Estudar | Questly',
+    title: 'Estudar | Cachly',
   },
 ];

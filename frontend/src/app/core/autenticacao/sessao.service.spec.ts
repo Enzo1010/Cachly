@@ -30,8 +30,8 @@ describe('SessaoService', () => {
     http.expectOne('/api/auth/login').flush(criarUsuario());
 
     expect(service.estaAutenticado()).toBe(true);
-    expect(window.sessionStorage.getItem('questly.usuario-autenticado')).toContain('Ana Silva');
-    expect(window.localStorage.getItem('questly.usuario-autenticado')).toBeNull();
+    expect(window.sessionStorage.getItem('cachly.usuario-autenticado')).toContain('Ana Silva');
+    expect(window.localStorage.getItem('cachly.usuario-autenticado')).toBeNull();
   });
 
   it('deve persistir a sessao quando lembrar login estiver marcado', () => {
@@ -42,18 +42,18 @@ describe('SessaoService', () => {
 
     http.expectOne('/api/auth/login').flush(criarUsuario());
 
-    expect(window.localStorage.getItem('questly.usuario-autenticado')).toContain('Ana Silva');
-    expect(window.sessionStorage.getItem('questly.usuario-autenticado')).toBeNull();
+    expect(window.localStorage.getItem('cachly.usuario-autenticado')).toContain('Ana Silva');
+    expect(window.sessionStorage.getItem('cachly.usuario-autenticado')).toBeNull();
   });
 
   it('deve limpar os dados ao encerrar a sessao', () => {
-    window.sessionStorage.setItem('questly.usuario-autenticado', JSON.stringify(criarUsuario()));
+    window.sessionStorage.setItem('cachly.usuario-autenticado', JSON.stringify(criarUsuario()));
     const service = TestBed.inject(SessaoService);
 
     service.encerrar();
 
     expect(service.estaAutenticado()).toBe(false);
-    expect(window.sessionStorage.getItem('questly.usuario-autenticado')).toBeNull();
+    expect(window.sessionStorage.getItem('cachly.usuario-autenticado')).toBeNull();
   });
 
   function criarUsuario() {

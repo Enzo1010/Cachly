@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import { MessageService } from 'primeng/api';
 
-import { TEMA_QUESTLY } from './core/config/tema-questly';
+import { TEMA_CACHLY } from './core/config/tema-cachly';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       ripple: true,
       theme: {
-        preset: TEMA_QUESTLY,
+        preset: TEMA_CACHLY,
         options: {
           darkModeSelector: false,
         },

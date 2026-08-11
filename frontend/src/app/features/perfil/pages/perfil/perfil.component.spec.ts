@@ -39,7 +39,7 @@ describe('PerfilComponent', () => {
     const conteudo = fixture.nativeElement as HTMLElement;
 
     expect(conteudo.querySelector('#titulo-perfil')?.textContent).toContain('Ezequiel');
-    expect(conteudo.textContent).toContain('Aluno Questly');
+    expect(conteudo.textContent).toContain('Aluno Cachly');
     expect(conteudo.textContent).toContain('0 XP total');
     expect(conteudo.textContent).toMatch(/N.{1,3}vel 1/);
   });

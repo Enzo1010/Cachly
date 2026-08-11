@@ -1,11 +1,11 @@
-# AGENTS.md — Frontend do Questly
+# AGENTS.md — Frontend do Cachly
 
 Este arquivo define o padrão de trabalho para alterações dentro de `frontend/`.
 As regras valem para pessoas e agentes que contribuírem com a aplicação Angular.
 
 ## Contexto do frontend
 
-O frontend é a interface web do Questly e consumirá a API REST do backend. Ele também será a
+O frontend é a interface web do Cachly e consumirá a API REST do backend. Ele também será a
 base de um futuro aplicativo Android com Capacitor, portanto as telas devem ser responsivas e não
 podem depender de comportamentos exclusivos de desktop.
 
@@ -107,7 +107,7 @@ features/
 - Use o PrimeNG Community compatível com Angular 21 como padrão para componentes de interface.
 - Adote os componentes do PrimeNG gradualmente, apenas quando forem necessários para a tela ou
   funcionalidade em desenvolvimento; não reescreva componentes existentes sem benefício claro.
-- Personalize o tema do PrimeNG com a identidade visual e os tokens do Questly, evitando vincular
+- Personalize o tema do PrimeNG com a identidade visual e os tokens do Cachly, evitando vincular
   a aplicação à aparência do Angular Material.
 - Use apenas os pacotes comunitários gratuitos. Pacotes LTS, templates, blocos ou outros recursos
   pagos não devem ser adicionados sem aprovação explícita.

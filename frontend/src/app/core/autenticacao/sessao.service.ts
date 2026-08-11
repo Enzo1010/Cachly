@@ -7,7 +7,7 @@ import { AutenticacaoRequest, UsuarioAutenticado } from './autenticacao.model';
 @Injectable({ providedIn: 'root' })
 export class SessaoService {
   private readonly http = inject(HttpClient);
-  private readonly chaveArmazenamento = 'questly.usuario-autenticado';
+  private readonly chaveArmazenamento = 'cachly.usuario-autenticado';
   private readonly usuarioAtual = signal<UsuarioAutenticado | null>(this.recuperarUsuario());
 
   readonly usuario = this.usuarioAtual.asReadonly();

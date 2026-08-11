@@ -88,7 +88,7 @@ describe('LoginComponent', () => {
     requisicao.flush(criarUsuario());
 
     expect(navegar).toHaveBeenCalledWith('/dashboard');
-    expect(window.sessionStorage.getItem('questly.usuario-autenticado')).toContain('Ana Silva');
+    expect(window.sessionStorage.getItem('cachly.usuario-autenticado')).toContain('Ana Silva');
   });
 
   it('deve exibir o erro devolvido pelo backend', () => {

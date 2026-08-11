@@ -8,6 +8,6 @@ export const ROTAS_CONQUISTAS: Routes = [
         (componente) => componente.PaginaTituloComponent,
       ),
     data: { titulo: 'Conquistas' },
-    title: 'Conquistas | Questly',
+    title: 'Conquistas | Cachly',
   },
 ];

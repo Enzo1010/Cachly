@@ -1,6 +1,6 @@
-# Frontend do Questly
+# Frontend do Cachly
 
-Aplicação web do Questly, uma plataforma educacional gamificada para o estudo de Sistemas Digitais
+Aplicação web do Cachly, uma plataforma educacional gamificada para o estudo de Sistemas Digitais
 e Arquitetura de Computadores. O frontend concentra as telas, a navegação e a interação do usuário
 com a API REST do backend.
 
@@ -17,7 +17,7 @@ com a API REST do backend.
 
 O PrimeNG é a biblioteca visual padrão. Sua adoção deve ser gradual, utilizando somente os
 componentes necessários para cada funcionalidade. O tema global parte do preset Aura e aplica a
-paleta visual do Questly.
+paleta visual do Cachly.
 
 ## Pré-requisitos
 
@@ -54,7 +54,7 @@ npm test -- --watch=false
 npm run build
 ```
 
-Os arquivos gerados serão armazenados em `dist/questly-frontend/`.
+Os arquivos gerados serão armazenados em `dist/cachly-frontend/`.
 
 ## Organização do código
 
@@ -67,7 +67,7 @@ src/app/
 ```
 
 A autenticação inicial está em `features/auth/`. O tema do PrimeNG está centralizado em
-`core/config/tema-questly.ts` e é registrado globalmente no `app.config.ts`.
+`core/config/tema-cachly.ts` e é registrado globalmente no `app.config.ts`.
 
 As regras completas de desenvolvimento do frontend estão documentadas no arquivo `AGENTS.md`.
 

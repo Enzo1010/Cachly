@@ -8,6 +8,6 @@ export const ROTAS_LIGA_SEMANAL: Routes = [
         (componente) => componente.PaginaTituloComponent,
       ),
     data: { titulo: 'Liga Semanal' },
-    title: 'Liga Semanal | Questly',
+    title: 'Liga Semanal | Cachly',
   },
 ];

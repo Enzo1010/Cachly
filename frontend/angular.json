@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "questly-frontend": {
+    "cachly-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -60,10 +60,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "questly-frontend:build:production"
+              "buildTarget": "cachly-frontend:build:production"
             },
             "development": {
-              "buildTarget": "questly-frontend:build:development"
+              "buildTarget": "cachly-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

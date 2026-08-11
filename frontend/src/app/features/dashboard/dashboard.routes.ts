@@ -8,6 +8,6 @@ export const ROTAS_DASHBOARD: Routes = [
         (componente) => componente.VisaoGeralComponent,
       ),
     data: { titulo: 'Visao Geral' },
-    title: 'Visao Geral | Questly',
+    title: 'Visao Geral | Cachly',
   },
 ];
