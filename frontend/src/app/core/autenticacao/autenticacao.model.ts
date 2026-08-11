@@ -10,4 +10,5 @@ export interface UsuarioAutenticado {
   readonly perfil: 'ALUNO' | 'ADMINISTRADOR';
   readonly xpTotal: number;
   readonly nivel: number;
+  readonly token: string;
 }
