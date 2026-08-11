@@ -28,6 +28,9 @@ class AlunoControllerTest {
     @MockitoBean
     private UsuarioService usuarioService;
 
+    @MockitoBean
+    private AlunoDesempenhoService alunoDesempenhoService;
+
     @Test
     void deveCadastrarAlunoERetornarStatusCriadoSemExporSenha() throws Exception {
         when(usuarioService.cadastrarAluno(any(AlunoCadastroRequest.class)))
