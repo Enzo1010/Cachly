@@ -41,6 +41,10 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/alunos").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/api/health").permitAll();
+                    
+                    // Rotas do Swagger / OpenAPI
+                    req.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                    
                     req.anyRequest().authenticated();
                 })
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(
