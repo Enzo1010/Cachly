@@ -157,7 +157,6 @@ class AlternativaControllerTest {
                 id,
                 1L,
                 "Saída igual a 1",
-                null,
                 true,
                 (short) 1,
                 ativa,
