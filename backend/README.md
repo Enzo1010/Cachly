@@ -152,34 +152,34 @@ Resposta esperada:
 
 ### Categorias
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/api/categorias` | Cadastra uma categoria |
-| `GET` | `/api/categorias` | Lista categorias ativas |
-| `GET` | `/api/categorias/{id}` | Busca uma categoria pelo ID |
-| `PUT` | `/api/categorias/{id}` | Atualiza uma categoria |
-| `PATCH` | `/api/categorias/{id}/desativar` | Desativa uma categoria |
+| Método | Endpoint | Descrição | Acesso |
+| --- | --- | --- | --- |
+| `POST` | `/api/categorias` | Cadastra uma categoria | **ADMIN** |
+| `GET` | `/api/categorias` | Lista categorias ativas | Autenticado |
+| `GET` | `/api/categorias/{id}` | Busca uma categoria pelo ID | Autenticado |
+| `PUT` | `/api/categorias/{id}` | Atualiza uma categoria | **ADMIN** |
+| `PATCH` | `/api/categorias/{id}/desativar` | Desativa uma categoria | **ADMIN** |
 
 ### Questões
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/api/questoes` | Cadastra uma questão |
-| `GET` | `/api/questoes` | Lista questões ativas |
-| `GET` | `/api/questoes/estudo` | Busca um lote de questões ativas (com alternativas sem resposta) |
-| `GET` | `/api/questoes/{id}` | Busca uma questão pelo ID |
-| `PUT` | `/api/questoes/{id}` | Atualiza uma questão |
-| `PATCH` | `/api/questoes/{id}/desativar` | Desativa uma questão |
+| Método | Endpoint | Descrição | Acesso |
+| --- | --- | --- | --- |
+| `POST` | `/api/questoes` | Cadastra uma questão | **ADMIN** |
+| `GET` | `/api/questoes` | Lista questões ativas | Autenticado |
+| `GET` | `/api/questoes/estudo` | Busca um lote de questões ativas | Autenticado |
+| `GET` | `/api/questoes/{id}` | Busca uma questão pelo ID | Autenticado |
+| `PUT` | `/api/questoes/{id}` | Atualiza uma questão | **ADMIN** |
+| `PATCH` | `/api/questoes/{id}/desativar` | Desativa uma questão | **ADMIN** |
 
 ### Alternativas
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/api/questoes/{questaoId}/alternativas` | Cadastra uma alternativa |
-| `GET` | `/api/questoes/{questaoId}/alternativas` | Lista alternativas ativas em ordem |
-| `GET` | `/api/questoes/{questaoId}/alternativas/{id}` | Busca uma alternativa pelo ID |
-| `PUT` | `/api/questoes/{questaoId}/alternativas/{id}` | Atualiza uma alternativa |
-| `PATCH` | `/api/questoes/{questaoId}/alternativas/{id}/desativar` | Desativa uma alternativa |
+| Método | Endpoint | Descrição | Acesso |
+| --- | --- | --- | --- |
+| `POST` | `/api/questoes/{questaoId}/alternativas` | Cadastra uma alternativa | **ADMIN** |
+| `GET` | `/api/questoes/{questaoId}/alternativas` | Lista alternativas ativas em ordem | Autenticado |
+| `GET` | `/api/questoes/{questaoId}/alternativas/{id}` | Busca uma alternativa pelo ID | Autenticado |
+| `PUT` | `/api/questoes/{questaoId}/alternativas/{id}` | Atualiza uma alternativa | **ADMIN** |
+| `PATCH` | `/api/questoes/{questaoId}/alternativas/{id}/desativar` | Desativa uma alternativa | **ADMIN** |
 
 ### Alunos
 
