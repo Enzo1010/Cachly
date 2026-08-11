@@ -1,4 +1,4 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.aluno;
 
 public record DesempenhoCategoriaResponse(
         Long categoriaId,

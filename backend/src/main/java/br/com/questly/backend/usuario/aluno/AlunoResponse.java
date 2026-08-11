@@ -1,5 +1,6 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.aluno;
 
+import br.com.questly.backend.usuario.PerfilUsuario;
 import java.time.OffsetDateTime;
 
 public record AlunoResponse(

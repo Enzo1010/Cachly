@@ -1,5 +1,8 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.autenticacao;
 
+import br.com.questly.backend.usuario.PerfilUsuario;
+import br.com.questly.backend.usuario.Usuario;
+import br.com.questly.backend.usuario.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

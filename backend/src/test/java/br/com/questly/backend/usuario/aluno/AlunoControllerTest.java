@@ -1,7 +1,10 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.aluno;
 
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
+
 import org.junit.jupiter.api.Test;
+import br.com.questly.backend.usuario.UsuarioService;
+import br.com.questly.backend.usuario.PerfilUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;

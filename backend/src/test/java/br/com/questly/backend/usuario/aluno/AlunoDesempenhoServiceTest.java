@@ -1,6 +1,7 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.aluno;
 
 import br.com.questly.backend.alternativa.Alternativa;
+import br.com.questly.backend.usuario.Usuario;
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.questao.Questao;
 import br.com.questly.backend.resposta.DesempenhoCategoriaProjection;

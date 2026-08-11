@@ -1,7 +1,9 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.autenticacao;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import br.com.questly.backend.usuario.UsuarioService;
+import br.com.questly.backend.usuario.Usuario;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

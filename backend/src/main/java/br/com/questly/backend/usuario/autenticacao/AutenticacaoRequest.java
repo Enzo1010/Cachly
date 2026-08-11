@@ -1,4 +1,4 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.autenticacao;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

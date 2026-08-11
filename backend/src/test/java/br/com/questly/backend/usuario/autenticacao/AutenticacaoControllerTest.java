@@ -1,7 +1,11 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.autenticacao;
+
+import br.com.questly.backend.usuario.Usuario;
 
 import br.com.questly.backend.comum.erro.CredenciaisInvalidasException;
 import org.junit.jupiter.api.Test;
+import br.com.questly.backend.usuario.UsuarioService;
+import br.com.questly.backend.usuario.PerfilUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;

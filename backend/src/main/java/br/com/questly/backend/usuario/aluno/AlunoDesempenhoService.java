@@ -1,7 +1,8 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.aluno;
 
 import br.com.questly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.questly.backend.resposta.DesempenhoCategoriaProjection;
+import br.com.questly.backend.usuario.Usuario;
 import br.com.questly.backend.resposta.TentativaQuestaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

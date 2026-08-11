@@ -1,4 +1,6 @@
-package br.com.questly.backend.usuario;
+package br.com.questly.backend.usuario.autenticacao;
+
+import br.com.questly.backend.usuario.PerfilUsuario;
 
 public record UsuarioSessaoResponse(
         Long id,
