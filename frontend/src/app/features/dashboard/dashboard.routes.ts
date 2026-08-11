@@ -48,10 +48,7 @@ export const ROTAS_DASHBOARD: Routes = [
   {
     path: 'perfil',
     loadComponent: () =>
-      import('./pages/pagina-titulo/pagina-titulo.component').then(
-        (componente) => componente.PaginaTituloComponent,
-      ),
-    data: { titulo: 'Perfil' },
+      import('./pages/perfil/perfil.component').then((componente) => componente.PerfilComponent),
     title: 'Perfil | Questly',
   },
 ];

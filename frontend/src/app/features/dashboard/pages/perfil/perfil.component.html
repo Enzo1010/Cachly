@@ -1,0 +1,125 @@
+<section class="pagina-perfil" aria-labelledby="titulo-perfil">
+  <article class="cartao-perfil">
+    <div class="avatar" aria-hidden="true">{{ iniciais() }}</div>
+
+    <div class="dados-perfil">
+      <h2 id="titulo-perfil">{{ usuario()?.nome }}</h2>
+      <p>{{ usuario()?.perfil === 'ADMINISTRADOR' ? 'Administrador Questly' : 'Aluno Questly' }}</p>
+      <div class="insignias" aria-label="Resumo do perfil">
+        <span
+          ><i class="pi pi-star-fill" aria-hidden="true"></i> {{ usuario()?.xpTotal ?? 0 }} XP
+          total</span
+        >
+        <span
+          ><i class="pi pi-sparkles" aria-hidden="true"></i> Nível {{ usuario()?.nivel ?? 1 }}</span
+        >
+      </div>
+    </div>
+
+    <button pButton class="botao-editar" type="button" (click)="abrirEdicao()">
+      <i pButtonIcon class="pi pi-pencil" aria-hidden="true"></i>
+      <span pButtonLabel>Editar perfil</span>
+    </button>
+  </article>
+
+  <article class="cartao-configuracoes" aria-labelledby="titulo-configuracoes">
+    <header>
+      <i class="pi pi-cog" aria-hidden="true"></i>
+      <h2 id="titulo-configuracoes">Configurações da conta</h2>
+    </header>
+
+    <form [formGroup]="formularioConfiguracoes">
+      <div class="configuracao">
+        <div>
+          <h3>Notificações de estudo</h3>
+          <p>Lembretes diários para você não perder o ritmo.</p>
+        </div>
+        <p-toggleswitch formControlName="notificacoesEstudo" aria-label="Notificações de estudo" />
+      </div>
+
+      <div class="configuracao">
+        <div>
+          <h3>Privacidade da liga</h3>
+          <p>Permitir que outros alunos vejam seu perfil no ranking.</p>
+        </div>
+        <p-toggleswitch formControlName="perfilPublico" aria-label="Privacidade da liga" />
+      </div>
+    </form>
+
+    <button pButton class="botao-encerrar" type="button" (click)="sair()">
+      <i pButtonIcon class="pi pi-sign-out" aria-hidden="true"></i>
+      <span pButtonLabel>Sair da conta</span>
+    </button>
+  </article>
+</section>
+
+<p-dialog
+  header="Editar perfil"
+  [visible]="edicaoAberta()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: 'min(32rem, calc(100vw - 2rem))' }"
+  (visibleChange)="edicaoAberta.set($event)"
+>
+  <form class="formulario-edicao" [formGroup]="formularioEdicao" novalidate>
+    <p>Atualize seus dados pessoais. A alteração da conta depende da disponibilidade da API.</p>
+
+    <div class="campo">
+      <label for="nome-perfil">Nome</label>
+      <input
+        pInputText
+        id="nome-perfil"
+        type="text"
+        formControlName="nome"
+        autocomplete="name"
+        [invalid]="formularioEdicao.controls.nome.invalid && formularioEdicao.controls.nome.touched"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="email-perfil">E-mail</label>
+      <input
+        pInputText
+        id="email-perfil"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        [invalid]="
+          formularioEdicao.controls.email.invalid && formularioEdicao.controls.email.touched
+        "
+      />
+    </div>
+
+    <div class="campo">
+      <label for="senha-perfil">Nova senha</label>
+      <input
+        pInputText
+        id="senha-perfil"
+        type="password"
+        formControlName="senha"
+        autocomplete="new-password"
+        placeholder="Deixe em branco para manter a senha atual"
+        [invalid]="
+          formularioEdicao.controls.senha.invalid && formularioEdicao.controls.senha.touched
+        "
+      />
+      <small>A senha deve ter entre 8 e 72 caracteres.</small>
+    </div>
+
+    <div class="acoes-edicao">
+      <button pButton class="botao-cancelar" type="button" (click)="fecharEdicao()">
+        <span pButtonLabel>Cancelar</span>
+      </button>
+      <button
+        pButton
+        class="botao-salvar"
+        type="button"
+        disabled
+        title="A API para atualizar o perfil ainda não está disponível."
+      >
+        <span pButtonLabel>Salvar alterações</span>
+      </button>
+    </div>
+  </form>
+</p-dialog>
