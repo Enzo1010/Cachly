@@ -8,6 +8,8 @@ public record AlternativaRequest(
         @NotBlank(message = "O texto da alternativa é obrigatório")
         String texto,
 
+        String explicacao,
+
         @NotNull(message = "A indicação de alternativa correta é obrigatória")
         Boolean correta,
 

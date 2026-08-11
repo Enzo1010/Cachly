@@ -123,6 +123,7 @@ public class AlternativaService {
 
     private void aplicarDados(Alternativa alternativa, AlternativaRequest request) {
         alternativa.setTexto(request.texto().trim());
+        alternativa.setExplicacao(request.explicacao() != null ? request.explicacao().trim() : null);
         alternativa.setCorreta(request.correta());
         alternativa.setOrdem(request.ordem());
     }
@@ -132,6 +133,7 @@ public class AlternativaService {
                 alternativa.getId(),
                 alternativa.getQuestao().getId(),
                 alternativa.getTexto(),
+                alternativa.getExplicacao(),
                 alternativa.getCorreta(),
                 alternativa.getOrdem(),
                 alternativa.getAtiva(),

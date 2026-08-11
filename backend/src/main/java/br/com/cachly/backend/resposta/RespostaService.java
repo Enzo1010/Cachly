@@ -70,6 +70,7 @@ public class RespostaService {
                 salva.getId(),
                 correta,
                 questao.getExplicacao(),
+                alternativa.getExplicacao(),
                 xpGanho,
                 usuario.getNivel(),
                 usuario.getXpTotal()

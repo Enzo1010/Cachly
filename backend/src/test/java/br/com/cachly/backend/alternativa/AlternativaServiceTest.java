@@ -289,7 +289,7 @@ class AlternativaServiceTest {
             boolean correta,
             short ordem
     ) {
-        return new AlternativaRequest(texto, correta, ordem);
+        return new AlternativaRequest(texto, null, correta, ordem);
     }
 
     private Questao criarQuestao(Long id) {

@@ -36,6 +36,9 @@ public class Alternativa {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String texto;
 
+    @Column(columnDefinition = "TEXT")
+    private String explicacao;
+
     @Column(nullable = false)
     private Boolean correta = false;
 
