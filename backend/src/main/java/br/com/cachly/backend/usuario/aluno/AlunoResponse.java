@@ -12,6 +12,7 @@ public record AlunoResponse(
         Integer nivel,
         String nomeNivel,
         Boolean ativo,
+        Integer diasOfensiva,
         OffsetDateTime criadoEm,
         OffsetDateTime atualizadoEm
 ) {

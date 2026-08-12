@@ -131,6 +131,7 @@ class AlunoControllerTest {
                 1,
                 "Estagiário",
                 true,
+                0,
                 agora,
                 agora
         );

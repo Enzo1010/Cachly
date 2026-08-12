@@ -34,7 +34,8 @@ public class AutenticacaoController {
                 usuario.getEmail(),
                 usuario.getPerfil(),
                 usuario.getXpTotal(),
-                usuario.getNivel()
+                usuario.getNivel(),
+                usuario.getDiasOfensiva()
         );
     }
 }

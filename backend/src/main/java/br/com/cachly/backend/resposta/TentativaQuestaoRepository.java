@@ -16,6 +16,8 @@ public interface TentativaQuestaoRepository extends JpaRepository<TentativaQuest
 
     long countByUsuarioIdAndCorretaTrue(Long usuarioId);
 
+    long countByUsuarioIdAndRespondidaEmBetween(Long usuarioId, java.time.OffsetDateTime start, java.time.OffsetDateTime end);
+
     @Query("""
             SELECT c.id as categoriaId, c.nome as categoriaNome,
                    COUNT(t.id) as totalTentativas,

@@ -27,7 +27,8 @@ public class RankingService {
                     posicao,
                     usuario.getNome(),
                     usuario.getNivel(),
-                    usuario.getXpTotal()
+                    usuario.getXpTotal(),
+                    usuario.getDiasOfensiva()
             );
         });
     }

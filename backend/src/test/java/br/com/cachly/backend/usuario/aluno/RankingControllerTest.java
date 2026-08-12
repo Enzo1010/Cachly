@@ -43,9 +43,11 @@ class RankingControllerTest {
     @Test
     void listarRanking_DeveRetornarRankingComSucesso() throws Exception {
         // Arrange
-        RankingResponse r1 = new RankingResponse(1, "Enzo", 10, 500);
-        RankingResponse r2 = new RankingResponse(2, "Alice", 8, 400);
-        Page<RankingResponse> pagina = new PageImpl<>(List.of(r1, r2));
+        var ranking = List.of(
+                new RankingResponse(1, "Enzo", 10, 500, 10),
+                new RankingResponse(2, "Alice", 8, 400, 5)
+        );
+        Page<RankingResponse> pagina = new PageImpl<>(ranking);
 
         when(rankingService.listarRanking(any(Pageable.class))).thenReturn(pagina);
 

@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -48,6 +49,12 @@ public class Usuario {
 
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    @Column(name = "dias_ofensiva", nullable = false)
+    private Integer diasOfensiva = 0;
+
+    @Column(name = "data_ultima_ofensiva")
+    private LocalDate dataUltimaOfensiva;
 
     @Column(name = "criado_em", nullable = false)
     private OffsetDateTime criadoEm;

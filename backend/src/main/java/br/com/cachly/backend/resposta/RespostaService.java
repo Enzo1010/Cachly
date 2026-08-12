@@ -12,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
 @Service
 @RequiredArgsConstructor
 public class RespostaService {
@@ -54,7 +58,6 @@ public class RespostaService {
             xpGanho = xpService.calcularXpGanho(questao);
             usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
             usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
-            usuarioRepository.save(usuario);
         }
 
         TentativaQuestao tentativa = new TentativaQuestao();
@@ -63,6 +66,13 @@ public class RespostaService {
         tentativa.setAlternativa(alternativa);
         tentativa.setCorreta(correta);
         tentativa.setXpConcedido(xpGanho);
+
+        atualizarOfensivaSeNecessario(usuario);
+
+        // Se o usuário foi atualizado (XP ou ofensiva), salva.
+        // Já estávamos salvando dentro do if (correta), mas agora a ofensiva também pode modificar o usuário,
+        // então é mais seguro dar um save() aqui garantidamente.
+        usuarioRepository.save(usuario);
 
         TentativaQuestao salva = tentativaQuestaoRepository.save(tentativa);
 
@@ -75,5 +85,33 @@ public class RespostaService {
                 xpService.nomeDoNivel(usuario.getNivel()),
                 usuario.getXpTotal()
         );
+    }
+
+    private void atualizarOfensivaSeNecessario(Usuario usuario) {
+        LocalDate hoje = LocalDate.now();
+        OffsetDateTime inicioDoDia = hoje.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        OffsetDateTime fimDoDia = hoje.atTime(23, 59, 59, 999999999).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+
+        long respostasHoje = tentativaQuestaoRepository.countByUsuarioIdAndRespondidaEmBetween(
+                usuario.getId(), inicioDoDia, fimDoDia
+        );
+
+        // A streak só aumenta se esta for exatamente a 2ª questão do dia.
+        // Se for a 1ª (respostasHoje == 0), ainda não bateu a meta.
+        // Se for a 3ª ou mais (respostasHoje >= 2), a ofensiva já foi calculada.
+        if (respostasHoje == 1) {
+            LocalDate dataUltima = usuario.getDataUltimaOfensiva();
+
+            if (dataUltima != null && dataUltima.equals(hoje.minusDays(1))) {
+                // Ontem o aluno também completou a meta, estende a ofensiva!
+                usuario.setDiasOfensiva(usuario.getDiasOfensiva() + 1);
+            } else if (dataUltima == null || dataUltima.isBefore(hoje.minusDays(1))) {
+                // Perdeu a ofensiva ou é a primeira vez
+                usuario.setDiasOfensiva(1);
+            }
+            
+            // Registra que hoje ele completou a meta
+            usuario.setDataUltimaOfensiva(hoje);
+        }
     }
 }

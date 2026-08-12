@@ -144,7 +144,7 @@ class RespostaServiceTest {
         assertEquals(0, response.xpTotal());
 
         verify(xpService, never()).calcularXpGanho(any());
-        verify(usuarioRepository, never()).save(any());
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 
     @Test

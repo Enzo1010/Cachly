@@ -8,6 +8,7 @@ public record UsuarioSessaoResponse(
         String email,
         PerfilUsuario perfil,
         Integer xpTotal,
-        Integer nivel
+        Integer nivel,
+        Integer diasOfensiva
 ) {
 }

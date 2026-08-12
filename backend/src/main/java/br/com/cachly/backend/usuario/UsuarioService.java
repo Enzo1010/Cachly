@@ -85,6 +85,7 @@ public class UsuarioService {
                 usuario.getNivel(),
                 xpService.nomeDoNivel(usuario.getNivel()),
                 usuario.getAtivo(),
+                usuario.getDiasOfensiva(),
                 usuario.getCriadoEm(),
                 usuario.getAtualizadoEm()
         );
