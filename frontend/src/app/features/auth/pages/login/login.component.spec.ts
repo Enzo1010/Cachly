@@ -56,6 +56,23 @@ describe('LoginComponent', () => {
     expect(conteudo.textContent).toContain('Esqueci minha senha');
   });
 
+  it('deve preencher o login e marcar lembrar login quando houver preferencia salva', () => {
+    window.localStorage.setItem(
+      'cachly.login-lembrado',
+      JSON.stringify({ email: 'ana.silva@exemplo.com', senha: 'senha-segura' }),
+    );
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+
+    const email = fixture.nativeElement.querySelector('#email') as HTMLInputElement;
+    const senha = fixture.nativeElement.querySelector('#senha') as HTMLInputElement;
+    const lembrarLogin = fixture.nativeElement.querySelector('#lembrar-login') as HTMLInputElement;
+
+    expect(email.value).toBe('ana.silva@exemplo.com');
+    expect(senha.value).toBe('senha-segura');
+    expect(lembrarLogin.checked).toBe(true);
+  });
+
   it('deve disponibilizar o link para a tela de cadastro', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     fixture.detectChanges();
