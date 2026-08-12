@@ -103,6 +103,8 @@ export class SessaoService {
       typeof valor.xpTotal === 'number' &&
       'nivel' in valor &&
       typeof valor.nivel === 'number' &&
+      'diasOfensiva' in valor &&
+      typeof valor.diasOfensiva === 'number' &&
       'token' in valor &&
       typeof valor.token === 'string' &&
       valor.token.length > 0

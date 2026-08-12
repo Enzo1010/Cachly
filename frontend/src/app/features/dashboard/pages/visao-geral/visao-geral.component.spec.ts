@@ -1,7 +1,9 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
+import { DashboardService } from '../../services/dashboard.service';
 import { VisaoGeralComponent } from './visao-geral.component';
 
 describe('VisaoGeralComponent', () => {
@@ -21,9 +23,21 @@ describe('VisaoGeralComponent', () => {
               perfil: 'ALUNO',
               xpTotal: 0,
               nivel: 1,
+              diasOfensiva: 12,
               token: 'token-de-teste',
             }),
           },
+        },
+        {
+          provide: DashboardService,
+          useValue: {
+            obterDesempenho: () => of({
+              totalTentativas: 10,
+              acertos: 8,
+              taxaAcerto: 80,
+              estatisticasPorCategoria: []
+            })
+          }
         },
       ],
     }).compileComponents();

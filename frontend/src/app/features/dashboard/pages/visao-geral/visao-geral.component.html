@@ -6,9 +6,9 @@
       </h2>
       <p>Pronto para manter a sua ofensiva hoje?</p>
     </div>
-    <div class="cartao-sequencia" aria-label="Sequência de estudos: 12 dias">
+    <div class="cartao-sequencia" [attr.aria-label]="'Sequência de estudos: ' + (sessao.usuario()?.diasOfensiva ?? 0) + ' dias'">
       <i class="pi pi-fire" aria-hidden="true"></i>
-      <strong>12 dias</strong>
+      <strong>{{ sessao.usuario()?.diasOfensiva ?? 0 }} dias</strong>
       <span>Sequência de estudos</span>
     </div>
   </section>
@@ -20,8 +20,12 @@
       </p>
       <h2 id="titulo-objetivo">Seu próximo objetivo</h2>
       <p class="objetivo__texto">
-        Analisamos seu desempenho recente. Você apresenta dificuldade em
-        <strong>Pipeline e ULA</strong>. Aqui está sua trilha recomendada para hoje:
+        @if (piorCategoria()) {
+          Analisamos seu desempenho recente. Você apresenta dificuldade em
+          <strong>{{ piorCategoria()?.categoriaNome }}</strong>. Aqui está sua trilha recomendada para hoje:
+        } @else {
+          Continue respondendo questões para podermos analisar o seu desempenho e recomendar a melhor trilha!
+        }
       </p>
       <div class="objetivo__acoes">
         <button pButton class="botao-revisao" type="button">
@@ -35,7 +39,7 @@
   </section>
 
   <section class="indicadores" aria-label="Resumo do desempenho">
-    @for (indicador of indicadores; track indicador.descricao) {
+    @for (indicador of indicadores(); track indicador.descricao) {
       <article class="indicador">
         <span class="indicador__icone"><i [class]="indicador.icone" aria-hidden="true"></i></span>
         <div>
