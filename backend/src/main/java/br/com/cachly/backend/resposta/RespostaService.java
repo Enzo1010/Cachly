@@ -72,6 +72,7 @@ public class RespostaService {
                 questao.getExplicacao(),
                 xpGanho,
                 usuario.getNivel(),
+                xpService.nomeDoNivel(usuario.getNivel()),
                 usuario.getXpTotal()
         );
     }

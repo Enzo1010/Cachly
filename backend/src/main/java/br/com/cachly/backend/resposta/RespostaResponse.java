@@ -6,6 +6,7 @@ public record RespostaResponse(
         String explicacao,
         Integer xpConcedido,
         Integer nivelAtual,
+        String nomeNivel,
         Integer xpTotal
 ) {
 }

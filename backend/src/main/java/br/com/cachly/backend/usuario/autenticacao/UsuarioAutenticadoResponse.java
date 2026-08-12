@@ -9,6 +9,7 @@ public record UsuarioAutenticadoResponse(
         PerfilUsuario perfil,
         Integer xpTotal,
         Integer nivel,
+        String nomeNivel,
         String token
 ) {
 }

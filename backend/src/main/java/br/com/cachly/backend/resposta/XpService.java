@@ -34,4 +34,23 @@ public class XpService {
         }
         return nivel;
     }
+
+    /**
+     * Retorna o nome do título correspondente ao nível.
+     * Níveis acima de 10 recebem o título máximo.
+     */
+    public String nomeDoNivel(int nivel) {
+        return switch (nivel) {
+            case 1 -> "Estagiário";
+            case 2 -> "Dev Junior";
+            case 3 -> "Dev";
+            case 4 -> "Dev Pleno";
+            case 5 -> "Dev Sênior";
+            case 6 -> "Tech Lead";
+            case 7 -> "Software Architect";
+            case 8 -> "Principal Engineer";
+            case 9 -> "CTO";
+            default -> "sudo";
+        };
+    }
 }

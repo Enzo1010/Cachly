@@ -2,6 +2,7 @@ package br.com.cachly.backend.usuario;
 
 import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.cachly.backend.comum.erro.CredenciaisInvalidasException;
+import br.com.cachly.backend.resposta.XpService;
 import br.com.cachly.backend.seguranca.TokenService;
 import br.com.cachly.backend.usuario.aluno.AlunoCadastroRequest;
 import br.com.cachly.backend.usuario.aluno.AlunoResponse;
@@ -38,6 +39,9 @@ class UsuarioServiceTest {
 
     @Mock
     private TokenService tokenService;
+
+    @Mock
+    private XpService xpService;
 
     @InjectMocks
     private UsuarioService usuarioService;

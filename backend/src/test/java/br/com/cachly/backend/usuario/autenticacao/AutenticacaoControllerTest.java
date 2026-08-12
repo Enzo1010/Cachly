@@ -67,6 +67,7 @@ class AutenticacaoControllerTest {
                         PerfilUsuario.ALUNO,
                         0,
                         1,
+                        "Estagiário",
                         "falso-jwt-token"
                 ));
 

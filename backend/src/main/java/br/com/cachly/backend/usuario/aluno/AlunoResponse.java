@@ -10,6 +10,7 @@ public record AlunoResponse(
         PerfilUsuario perfil,
         Integer xpTotal,
         Integer nivel,
+        String nomeNivel,
         Boolean ativo,
         OffsetDateTime criadoEm,
         OffsetDateTime atualizadoEm

@@ -2,6 +2,7 @@ package br.com.cachly.backend.usuario;
 
 import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.cachly.backend.comum.erro.CredenciaisInvalidasException;
+import br.com.cachly.backend.resposta.XpService;
 import br.com.cachly.backend.seguranca.TokenService;
 import br.com.cachly.backend.usuario.aluno.AlunoCadastroRequest;
 import br.com.cachly.backend.usuario.aluno.AlunoResponse;
@@ -22,6 +23,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder codificadorSenha;
     private final TokenService tokenService;
+    private final XpService xpService;
 
     @Transactional
     public AlunoResponse cadastrarAluno(AlunoCadastroRequest request) {
@@ -64,6 +66,7 @@ public class UsuarioService {
                 usuario.getPerfil(),
                 usuario.getXpTotal(),
                 usuario.getNivel(),
+                xpService.nomeDoNivel(usuario.getNivel()),
                 token
         );
     }
@@ -80,6 +83,7 @@ public class UsuarioService {
                 usuario.getPerfil(),
                 usuario.getXpTotal(),
                 usuario.getNivel(),
+                xpService.nomeDoNivel(usuario.getNivel()),
                 usuario.getAtivo(),
                 usuario.getCriadoEm(),
                 usuario.getAtualizadoEm()

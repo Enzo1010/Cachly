@@ -129,6 +129,7 @@ class AlunoControllerTest {
                 PerfilUsuario.ALUNO,
                 0,
                 1,
+                "Estagiário",
                 true,
                 agora,
                 agora
