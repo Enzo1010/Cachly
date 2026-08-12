@@ -33,17 +33,18 @@ export class LoginComponent {
   protected readonly senhaVisivel = signal(false);
   protected readonly carregando = signal(false);
   protected readonly erroLogin = signal('');
+  private readonly loginLembrado = this.sessao.obterLoginLembrado();
 
   protected readonly formularioLogin = new FormGroup({
-    email: new FormControl('', {
+    email: new FormControl(this.loginLembrado?.email ?? '', {
       nonNullable: true,
       validators: [Validators.required, Validators.email],
     }),
-    senha: new FormControl('', {
+    senha: new FormControl(this.loginLembrado?.senha ?? '', {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(6)],
     }),
-    lembrarLogin: new FormControl(false, { nonNullable: true }),
+    lembrarLogin: new FormControl(this.loginLembrado !== null, { nonNullable: true }),
   });
 
   protected alternarVisibilidadeSenha(): void {
