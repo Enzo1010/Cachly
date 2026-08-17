@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Serviço responsável por executar a simulação didática da memória cache.
  * 
- * Design Arquitetural: Esta classe foi desenhada para ser 100% stateless. 
+ * Design Arquintetural: Esta classe foi desenhada para ser 100% stateless.
  * Ela não mantém estado no banco de dados. O algoritmo recebe as configurações e a sequência de 
  * endereços na requisição e processa toda a simulação de forma determinística na memória (heap), 
  * retornando o histórico completo passo a passo. Isso garante alta performance e escabilidade.

@@ -1,0 +1,82 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <div class="field">
+    <label class="field-label">
+      <i class="pi pi-database"></i> Tamanho da Cache
+    </label>
+    <p-selectButton
+      formControlName="tamanhoCacheBytes"
+      [options]="tamanhoOptions"
+      optionLabel="label"
+      optionValue="value">
+    </p-selectButton>
+  </div>
+
+  <div class="field">
+    <label class="field-label">
+      <i class="pi pi-box"></i> Tamanho do Bloco
+    </label>
+    <p-selectButton
+      formControlName="tamanhoBlocoBytes"
+      [options]="blocoOptions"
+      optionLabel="label"
+      optionValue="value">
+    </p-selectButton>
+  </div>
+
+  <div class="field">
+    <label class="field-label">
+      <i class="pi pi-sitemap"></i> Mapeamento
+    </label>
+    <p-selectButton
+      formControlName="mapeamento"
+      [options]="mapeamentoOptions"
+      optionLabel="label"
+      optionValue="value">
+    </p-selectButton>
+  </div>
+
+  <div class="field" *ngIf="form.get('mapeamento')?.value === 'CONJUNTO_ASSOCIATIVO'">
+    <label class="field-label">
+      <i class="pi pi-arrows-alt"></i> Número de Vias
+    </label>
+    <p-selectButton
+      formControlName="numeroVias"
+      [options]="viasOptions"
+      optionLabel="label"
+      optionValue="value">
+    </p-selectButton>
+  </div>
+
+  <div class="field" *ngIf="form.get('mapeamento')?.value !== 'DIRETO'">
+    <label class="field-label">
+      <i class="pi pi-sync"></i> Política de Substituição
+    </label>
+    <p-selectButton
+      formControlName="substituicao"
+      [options]="politicaOptions"
+      optionLabel="label"
+      optionValue="value">
+    </p-selectButton>
+  </div>
+
+  <div class="field">
+    <label class="field-label">
+      <i class="pi pi-list-check"></i> Endereços de Acesso
+    </label>
+    <input
+      pInputText
+      formControlName="enderecosStr"
+      placeholder="Ex: 0, 4, 8, 12, 0, 4" />
+    <span class="field-hint">Separados por vírgula — requisições decimais da CPU.</span>
+  </div>
+
+  <p-button
+    type="submit"
+    label="Iniciar Simulação"
+    icon="pi pi-play"
+    styleClass="w-full p-button-lg"
+    [disabled]="form.invalid">
+  </p-button>
+
+</form>
