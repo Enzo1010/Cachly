@@ -32,7 +32,7 @@ public class RespostaService {
             throw new ConflitoDeDadosException("Usuário não autenticado");
         }
 
-        Usuario usuario = usuarioRepository.findById(usuarioAutenticado.getId())
+        Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioAutenticado.getId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         if (!Boolean.TRUE.equals(usuario.getAtivo())) {

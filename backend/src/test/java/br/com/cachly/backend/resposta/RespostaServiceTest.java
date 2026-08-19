@@ -86,7 +86,7 @@ class RespostaServiceTest {
 
     @Test
     void deveRegistrarRespostaCorretaEConcederXp() {
-        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(100L, 1L)).thenReturn(Optional.of(alternativaCorreta));
         when(xpService.calcularXpGanho(questao)).thenReturn(10);
@@ -124,7 +124,7 @@ class RespostaServiceTest {
 
     @Test
     void deveRegistrarRespostaIncorretaSemConcederXp() {
-        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(101L, 1L)).thenReturn(Optional.of(alternativaIncorreta));
 
@@ -152,7 +152,7 @@ class RespostaServiceTest {
         usuario.setXpTotal(90);
         usuario.setNivel(1);
 
-        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(100L, 1L)).thenReturn(Optional.of(alternativaCorreta));
         when(xpService.calcularXpGanho(questao)).thenReturn(10);
@@ -172,7 +172,7 @@ class RespostaServiceTest {
 
     @Test
     void deveLancarExcecaoQuandoQuestaoInexistenteOuInativa() {
-        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(99L)).thenReturn(Optional.empty());
 
         RespostaRequest request = new RespostaRequest(100L);
@@ -183,7 +183,7 @@ class RespostaServiceTest {
 
     @Test
     void deveLancarExcecaoQuandoAlternativaInexistenteInativaOuNaoPertencenteAQuestao() {
-        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(999L, 1L)).thenReturn(Optional.empty());
 
@@ -196,7 +196,7 @@ class RespostaServiceTest {
     @Test
     void deveLancarExcecaoQuandoUsuarioInativo() {
         usuario.setAtivo(false);
-        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
 
         RespostaRequest request = new RespostaRequest(100L);
 
