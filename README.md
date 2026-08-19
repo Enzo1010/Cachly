@@ -20,7 +20,7 @@
 
 ## Contexto Acadêmico
 
-Este projeto é desenvolvido como Trabalho de Conclusão de Curso (TCC) no âmbito da disciplina de **Sistemas Digitais e Arquitetura de Computadores** da **URI Campus Erechim (URICER)**.
+Este projeto é desenvolvido como Trabalho de Projeto Integrador IV no âmbito da disciplina de **Projeto Integrador** da **URI Campus Erechim**.
 
 **Tema Norteador**
 > Cachly: Uma Plataforma Educacional para Aprendizagem e Acompanhamento do Desempenho em Sistemas Digitais e Arquitetura de Computadores
