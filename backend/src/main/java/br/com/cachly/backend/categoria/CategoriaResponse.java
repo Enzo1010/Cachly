@@ -8,6 +8,8 @@ public record CategoriaResponse(
         String descricao,
         Boolean ativa,
         OffsetDateTime criadoEm,
-        OffsetDateTime atualizadoEm
+        OffsetDateTime atualizadoEm,
+        Long criadoPor,
+        Long atualizadoPor
 ) {
 }

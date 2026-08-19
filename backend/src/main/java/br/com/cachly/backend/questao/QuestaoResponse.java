@@ -12,6 +12,8 @@ public record QuestaoResponse(
         Integer xpBase,
         Boolean ativa,
         OffsetDateTime criadoEm,
-        OffsetDateTime atualizadoEm
+        OffsetDateTime atualizadoEm,
+        Long criadoPor,
+        Long atualizadoPor
 ) {
 }

@@ -10,6 +10,8 @@ public record AlternativaResponse(
         Short ordem,
         Boolean ativa,
         OffsetDateTime criadoEm,
-        OffsetDateTime atualizadoEm
+        OffsetDateTime atualizadoEm,
+        Long criadoPor,
+        Long atualizadoPor
 ) {
 }

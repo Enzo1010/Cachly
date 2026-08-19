@@ -131,7 +131,9 @@ public class QuestaoService {
                 questao.getXpBase(),
                 questao.getAtiva(),
                 questao.getCriadoEm(),
-                questao.getAtualizadoEm()
+                questao.getAtualizadoEm(),
+                questao.getCriadoPor(),
+                questao.getAtualizadoPor()
         );
     }
 }

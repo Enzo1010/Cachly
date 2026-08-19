@@ -186,7 +186,9 @@ class QuestaoControllerTest {
                 10,
                 ativa,
                 agora,
-                agora
+                agora,
+                null,
+                null
         );
     }
 

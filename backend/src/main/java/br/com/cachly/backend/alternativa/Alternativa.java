@@ -1,5 +1,6 @@
 package br.com.cachly.backend.alternativa;
 
+import br.com.cachly.backend.comum.auditoria.EntidadeAuditavel;
 import br.com.cachly.backend.questao.Questao;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,21 +10,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "alternativas")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Alternativa {
+public class Alternativa extends EntidadeAuditavel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,22 +41,4 @@ public class Alternativa {
 
     @Column(nullable = false)
     private Boolean ativa = true;
-
-    @Column(name = "criado_em", nullable = false)
-    private OffsetDateTime criadoEm;
-
-    @Column(name = "atualizado_em", nullable = false)
-    private OffsetDateTime atualizadoEm;
-
-    @PrePersist
-    private void antesDeSalvar() {
-        OffsetDateTime agora = OffsetDateTime.now();
-        criadoEm = agora;
-        atualizadoEm = agora;
-    }
-
-    @PreUpdate
-    private void antesDeAtualizar() {
-        atualizadoEm = OffsetDateTime.now();
-    }
 }

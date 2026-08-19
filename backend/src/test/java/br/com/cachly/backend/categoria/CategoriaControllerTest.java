@@ -164,7 +164,9 @@ class CategoriaControllerTest {
                 "Descrição da categoria",
                 ativa,
                 agora,
-                agora
+                agora,
+                null,
+                null
         );
     }
 }

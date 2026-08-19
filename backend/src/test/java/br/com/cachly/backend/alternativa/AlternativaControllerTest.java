@@ -161,7 +161,9 @@ class AlternativaControllerTest {
                 (short) 1,
                 ativa,
                 agora,
-                agora
+                agora,
+                null,
+                null
         );
     }
 

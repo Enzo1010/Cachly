@@ -136,7 +136,9 @@ public class AlternativaService {
                 alternativa.getOrdem(),
                 alternativa.getAtiva(),
                 alternativa.getCriadoEm(),
-                alternativa.getAtualizadoEm()
+                alternativa.getAtualizadoEm(),
+                alternativa.getCriadoPor(),
+                alternativa.getAtualizadoPor()
         );
     }
 }
