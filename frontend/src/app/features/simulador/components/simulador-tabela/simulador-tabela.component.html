@@ -1,0 +1,34 @@
+<div class="cache-grid">
+  <div class="conjunto" *ngFor="let conjunto of conjuntos">
+    <!-- Label do Conjunto apenas quando há mais de 1 -->
+    <div class="conjunto__label" *ngIf="conjuntos.length > 1">
+      Conjunto {{ conjunto.id }}
+    </div>
+
+    <div class="conjunto__linhas">
+      <div *ngFor="let linha of conjunto.linhas"
+           class="slot"
+           [class.slot--vazio]="!linha.valida"
+           [class.slot--ocupado]="linha.valida && !isLinhaAlterada(linha.indiceLinha)"
+           [class.slot--novo]="linha.valida && isLinhaAlterada(linha.indiceLinha) && !isHit"
+           [class.slot--hit]="linha.valida && isLinhaAlterada(linha.indiceLinha) && isHit">
+
+        <span class="slot__linha-id">Linha {{ linha.indiceLinha }}</span>
+
+        <ng-container *ngIf="linha.valida">
+          <span class="slot__tag-label">Tag</span>
+          <span class="slot__tag-value">{{ linha.tag }}</span>
+        </ng-container>
+
+        <ng-container *ngIf="!linha.valida">
+          <span class="slot__tag-value">—</span>
+        </ng-container>
+
+        <!-- Badge "NEW" ou "HIT" -->
+        <span *ngIf="isLinhaAlterada(linha.indiceLinha) && linha.valida" class="slot__badge">
+          {{ isHit ? 'HIT' : 'NEW' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

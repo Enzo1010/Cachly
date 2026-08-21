@@ -1,0 +1,56 @@
+// ============================================================
+// Simulador de Cache — Estilos do Formulário de Configuração
+// ============================================================
+
+:host {
+  display: block;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+// Faz os SelectButtons ocuparem toda a largura
+::ng-deep .p-selectbutton {
+  display: flex;
+  width: 100%;
+}
+
+::ng-deep .p-selectbutton .p-button {
+  flex: 1;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.25rem;
+}
+
+// Input de endereços
+::ng-deep .p-inputtext {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.field-hint {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}

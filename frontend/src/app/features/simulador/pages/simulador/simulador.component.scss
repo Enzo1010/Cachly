@@ -1,0 +1,407 @@
+// ============================================================
+// Simulador de Cache — Estilos da Página Principal
+// ============================================================
+
+.sim-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// Layout em 2 colunas: sidebar + conteúdo principal
+.sim-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// --------------------------------------------------------
+// Sidebar de Configuração
+// --------------------------------------------------------
+.sim-sidebar {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  position: sticky;
+  top: 1.5rem;
+
+  h3 {
+    margin: 0 0 1.25rem 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748b;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+  }
+}
+
+// --------------------------------------------------------
+// Área principal de visualização
+// --------------------------------------------------------
+.sim-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// --------------------------------------------------------
+// Estado Vazio / Loading
+// --------------------------------------------------------
+.sim-empty {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+
+  &__icon {
+    font-size: 4rem;
+    color: #cbd5e1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  &__desc {
+    margin: 0;
+    color: #94a3b8;
+    max-width: 22rem;
+    line-height: 1.6;
+  }
+}
+
+.sim-loading {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #64748b;
+}
+
+// --------------------------------------------------------
+// Barra de Controle (Navegação de Passos)
+// --------------------------------------------------------
+.sim-control-bar {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .step-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .step-badge {
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .stat-hit {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #16a34a;
+    }
+
+    .stat-miss {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #dc2626;
+    }
+  }
+
+  .control-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// --------------------------------------------------------
+// Dashboard de Gráficos
+// --------------------------------------------------------
+.sim-charts {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    h4 {
+      margin: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      text-align: center;
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Painel Didático (Resolução do Acesso)
+// --------------------------------------------------------
+.sim-resolution {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(15,23,42,0.35);
+
+  &__deco {
+    position: absolute;
+    right: -0.5rem;
+    top: -2rem;
+    font-size: 18rem;
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(255,255,255,0.03);
+    pointer-events: none;
+    user-select: none;
+    font-family: monospace;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+
+  &__address {
+    .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    .value {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #f1f5f9;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    .value-sub {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 0.25rem;
+    }
+  }
+
+  &__bits {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 1.25rem 1.75rem;
+    text-align: center;
+    backdrop-filter: blur(8px);
+
+    .bits-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #475569;
+      margin-bottom: 1rem;
+    }
+
+    .bits-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .bit-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+
+      .bit-value {
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        line-height: 1;
+      }
+
+      .bit-bar {
+        height: 2px;
+        width: 100%;
+        border-radius: 999px;
+        min-width: 2rem;
+      }
+
+      .bit-name {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      &--tag .bit-value  { color: #60a5fa; }
+      &--tag .bit-bar    { background: #60a5fa; }
+      &--tag .bit-name   { color: #60a5fa; }
+
+      &--idx .bit-value  { color: #fbbf24; }
+      &--idx .bit-bar    { background: #fbbf24; }
+      &--idx .bit-name   { color: #fbbf24; }
+
+      &--off .bit-value  { color: #f472b6; }
+      &--off .bit-bar    { background: #f472b6; }
+      &--off .bit-name   { color: #f472b6; }
+    }
+  }
+
+  // Badge HIT / MISS
+  &__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 1.25rem 1.75rem;
+    border-radius: 16px;
+    min-width: 120px;
+    transition: background 0.3s ease;
+
+    .result-icon {
+      font-size: 2.5rem;
+    }
+
+    .result-text {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+    }
+
+    &--hit {
+      background: rgba(34,197,94,0.15);
+      border: 2px solid rgba(34,197,94,0.4);
+      .result-icon, .result-text { color: #4ade80; }
+    }
+
+    &--miss {
+      background: rgba(239,68,68,0.15);
+      border: 2px solid rgba(239,68,68,0.4);
+      .result-icon, .result-text { color: #f87171; }
+    }
+  }
+
+  // Explicação didática (rodapé do painel)
+  &__explain {
+    position: relative;
+    z-index: 1;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+
+    .explain-icon {
+      font-size: 1.2rem;
+      color: #fbbf24;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Memória Cache — Slots Visuais
+// --------------------------------------------------------
+.cache-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+
+    h4 {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #94a3b8;
+    }
+  }
+}
+
+// --------------------------------------------------------
+// Animações
+// --------------------------------------------------------
+@keyframes sim-pop {
+  0%   { transform: scale(0.85); opacity: 0.5; }
+  60%  { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.sim-fadein {
+  animation: sim-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
