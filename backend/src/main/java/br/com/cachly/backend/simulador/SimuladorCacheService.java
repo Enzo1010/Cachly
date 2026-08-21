@@ -101,15 +101,31 @@ public class SimuladorCacheService {
             boolean isHit = linhaHit != null;
             Integer blocoSubstituido = null;
             EstadoLinhaCacheResponse deltaLinha = null;
+            
+            StringBuilder explicacao = new StringBuilder();
+            explicacao.append(String.format("Passo %d: O processador solicitou o Endereço %d. ", passoNumero, endereco));
+            explicacao.append(String.format("Ao decodificar, encontramos Tag = %d", tag));
+            if (indice != null) {
+                explicacao.append(String.format(", Índice = %d", indice));
+            }
+            explicacao.append(String.format(" e Offset = %d. ", offset));
+            
+            if (indice != null) {
+                explicacao.append(String.format("Procurando pela Tag %d dentro do Conjunto %d... ", tag, indice));
+            } else {
+                explicacao.append(String.format("Procurando pela Tag %d em toda a cache (Totalmente Associativo)... ", tag));
+            }
 
             if (isHit) {
                 totalHits++;
-                // Atualiza o marcador de uso para a política LRU (Least Recently Used)
                 linhaHit.ultimaUtilizacao = tempoGlobal++;
+                explicacao.append(String.format("HIT! Encontramos a Tag %d na Linha %d! O acesso foi super rápido pois o bloco inteiro (com o offset %d) já estava na cache.", tag, linhaHit.indiceLinha, offset));
+                if (substituicao == PoliticaSubstituicao.LRU) {
+                    explicacao.append(String.format(" Pela política LRU, a Linha %d foi atualizada como a 'mais recentemente usada'.", linhaHit.indiceLinha));
+                }
             } else {
                 totalMisses++;
                 
-                // Em caso de falha (Miss), procura a primeira linha do conjunto que não possui dados válidos (compulsory miss).
                 LinhaCacheInterna linhaVazia = candidatoLinhas.stream()
                         .filter(l -> !l.valida)
                         .findFirst()
@@ -117,19 +133,19 @@ public class SimuladorCacheService {
 
                 LinhaCacheInterna linhaAlvo;
                 if (linhaVazia != null) {
-                    linhaAlvo = linhaVazia; // Cold miss: há espaço livre no conjunto
+                    linhaAlvo = linhaVazia;
+                    explicacao.append(String.format("MISS! A Tag %d não foi encontrada. Fomos buscar na RAM e trouxemos o bloco para a Linha %d, que estava VAZIA. Esse é um 'Miss Compulsório' (inevitável no primeiro acesso ao bloco).", tag, linhaAlvo.indiceLinha));
                 } else {
-                    // Conflict/Capacity miss: conjunto cheio, requer aplicação da política de substituição (Eviction)
                     if (substituicao == PoliticaSubstituicao.LRU) {
-                        // LRU: Remove a linha que não é acessada há mais tempo
                         linhaAlvo = candidatoLinhas.stream()
                                 .min(Comparator.comparingLong(l -> l.ultimaUtilizacao))
                                 .orElseThrow();
+                        explicacao.append(String.format("MISS! A Tag %d não estava na cache e o conjunto estava CHEIO. A política LRU escolheu evictar a Linha %d (Tag antiga %d) por ser a menos usada recentemente. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
                     } else { 
-                        // FIFO: Remove a linha mais antiga inserida na cache, independentemente de quando foi acessada por último
                         linhaAlvo = candidatoLinhas.stream()
                                 .min(Comparator.comparingLong(l -> l.ordemChegada))
                                 .orElseThrow();
+                        explicacao.append(String.format("MISS! A Tag %d não estava na cache e o conjunto estava CHEIO. A política FIFO evictou a Linha %d (Tag antiga %d) por ser a mais antiga a ter entrado. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
                     }
                 }
 
@@ -156,7 +172,8 @@ public class SimuladorCacheService {
                     offset,
                     isHit,
                     blocoSubstituido,
-                    deltaLinha
+                    deltaLinha,
+                    explicacao.toString()
             ));
         }
 

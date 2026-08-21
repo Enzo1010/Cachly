@@ -27,6 +27,7 @@ export interface PassoSimulacaoResponse {
   hit: boolean;
   blocoSubstituido: number | null;
   deltaLinha: EstadoLinhaCacheResponse | null;
+  explicacao: string;
 }
 
 export interface SimulacaoResponse {

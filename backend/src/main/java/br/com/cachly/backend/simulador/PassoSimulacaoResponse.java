@@ -10,5 +10,6 @@ public record PassoSimulacaoResponse(
     int offset,
     boolean hit,
     Integer blocoSubstituido,
-    EstadoLinhaCacheResponse deltaLinha
+    EstadoLinhaCacheResponse deltaLinha,
+    String explicacao
 ) {}

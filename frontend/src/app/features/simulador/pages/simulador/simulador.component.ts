@@ -48,6 +48,11 @@ export class SimuladorPageComponent {
   error = signal<string | null>(null);
   simulacao = signal<SimulacaoResponse | null>(null);
   passoAtualIndex = signal<number>(0);
+  sidebarCollapsed = signal<boolean>(false);
+  
+  toggleSidebar(): void {
+    this.sidebarCollapsed.update(v => !v);
+  }
   
   passoAtual = computed<PassoSimulacaoResponse | null>(() => {
     const sim = this.simulacao();
