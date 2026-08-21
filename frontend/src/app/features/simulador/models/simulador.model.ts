@@ -26,7 +26,7 @@ export interface PassoSimulacaoResponse {
   offset: number;
   hit: boolean;
   blocoSubstituido: number | null;
-  estadoCache: EstadoLinhaCacheResponse[];
+  deltaLinha: EstadoLinhaCacheResponse | null;
 }
 
 export interface SimulacaoResponse {

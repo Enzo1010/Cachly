@@ -57,6 +57,33 @@ export class SimuladorPageComponent {
     }
     return null;
   });
+
+  estadoCacheAtual = computed(() => {
+    const sim = this.simulacao();
+    const currentIndex = this.passoAtualIndex();
+    if (!sim) return [];
+
+    const totalLinhas = sim.totalLinhas;
+    const vias = sim.totalConjuntos > 0 ? totalLinhas / sim.totalConjuntos : totalLinhas;
+    
+    // Inicializa a cache vazia
+    const cache = Array.from({ length: totalLinhas }, (_, i) => ({
+      indiceLinha: i,
+      conjuntoIndex: sim.totalConjuntos > 1 ? Math.floor(i / vias) : (sim.totalConjuntos === 1 ? 0 : null),
+      valida: false,
+      tag: null as number | null
+    }));
+
+    // Aplica os deltas atǸ o passo atual
+    for (let i = 0; i <= currentIndex; i++) {
+      const delta = sim.passos[i].deltaLinha;
+      if (delta) {
+        cache[delta.indiceLinha] = { ...delta };
+      }
+    }
+
+    return cache;
+  });
   
   isFirstStep = computed<boolean>(() => this.passoAtualIndex() === 0);
   isLastStep = computed<boolean>(() => {

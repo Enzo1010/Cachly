@@ -137,6 +137,8 @@ src/main/resources/db/migration
 | `V4`   | Alternativas                              |
 | `V5`   | Tentativas de questão                     |
 | `V6`   | Campo de ativação das alternativas        |
+| `V7`   | Colunas de ofensiva do aluno              |
+| `V8`   | Colunas de auditoria (audit trail)        |
 
 Uma migration aplicada não deve ser modificada. Mudanças futuras no banco devem
 ser criadas em um novo arquivo versionado, por exemplo:
@@ -193,17 +195,18 @@ Resposta esperada:
 
 ### Autenticação
 
-| Método | Endpoint          | Descrição                                   | Acesso   |
-|--------|-------------------|---------------------------------------------|----------|
-| `POST` | `/api/auth/login` | Realiza o login e retorna o token JWT       | Público  |
+| Método | Endpoint          | Descrição                                   | Acesso      |
+|--------|-------------------|---------------------------------------------|-------------|
+| `POST` | `/api/auth/login` | Realiza o login e retorna o token JWT       | Público     |
+| `GET`  | `/api/auth/me`    | Retorna os dados do usuário autenticado     | Autenticado |
 
 ### Alunos
 
 | Método | Endpoint                      | Descrição                                   | Acesso        |
 |--------|-------------------------------|---------------------------------------------|---------------|
 | `POST` | `/api/alunos`                 | Cadastra um novo aluno                      | Público       |
-| `GET`  | `/api/alunos/me`              | Retorna os dados do aluno autenticado       | Autenticado   |
 | `GET`  | `/api/alunos/me/desempenho`   | Retorna o desempenho do aluno por categoria | Autenticado   |
+| `GET`  | `/api/alunos/me/historico`    | Retorna o histórico de tentativas do aluno  | Autenticado   |
 
 ### Categorias
 
@@ -238,9 +241,15 @@ Resposta esperada:
 
 ### Respostas
 
-| Método | Endpoint        | Descrição                                               | Acesso      |
-|--------|-----------------|---------------------------------------------------------|-------------|
-| `POST` | `/api/respostas`| Registra a tentativa de resposta e retorna a correção   | Autenticado |
+| Método | Endpoint                                | Descrição                                               | Acesso      |
+|--------|-----------------------------------------|---------------------------------------------------------|-------------|
+| `POST` | `/api/questoes/{questaoId}/respostas`   | Registra a tentativa de resposta e retorna a correção   | Autenticado |
+
+### Simulador
+
+| Método | Endpoint                    | Descrição                                         | Acesso      |
+|--------|-----------------------------|---------------------------------------------------|-------------|
+| `POST` | `/api/simulador/executar`   | Executa a simulação de cache e retorna snapshots  | Autenticado |
 
 ### Ranking
 

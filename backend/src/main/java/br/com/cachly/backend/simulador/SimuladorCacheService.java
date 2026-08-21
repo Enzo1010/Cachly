@@ -100,6 +100,7 @@ public class SimuladorCacheService {
 
             boolean isHit = linhaHit != null;
             Integer blocoSubstituido = null;
+            EstadoLinhaCacheResponse deltaLinha = null;
 
             if (isHit) {
                 totalHits++;
@@ -138,17 +139,14 @@ public class SimuladorCacheService {
                 linhaAlvo.ordemChegada = tempoGlobal;
                 linhaAlvo.ultimaUtilizacao = tempoGlobal++;
                 blocoSubstituido = linhaAlvo.indiceLinha;
+                
+                deltaLinha = new EstadoLinhaCacheResponse(
+                        linhaAlvo.indiceLinha,
+                        linhaAlvo.conjuntoIndex,
+                        linhaAlvo.valida,
+                        linhaAlvo.tag
+                );
             }
-
-            // Realiza um "Snapshot" do estado atual da cache para envio ao Frontend exibir na tabela animada
-            List<EstadoLinhaCacheResponse> estadoCache = linhas.stream()
-                    .map(l -> new EstadoLinhaCacheResponse(
-                            l.indiceLinha,
-                            l.conjuntoIndex,
-                            l.valida,
-                            l.valida ? l.tag : null
-                    ))
-                    .toList();
 
             passos.add(new PassoSimulacaoResponse(
                     passoNumero,
@@ -158,7 +156,7 @@ public class SimuladorCacheService {
                     offset,
                     isHit,
                     blocoSubstituido,
-                    estadoCache
+                    deltaLinha
             ));
         }
 

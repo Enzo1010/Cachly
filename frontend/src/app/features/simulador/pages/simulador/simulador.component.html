@@ -177,7 +177,7 @@
             <h4>Estado Atual da Memória Cache</h4>
           </div>
           <app-simulador-tabela
-            [estadoCache]="passoAtual()!.estadoCache"
+            [estadoCache]="estadoCacheAtual()"
             [blocoAlterado]="passoAtual()!.blocoSubstituido"
             [isHit]="passoAtual()!.hit">
           </app-simulador-tabela>

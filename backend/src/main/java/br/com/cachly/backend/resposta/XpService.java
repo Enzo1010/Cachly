@@ -17,6 +17,7 @@ public class XpService {
 
     /**
      * Calcula o nível correspondente ao XP total acumulado.
+     * Complexidade O(1) utilizando a fórmula de Bhaskara.
      *
      * Limiares:
      *   Nível 1: 0 XP
@@ -24,15 +25,13 @@ public class XpService {
      *   Nível 3: 250 XP
      *   Nível 4: 450 XP
      *   Nível N: 25 * (N-1) * (N+2) XP
-     *
-     * Fórmula de verificação: xpTotal >= 25 * nivelAtual * (nivelAtual + 3)
      */
     public int calcularNivel(int xpTotal) {
-        int nivel = 1;
-        while (xpTotal >= 25 * nivel * (nivel + 3)) {
-            nivel++;
+        if (xpTotal <= 0) {
+            return 1;
         }
-        return nivel;
+        // Resolvendo a equação quadrática: 25x² + 75x - XP = 0
+        return (int) ((-75.0 + Math.sqrt(5625.0 + 100.0 * xpTotal)) / 50.0) + 1;
     }
 
     /**
