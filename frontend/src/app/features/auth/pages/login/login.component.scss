@@ -14,8 +14,8 @@
   position: relative;
   display: flex;
   min-height: 100dvh;
-  align-items: flex-start;
-  padding: 3.5rem clamp(2.5rem, 5vw, 5.5rem) clamp(2.5rem, 5vw, 5.5rem);
+  align-items: center;
+  padding: clamp(2.5rem, 5vw, 5.5rem);
   color: var(--branco);
   background:
     radial-gradient(circle at 78% 17%, rgba(27, 152, 224, 0.34), transparent 32%),
@@ -259,7 +259,7 @@ form {
   text-decoration: underline;
 }
 
-.botao-entrar {
+button.botao-entrar {
   display: flex;
   height: 3.6rem;
   align-items: center;
@@ -269,18 +269,23 @@ form {
   border: 0;
   border-radius: 0.9rem;
   color: var(--branco);
-  background: linear-gradient(105deg, var(--azul-safira), var(--azul-carolina));
+  background: linear-gradient(105deg, var(--azul-safira), var(--azul-carolina)) !important;
+  background-size: 150% 100% !important;
+  background-position: left center !important;
   box-shadow: 0 0.9rem 1.8rem rgba(0, 100, 148, 0.2);
   cursor: pointer;
   font-weight: 800;
+  transition: background-position 0.3s ease, box-shadow 0.3s ease;
 }
 
-.botao-entrar:hover {
-  border-color: transparent;
-  background: linear-gradient(105deg, #00547d, #1689ca);
+button.botao-entrar:hover,
+button.botao-entrar:focus-visible {
+  border: 0 !important;
+  background-position: right center !important;
+  box-shadow: 0 0.6rem 1.2rem rgba(0, 100, 148, 0.3);
 }
 
-.botao-entrar:disabled {
+button.botao-entrar:disabled {
   cursor: wait;
   opacity: 0.72;
 }
@@ -315,6 +320,7 @@ form {
     width: 12rem;
     height: 3.5rem;
     margin-bottom: 2.75rem;
+    background-image: url('/cachly-logo-sem-fundo.png');
   }
 
   .cartao-login {

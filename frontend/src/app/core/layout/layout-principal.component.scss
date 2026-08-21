@@ -246,21 +246,24 @@
   padding: clamp(1rem, 3vw, 2rem);
 }
 
-.botao-menu {
+button.botao-menu {
   display: inline-grid;
   width: 2.6rem;
   height: 2.6rem;
   place-items: center;
-  border: 0;
+  border: 0 !important;
   border-radius: 0.65rem;
-  color: var(--azul-safira);
-  background: #e8f1f2;
+  color: var(--azul-safira) !important;
+  background: #e8f1f2 !important;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.botao-menu:hover {
-  background: #d9e5e8;
+button.botao-menu:hover,
+button.botao-menu:focus-visible {
+  background: #d9e5e8 !important;
+  color: var(--azul-profundo) !important;
+  box-shadow: none !important;
 }
 
 .camada-menu {

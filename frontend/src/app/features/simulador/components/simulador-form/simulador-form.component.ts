@@ -42,7 +42,7 @@ export class SimuladorFormComponent {
 
   mapeamentoOptions = [
     { label: 'Direto', value: 'DIRETO' },
-    { label: 'Totalmente Associativo', value: 'TOTALMENTE_ASSOCIATIVO' },
+    { label: 'Total. Assoc.', value: 'TOTALMENTE_ASSOCIATIVO' },
     { label: 'Conjuntos', value: 'CONJUNTO_ASSOCIATIVO' }
   ];
 

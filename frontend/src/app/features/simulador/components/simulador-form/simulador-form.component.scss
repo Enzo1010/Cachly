@@ -38,9 +38,10 @@ form {
 ::ng-deep .p-selectbutton .p-button {
   flex: 1;
   justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.45rem 0.25rem;
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 0.45rem 0.1rem;
+  white-space: nowrap;
 }
 
 // Input de endereços
