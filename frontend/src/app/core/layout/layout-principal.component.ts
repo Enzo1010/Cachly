@@ -33,6 +33,7 @@ export class LayoutPrincipalComponent {
   protected readonly sessao = inject(SessaoService);
 
   protected readonly menuAberto = signal(false);
+  protected readonly sidebarRecolhida = signal(false);
   protected readonly tituloPagina = signal('Visão Geral');
 
   protected readonly navegacaoPrincipal: readonly ItemNavegacao[] = [
@@ -56,7 +57,11 @@ export class LayoutPrincipalComponent {
   }
 
   protected alternarMenu(): void {
-    this.menuAberto.update((aberto) => !aberto);
+    if (window.innerWidth <= 800) {
+      this.menuAberto.update((aberto) => !aberto);
+    } else {
+      this.sidebarRecolhida.update((rec) => !rec);
+    }
   }
 
   protected fecharMenu(): void {

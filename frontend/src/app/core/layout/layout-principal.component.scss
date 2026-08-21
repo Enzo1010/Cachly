@@ -18,6 +18,7 @@
   border-right: 1px solid rgba(31, 153, 207, 0.35);
   color: #d9e8ef;
   background: #112f46;
+  transition: transform 300ms ease;
 }
 
 .marca {
@@ -179,6 +180,7 @@
 .conteudo-aplicacao {
   min-height: 100dvh;
   margin-left: 18rem;
+  transition: margin-left 300ms ease;
 }
 
 .topo {
@@ -244,9 +246,34 @@
   padding: clamp(1rem, 3vw, 2rem);
 }
 
-.botao-menu,
+.botao-menu {
+  display: inline-grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  border: 0;
+  border-radius: 0.65rem;
+  color: var(--azul-safira);
+  background: #e8f1f2;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.botao-menu:hover {
+  background: #d9e5e8;
+}
+
 .camada-menu {
   display: none;
+}
+
+@media (min-width: 801px) {
+  .estrutura-aplicacao--sidebar-recolhida .barra-lateral {
+    transform: translateX(-105%);
+  }
+  .estrutura-aplicacao--sidebar-recolhida .conteudo-aplicacao {
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 800px) {
@@ -278,17 +305,6 @@
   .topo {
     min-height: 4.5rem;
     padding: 0.75rem 1rem;
-  }
-
-  .botao-menu {
-    display: inline-grid;
-    width: 2.6rem;
-    height: 2.6rem;
-    place-items: center;
-    border: 0;
-    border-radius: 0.65rem;
-    color: var(--azul-safira);
-    background: #e8f1f2;
   }
 
   .progresso-xp {

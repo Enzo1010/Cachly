@@ -6,5 +6,6 @@ export const ROTAS_SIMULADOR: Routes = [
     path: '',
     component: SimuladorPageComponent,
     title: 'Simulador de Cache | Cachly',
+    data: { titulo: 'Simulador' }
   },
 ];
