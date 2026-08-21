@@ -55,9 +55,15 @@ public class RespostaService {
 
         int xpGanho = 0;
         if (correta) {
-            xpGanho = xpService.calcularXpGanho(questao);
-            usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
-            usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
+            boolean jaAcertouAntes = tentativaQuestaoRepository.existsByUsuarioIdAndQuestaoIdAndCorretaTrue(
+                    usuario.getId(), questao.getId()
+            );
+
+            if (!jaAcertouAntes) {
+                xpGanho = xpService.calcularXpGanho(questao);
+                usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
+                usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
+            }
         }
 
         TentativaQuestao tentativa = new TentativaQuestao();

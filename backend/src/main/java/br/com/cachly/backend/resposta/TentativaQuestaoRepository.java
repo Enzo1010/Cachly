@@ -15,6 +15,8 @@ public interface TentativaQuestaoRepository extends JpaRepository<TentativaQuest
     long countByUsuarioId(Long usuarioId);
 
     long countByUsuarioIdAndCorretaTrue(Long usuarioId);
+    
+    boolean existsByUsuarioIdAndQuestaoIdAndCorretaTrue(Long usuarioId, Long questaoId);
 
     long countByUsuarioIdAndRespondidaEmBetween(Long usuarioId, java.time.OffsetDateTime start, java.time.OffsetDateTime end);
 
