@@ -1,0 +1,29 @@
+<section class="quadro-medalhas" aria-labelledby="titulo-quadro">
+  <header class="quadro-medalhas__cabecalho">
+    <h2 id="titulo-quadro"><i class="pi pi-verified" aria-hidden="true"></i>Quadro de Medalhas</h2>
+    <p>Desbloqueie conquistas ao atingir marcos de aprendizado.</p>
+  </header>
+
+  <div class="grade-conquistas">
+    @for (conquista of conquistas(); track conquista.id) {
+      <article
+        class="cartao-conquista"
+        [class]="'cartao-conquista--' + conquista.tema"
+        [attr.aria-label]="conquista.titulo + ': ' + conquista.descricao"
+      >
+        <span class="cartao-conquista__icone" aria-hidden="true">
+          <i [class]="conquista.icone"></i>
+        </span>
+
+        <h3>{{ conquista.titulo }}</h3>
+        <p>{{ conquista.descricao }}</p>
+
+        @if (conquista.status === 'desbloqueada') {
+          <span class="selo selo--desbloqueada">Desbloqueado</span>
+        } @else {
+          <span class="selo selo--progresso">Progresso: {{ conquista.progresso }}%</span>
+        }
+      </article>
+    }
+  </div>
+</section>

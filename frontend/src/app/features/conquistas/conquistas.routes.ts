@@ -4,10 +4,10 @@ export const ROTAS_CONQUISTAS: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../shared/components/pagina-titulo/pagina-titulo.component').then(
-        (componente) => componente.PaginaTituloComponent,
+      import('./pages/conquistas/conquistas.component').then(
+        (componente) => componente.ConquistasComponent,
       ),
-    data: { titulo: 'Conquistas' },
+    data: { titulo: 'Minhas Conquistas' },
     title: 'Conquistas | Cachly',
   },
 ];
