@@ -4,10 +4,10 @@ export const ROTAS_DESEMPENHO: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../shared/components/pagina-titulo/pagina-titulo.component').then(
-        (componente) => componente.PaginaTituloComponent,
+      import('./pages/desempenho/desempenho.component').then(
+        (componente) => componente.DesempenhoComponent,
       ),
-    data: { titulo: 'Desempenho' },
+    data: { titulo: 'Meu Desempenho' },
     title: 'Desempenho | Cachly',
   },
 ];
