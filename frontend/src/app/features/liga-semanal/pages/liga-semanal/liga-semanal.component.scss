@@ -1,0 +1,155 @@
+:host {
+  display: block;
+}
+
+.liga-semanal {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.cartao-liga {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  border: 1px solid #e5edef;
+  border-radius: 1.25rem;
+  padding: clamp(2rem, 5vw, 2.75rem) 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, #eef3f5 0%, #fbfdfd 100%);
+  box-shadow: 0 0.7rem 2rem rgba(16, 42, 58, 0.045);
+}
+
+.cartao-liga__selo {
+  display: grid;
+  width: 5.5rem;
+  height: 5.5rem;
+  place-items: center;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(145deg, #c4ccd1, #97a1a8);
+  box-shadow: 0 0.6rem 1.4rem rgba(90, 105, 115, 0.3);
+  font-size: 2.1rem;
+}
+
+.cartao-liga h2 {
+  margin: 0;
+  color: var(--azul-profundo);
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  letter-spacing: -0.03em;
+}
+
+.cartao-liga__prazo {
+  margin: 0;
+  color: var(--texto-secundario);
+  font-size: 0.95rem;
+}
+
+.cartao-liga__prazo strong {
+  color: var(--azul-safira);
+}
+
+.cartao-liga__regra {
+  margin: 0;
+  color: var(--texto-secundario);
+  font-size: 0.85rem;
+}
+
+.tabela-ranking {
+  border: 1px solid #e5edef;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0.7rem 2rem rgba(16, 42, 58, 0.045);
+}
+
+.linha-ranking {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4.25rem;
+  padding: 0 1.5rem;
+  border-left: 3px solid transparent;
+}
+
+.linha-ranking:not(.linha-ranking--cabecalho):nth-child(even) {
+  background: #f7f9fa;
+}
+
+.linha-ranking--cabecalho {
+  min-height: 3rem;
+  color: var(--texto-secundario);
+  background: #f0f4f5;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.linha-ranking--voce {
+  border-left-color: var(--azul-carolina);
+  background: #eaf4fb !important;
+}
+
+.linha-ranking--voce .coluna-aluno {
+  color: var(--azul-profundo);
+  font-weight: 750;
+}
+
+.coluna-posicao {
+  display: flex;
+  justify-content: center;
+}
+
+.posicao-numero {
+  color: var(--texto-secundario);
+  font-weight: 700;
+}
+
+.posicao-icone {
+  font-size: 1.4rem;
+}
+
+.posicao-icone--1 {
+  color: #f2a900;
+}
+
+.posicao-icone--2 {
+  color: #97a1a8;
+}
+
+.posicao-icone--3 {
+  color: #c17a3f;
+}
+
+.coluna-aluno strong {
+  margin-left: 0.35rem;
+  color: var(--azul-safira);
+  font-weight: 750;
+}
+
+.coluna-xp {
+  color: var(--azul-safira);
+  font-weight: 750;
+  text-align: right;
+}
+
+.tabela-ranking__vazio {
+  margin: 0;
+  padding: 1.5rem;
+  color: var(--texto-secundario);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .linha-ranking {
+    grid-template-columns: 2.5rem 1fr auto;
+    gap: 0.65rem;
+    padding: 0 1rem;
+  }
+
+  .cartao-liga {
+    padding: 1.75rem 1.25rem;
+  }
+}

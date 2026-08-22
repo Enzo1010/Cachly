@@ -4,10 +4,10 @@ export const ROTAS_LIGA_SEMANAL: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../shared/components/pagina-titulo/pagina-titulo.component').then(
-        (componente) => componente.PaginaTituloComponent,
+      import('./pages/liga-semanal/liga-semanal.component').then(
+        (componente) => componente.LigaSemanalComponent,
       ),
-    data: { titulo: 'Liga Semanal' },
+    data: { titulo: 'Competição Semanal' },
     title: 'Liga Semanal | Cachly',
   },
 ];

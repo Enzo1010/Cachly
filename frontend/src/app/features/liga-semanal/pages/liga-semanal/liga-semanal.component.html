@@ -1,0 +1,48 @@
+<section class="liga-semanal">
+  <article class="cartao-liga" aria-labelledby="titulo-liga">
+    <span class="cartao-liga__selo" aria-hidden="true"><i class="pi pi-star-fill"></i></span>
+    <h2 id="titulo-liga">{{ nomeLiga }}</h2>
+    <p class="cartao-liga__prazo">
+      Termina em: <strong>{{ prazoRestante().dias }} dias e {{ prazoRestante().horas }} horas</strong>
+    </p>
+    <p class="cartao-liga__regra">
+      Fique entre os {{ vagasParaAvancar }} primeiros para avançar para a {{ proximaLiga }}.
+    </p>
+  </article>
+
+  <article class="tabela-ranking" aria-label="Ranking semanal de XP">
+    <div class="linha-ranking linha-ranking--cabecalho" role="presentation">
+      <span class="coluna-posicao">Pos</span>
+      <span class="coluna-aluno">Aluno</span>
+      <span class="coluna-xp">XP Semanal</span>
+    </div>
+
+    @for (aluno of alunos(); track aluno.posicao) {
+      <div class="linha-ranking" [class.linha-ranking--voce]="ehUsuarioAtual(aluno.nome)">
+        <span class="coluna-posicao">
+          @if (iconePosicao(aluno.posicao); as icone) {
+            <i
+              [class]="'pi pi-' + icone + ' posicao-icone posicao-icone--' + aluno.posicao"
+              [attr.aria-label]="aluno.posicao + 'º lugar'"
+            ></i>
+          } @else {
+            <span class="posicao-numero">{{ aluno.posicao }}</span>
+          }
+        </span>
+
+        <span class="coluna-aluno">
+          {{ aluno.nome }}
+          @if (ehUsuarioAtual(aluno.nome)) {
+            <strong>(Você)</strong>
+          }
+        </span>
+
+        <span class="coluna-xp">{{ aluno.xpTotal }} XP</span>
+      </div>
+    }
+
+    @if (ranking() && alunos().length === 0) {
+      <p class="tabela-ranking__vazio">Ainda não há alunos no ranking desta semana.</p>
+    }
+  </article>
+</section>
