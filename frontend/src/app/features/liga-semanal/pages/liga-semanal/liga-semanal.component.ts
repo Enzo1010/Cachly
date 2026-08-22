@@ -23,9 +23,6 @@ export class LigaSemanalComponent {
   });
   protected readonly alunos = computed(() => this.ranking()?.content ?? []);
 
-  // TODO: o backend ainda não tem o conceito de "liga" (nome da liga, prazo da semana,
-  // corte de vagas para promoção). Os valores abaixo são fixos até que um endpoint de
-  // ligas exista; o restante da tela (a lista de alunos) já usa dados reais de /api/ranking.
   protected readonly nomeLiga = 'Liga Prata';
   protected readonly proximaLiga = 'Liga Ouro';
   protected readonly vagasParaAvancar = 5;
