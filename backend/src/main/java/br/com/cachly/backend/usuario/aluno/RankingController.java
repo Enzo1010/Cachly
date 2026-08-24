@@ -19,7 +19,7 @@ public class RankingController {
 
     @GetMapping
     public ResponseEntity<Page<RankingResponse>> listarRanking(
-            @PageableDefault(size = 20, sort = {"xpTotal", "nivel"}, direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 20, sort = {"xpSemanal", "nivel"}, direction = Sort.Direction.DESC) Pageable pageable) {
         
         Page<RankingResponse> ranking = rankingService.listarRanking(pageable);
         return ResponseEntity.ok(ranking);

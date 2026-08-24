@@ -9,6 +9,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import java.time.OffsetDateTime;
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+
 @Service
 @RequiredArgsConstructor
 public class RankingService {
@@ -17,19 +25,21 @@ public class RankingService {
 
     @Transactional(readOnly = true)
     public Page<RankingResponse> listarRanking(Pageable pageable) {
-        Page<Usuario> usuarios = usuarioRepository.findByPerfil(PerfilUsuario.ALUNO, pageable);
+        // Calcula o início da semana (ex: segunda-feira, 00:00:00)
+        OffsetDateTime inicioSemana = OffsetDateTime.now(ZoneOffset.UTC)
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .with(LocalTime.MIN);
+
+        Page<RankingProjection> usuarios = usuarioRepository.findRankingSemanal(PerfilUsuario.ALUNO, inicioSemana, pageable);
         
-        return usuarios.map(usuario -> {
-            // A posição é baseada no offset da página + index do elemento atual
-            int posicao = (pageable.getPageNumber() * pageable.getPageSize()) + usuarios.getContent().indexOf(usuario) + 1;
-            
-            return new RankingResponse(
-                    posicao,
-                    usuario.getNome(),
-                    usuario.getNivel(),
-                    usuario.getXpTotal(),
-                    usuario.getDiasOfensiva()
-            );
-        });
+        AtomicInteger posicaoAtual = new AtomicInteger((pageable.getPageNumber() * pageable.getPageSize()) + 1);
+        
+        return usuarios.map(projecao -> new RankingResponse(
+                posicaoAtual.getAndIncrement(),
+                projecao.getNome(),
+                projecao.getNivel(),
+                projecao.getXpSemanal(),
+                projecao.getDiasOfensiva()
+        ));
     }
 }
