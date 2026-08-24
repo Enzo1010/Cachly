@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
@@ -14,9 +14,10 @@ interface PrazoRestante {
   templateUrl: './liga-semanal.component.html',
   styleUrl: './liga-semanal.component.scss',
 })
-export class LigaSemanalComponent {
+export class LigaSemanalComponent implements OnInit {
   protected readonly sessao = inject(SessaoService);
   private readonly ligaSemanalService = inject(LigaSemanalService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly ranking = toSignal(this.ligaSemanalService.obterRanking(), {
     initialValue: null,
@@ -26,7 +27,17 @@ export class LigaSemanalComponent {
   protected readonly nomeLiga = 'Liga Prata';
   protected readonly proximaLiga = 'Liga Ouro';
   protected readonly vagasParaAvancar = 5;
-  protected readonly prazoRestante = computed<PrazoRestante>(() => this.calcularPrazoRestante());
+  protected readonly prazoRestante = signal<PrazoRestante>(this.calcularPrazoRestante());
+
+  ngOnInit(): void {
+    // Atualiza o prazo a cada 1 minuto
+    const intervalId = setInterval(() => {
+      this.prazoRestante.set(this.calcularPrazoRestante());
+    }, 60000);
+
+    // Garante que o timer seja limpo quando o componente for destruído (evita vazamento de memória)
+    this.destroyRef.onDestroy(() => clearInterval(intervalId));
+  }
 
   protected ehUsuarioAtual(nome: string): boolean {
     return nome === this.sessao.usuario()?.nome;
