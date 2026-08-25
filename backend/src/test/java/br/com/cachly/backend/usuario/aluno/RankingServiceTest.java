@@ -1,7 +1,6 @@
 package br.com.cachly.backend.usuario.aluno;
 
 import br.com.cachly.backend.usuario.PerfilUsuario;
-import br.com.cachly.backend.usuario.Usuario;
 import br.com.cachly.backend.usuario.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,37 +29,36 @@ class RankingServiceTest {
     @InjectMocks
     private RankingService rankingService;
 
-    private Usuario usuario1;
-    private Usuario usuario2;
+    private RankingProjection usuario1;
+    private RankingProjection usuario2;
 
     @BeforeEach
     void setUp() {
-        usuario1 = new Usuario();
-        usuario1.setId(1L);
-        usuario1.setNome("Aluno Top 1");
-        usuario1.setXpTotal(500);
-        usuario1.setNivel(10);
+        usuario1 = new RankingProjection() {
+            public String getNome() { return "Aluno Top 1"; }
+            public Integer getNivel() { return 10; }
+            public Integer getXpSemanal() { return 500; }
+            public Integer getDiasOfensiva() { return 5; }
+        };
         
-        usuario2 = new Usuario();
-        usuario2.setId(2L);
-        usuario2.setNome("Aluno Top 2");
-        usuario2.setXpTotal(300);
-        usuario2.setNivel(6);
+        usuario2 = new RankingProjection() {
+            public String getNome() { return "Aluno Top 2"; }
+            public Integer getNivel() { return 6; }
+            public Integer getXpSemanal() { return 300; }
+            public Integer getDiasOfensiva() { return 3; }
+        };
     }
 
     @Test
     void listarRanking_DeveRetornarRankingComPosicao() {
-        // Arrange
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<Usuario> paginaUsuarios = new PageImpl<>(List.of(usuario1, usuario2));
+        Page<RankingProjection> paginaUsuarios = new PageImpl<>(List.of(usuario1, usuario2));
         
-        when(usuarioRepository.findByPerfil(eq(PerfilUsuario.ALUNO), any(Pageable.class)))
+        when(usuarioRepository.findRankingSemanal(eq(PerfilUsuario.ALUNO), any(Pageable.class)))
                 .thenReturn(paginaUsuarios);
 
-        // Act
         Page<RankingResponse> result = rankingService.listarRanking(pageRequest);
 
-        // Assert
         assertEquals(2, result.getContent().size());
         
         RankingResponse top1 = result.getContent().get(0);
@@ -76,20 +74,17 @@ class RankingServiceTest {
 
     @Test
     void listarRanking_DeveCalcularPosicaoCorretamenteParaPagina2() {
-        // Arrange
-        PageRequest pageRequest = PageRequest.of(1, 10); // Página 2 (index 1), tamanho 10
-        Page<Usuario> paginaUsuarios = new PageImpl<>(List.of(usuario2));
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        Page<RankingProjection> paginaUsuarios = new PageImpl<>(List.of(usuario2));
         
-        when(usuarioRepository.findByPerfil(eq(PerfilUsuario.ALUNO), any(Pageable.class)))
+        when(usuarioRepository.findRankingSemanal(eq(PerfilUsuario.ALUNO), any(Pageable.class)))
                 .thenReturn(paginaUsuarios);
 
-        // Act
         Page<RankingResponse> result = rankingService.listarRanking(pageRequest);
 
-        // Assert
         assertEquals(1, result.getContent().size());
         
         RankingResponse top1 = result.getContent().get(0);
-        assertEquals(11, top1.posicao()); // 1 (page) * 10 (size) + 0 (index) + 1
+        assertEquals(11, top1.posicao());
     }
 }

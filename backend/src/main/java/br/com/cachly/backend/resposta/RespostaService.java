@@ -62,6 +62,7 @@ public class RespostaService {
             if (!jaAcertouAntes) {
                 xpGanho = xpService.calcularXpGanho(questao);
                 usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
+                usuario.setXpSemanal(usuario.getXpSemanal() + xpGanho);
                 usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
             }
         }

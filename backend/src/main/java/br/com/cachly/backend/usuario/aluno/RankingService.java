@@ -25,12 +25,7 @@ public class RankingService {
 
     @Transactional(readOnly = true)
     public Page<RankingResponse> listarRanking(Pageable pageable) {
-        // Calcula o início da semana (ex: segunda-feira, 00:00:00)
-        OffsetDateTime inicioSemana = OffsetDateTime.now(ZoneOffset.UTC)
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                .with(LocalTime.MIN);
-
-        Page<RankingProjection> usuarios = usuarioRepository.findRankingSemanal(PerfilUsuario.ALUNO, inicioSemana, pageable);
+        Page<RankingProjection> usuarios = usuarioRepository.findRankingSemanal(PerfilUsuario.ALUNO, pageable);
         
         AtomicInteger posicaoAtual = new AtomicInteger((pageable.getPageNumber() * pageable.getPageSize()) + 1);
         

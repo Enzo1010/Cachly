@@ -27,15 +27,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("""
         SELECT u.nome AS nome, u.nivel AS nivel, u.diasOfensiva AS diasOfensiva,
-               COALESCE(SUM(t.xpConcedido), 0) AS xpSemanal
+               u.xpSemanal AS xpSemanal
         FROM Usuario u
-        LEFT JOIN TentativaQuestao t ON t.usuario.id = u.id AND t.respondidaEm >= :inicioSemana
         WHERE u.perfil = :perfil
-        GROUP BY u.id, u.nome, u.nivel, u.diasOfensiva
+        ORDER BY u.xpSemanal DESC
     """)
     Page<br.com.cachly.backend.usuario.aluno.RankingProjection> findRankingSemanal(
         @Param("perfil") PerfilUsuario perfil, 
-        @Param("inicioSemana") OffsetDateTime inicioSemana, 
         Pageable pageable
     );
 }

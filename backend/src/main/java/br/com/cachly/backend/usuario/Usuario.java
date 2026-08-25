@@ -44,6 +44,9 @@ public class Usuario {
     @Column(name = "xp_total", nullable = false)
     private Integer xpTotal = 0;
 
+    @Column(name = "xp_semanal", nullable = false)
+    private Integer xpSemanal = 0;
+
     @Column(nullable = false)
     private Integer nivel = 1;
 
