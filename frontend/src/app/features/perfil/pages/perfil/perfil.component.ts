@@ -72,7 +72,8 @@ export class PerfilComponent {
   }
 
   protected sair(): void {
-    this.sessao.encerrar();
-    void this.router.navigateByUrl('/login');
+    this.sessao.encerrar().subscribe(() => {
+      void this.router.navigateByUrl('/login');
+    });
   }
 }

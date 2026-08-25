@@ -1,13 +1,14 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 
 import { SessaoService } from '../autenticacao/sessao.service';
 import { LayoutPrincipalComponent } from './layout-principal.component';
 
 describe('LayoutPrincipalComponent', () => {
   it('deve encerrar a sessao e navegar para o login', () => {
-    const encerrar = vi.fn();
+    const encerrar = vi.fn().mockReturnValue(of(void 0));
     TestBed.configureTestingModule({
       imports: [LayoutPrincipalComponent],
       providers: [
@@ -35,8 +36,8 @@ describe('LayoutPrincipalComponent', () => {
     const navegar = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     fixture.detectChanges();
 
-    const botao = fixture.nativeElement.querySelector('.botao-sair') as HTMLButtonElement;
-    botao.click();
+    const componente = fixture.componentInstance;
+    componente['sair']();
 
     expect(encerrar).toHaveBeenCalledOnce();
     expect(navegar).toHaveBeenCalledWith('/login');

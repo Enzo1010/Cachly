@@ -2,14 +2,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { configurarArmazenamentosTeste } from '../../../testing/armazenamento-teste';
 import { SessaoService } from './sessao.service';
 
 describe('SessaoService', () => {
   beforeEach(() => {
-    configurarArmazenamentosTeste();
-    window.localStorage.clear();
-    window.sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -19,7 +15,7 @@ describe('SessaoService', () => {
     TestBed.inject(HttpTestingController).verify();
   });
 
-  it('deve manter a sessao apenas durante a aba quando lembrar login estiver desmarcado', () => {
+  it('deve autenticar o usuario chamando a api e guardando estado em memoria', () => {
     const service = TestBed.inject(SessaoService);
     const http = TestBed.inject(HttpTestingController);
 
@@ -30,43 +26,36 @@ describe('SessaoService', () => {
     http.expectOne('/api/auth/login').flush(criarUsuario());
 
     expect(service.estaAutenticado()).toBe(true);
-    expect(window.sessionStorage.getItem('cachly.usuario-autenticado')).toContain('Ana Silva');
-    expect(window.localStorage.getItem('cachly.usuario-autenticado')).toBeNull();
-    expect(window.localStorage.getItem('cachly.login-lembrado')).toBeNull();
+    expect(service.usuario()?.nome).toBe('Ana Silva');
   });
 
-  it('deve persistir a sessao quando lembrar login estiver marcado', () => {
+  it('deve carregar a sessao via chamando /api/auth/me', () => {
     const service = TestBed.inject(SessaoService);
     const http = TestBed.inject(HttpTestingController);
 
-    service.autenticar({ email: 'ana.silva@exemplo.com', senha: 'senha-segura' }, true).subscribe();
+    service.carregarSessao().subscribe();
 
-    expect(window.localStorage.getItem('cachly.login-lembrado')).toBe(
-      JSON.stringify({ email: 'ana.silva@exemplo.com', senha: 'senha-segura' }),
-    );
+    http.expectOne('/api/auth/me').flush(criarUsuario());
 
-    http.expectOne('/api/auth/login').flush(criarUsuario());
-
-    expect(window.localStorage.getItem('cachly.usuario-autenticado')).toContain('Ana Silva');
-    expect(window.sessionStorage.getItem('cachly.usuario-autenticado')).toBeNull();
+    expect(service.estaAutenticado()).toBe(true);
+    expect(service.usuario()?.nome).toBe('Ana Silva');
   });
 
-  it('deve limpar a sessao e preservar o login lembrado ao encerrar', () => {
-    window.localStorage.setItem('cachly.usuario-autenticado', JSON.stringify(criarUsuario()));
-    window.localStorage.setItem(
-      'cachly.login-lembrado',
-      JSON.stringify({ email: 'ana.silva@exemplo.com', senha: 'senha-segura' }),
-    );
+  it('deve encerrar a sessao fazendo chamada para /api/auth/logout', () => {
     const service = TestBed.inject(SessaoService);
+    const http = TestBed.inject(HttpTestingController);
 
-    service.encerrar();
+    // Initial load
+    service.carregarSessao().subscribe();
+    http.expectOne('/api/auth/me').flush(criarUsuario());
+    expect(service.estaAutenticado()).toBe(true);
+
+    // Logout
+    service.encerrar().subscribe();
+    http.expectOne('/api/auth/logout').flush({});
 
     expect(service.estaAutenticado()).toBe(false);
-    expect(window.localStorage.getItem('cachly.usuario-autenticado')).toBeNull();
-    expect(service.obterLoginLembrado()).toEqual({
-      email: 'ana.silva@exemplo.com',
-      senha: 'senha-segura',
-    });
+    expect(service.usuario()).toBeNull();
   });
 
   function criarUsuario() {
@@ -77,6 +66,7 @@ describe('SessaoService', () => {
       perfil: 'ALUNO' as const,
       xpTotal: 0,
       nivel: 1,
+      diasOfensiva: 0,
       token: 'token-de-teste',
     };
   }

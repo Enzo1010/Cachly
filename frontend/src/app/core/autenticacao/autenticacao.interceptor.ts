@@ -7,15 +7,17 @@ export const autenticacaoInterceptor: HttpInterceptorFn = (req, next) => {
   const sessaoService = inject(SessaoService);
   const token = sessaoService.usuario()?.token;
 
+  let requisicaoClonada = req.clone({
+    withCredentials: true
+  });
+
   if (token) {
-    const requisicaoClonada = req.clone({
+    requisicaoClonada = requisicaoClonada.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    return next(requisicaoClonada);
   }
 
-  return next(req);
+  return next(requisicaoClonada);
 };
