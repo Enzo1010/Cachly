@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -20,6 +21,9 @@ import { SimulacaoRequest, TipoMapeamento, PoliticaSubstituicao } from '../../mo
   styleUrls: ['./simulador-form.component.scss']
 })
 export class SimuladorFormComponent {
+  @Input() loading = false;
+
+  private readonly notificacoes = inject(MessageService);
   @Output() simular = new EventEmitter<SimulacaoRequest>();
   
   private readonly fb = inject(FormBuilder);

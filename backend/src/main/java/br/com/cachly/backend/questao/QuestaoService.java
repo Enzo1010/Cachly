@@ -20,7 +20,6 @@ public class QuestaoService {
 
     private final QuestaoRepository questaoRepository;
     private final CategoriaRepository categoriaRepository;
-    private final AlternativaRepository alternativaRepository;
 
     @Transactional
     public QuestaoResponse cadastrar(QuestaoRequest request) {
@@ -39,6 +38,13 @@ public class QuestaoService {
                 .toList();
     }
 
+    public List<QuestaoResponse> listarTodas() {
+        return questaoRepository.findAll()
+                .stream()
+                .map(this::converterParaResponse)
+                .toList();
+    }
+
     public List<QuestaoEstudoResponse> listarParaEstudo(Long categoriaId, Integer limite) {
         if (limite == null || limite <= 0) {
             limite = 10;
@@ -48,19 +54,10 @@ public class QuestaoService {
                 ? questaoRepository.findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(categoriaId, pageRequest)
                 : questaoRepository.findAllByAtivaTrueOrderByIdAsc(pageRequest);
 
-        List<Long> questaoIds = questoes.stream().map(Questao::getId).toList();
-        
-        List<Alternativa> todasAlternativas = questaoIds.isEmpty() 
-                ? List.of() 
-                : alternativaRepository.findAllByQuestaoIdInAndAtivaTrueOrderByOrdemAsc(questaoIds);
-                
-        var alternativasPorQuestao = todasAlternativas.stream()
-                .collect(java.util.stream.Collectors.groupingBy(a -> a.getQuestao().getId()));
-
         return questoes.stream().map(questao -> {
-            List<Alternativa> alternativas = alternativasPorQuestao.getOrDefault(questao.getId(), List.of());
-            
-            List<AlternativaEstudoResponse> alternativasResponse = alternativas.stream()
+            List<AlternativaEstudoResponse> alternativasResponse = questao.getAlternativas().stream()
+                    .filter(a -> Boolean.TRUE.equals(a.getAtiva()))
+                    .sorted(java.util.Comparator.comparing(br.com.cachly.backend.alternativa.Alternativa::getOrdem))
                     .map(alt -> new AlternativaEstudoResponse(alt.getId(), alt.getTexto(), alt.getOrdem()))
                     .toList();
             
@@ -126,9 +123,39 @@ public class QuestaoService {
         questao.setExplicacao(request.explicacao().trim());
         questao.setDificuldade(request.dificuldade());
         questao.setXpBase(request.xpBase());
+
+        long corretas = request.alternativas().stream().filter(br.com.cachly.backend.alternativa.AlternativaRequest::correta).count();
+        if (corretas != 1) {
+            throw new ConflitoDeDadosException("A questão deve ter exatamente uma alternativa correta");
+        }
+
+        questao.getAlternativas().clear();
+        request.alternativas().forEach(altReq -> {
+            br.com.cachly.backend.alternativa.Alternativa alt = new br.com.cachly.backend.alternativa.Alternativa();
+            alt.setTexto(altReq.texto().trim());
+            alt.setCorreta(altReq.correta());
+            alt.setOrdem(altReq.ordem());
+            alt.setQuestao(questao);
+            questao.getAlternativas().add(alt);
+        });
     }
 
     private QuestaoResponse converterParaResponse(Questao questao) {
+        List<br.com.cachly.backend.alternativa.AlternativaResponse> alternativasResp = questao.getAlternativas().stream()
+                .filter(a -> Boolean.TRUE.equals(a.getAtiva()))
+                .map(a -> new br.com.cachly.backend.alternativa.AlternativaResponse(
+                        a.getId(),
+                        a.getQuestao().getId(),
+                        a.getTexto(),
+                        a.getCorreta(),
+                        a.getOrdem(),
+                        a.getAtiva(),
+                        a.getCriadoEm(),
+                        a.getAtualizadoEm(),
+                        a.getCriadoPor(),
+                        a.getAtualizadoPor()
+                )).toList();
+
         return new QuestaoResponse(
                 questao.getId(),
                 questao.getCategoria().getId(),
@@ -138,6 +165,7 @@ public class QuestaoService {
                 questao.getDificuldade(),
                 questao.getXpBase(),
                 questao.getAtiva(),
+                alternativasResp,
                 questao.getCriadoEm(),
                 questao.getAtualizadoEm(),
                 questao.getCriadoPor(),

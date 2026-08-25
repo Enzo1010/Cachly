@@ -2,13 +2,17 @@ import { Routes } from '@angular/router';
 
 import { autenticacaoGuard } from './core/autenticacao/autenticacao.guard';
 
+import { guestGuard } from './core/autenticacao/guest.guard';
+
 export const routes: Routes = [
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadChildren: () => import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_LOGIN),
   },
   {
     path: 'cadastro',
+    canActivate: [guestGuard],
     loadChildren: () => import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_CADASTRO),
   },
   {
@@ -49,11 +53,6 @@ export const routes: Routes = [
           import('./features/conquistas/conquistas.routes').then(
             (rotas) => rotas.ROTAS_CONQUISTAS,
           ),
-      },
-      {
-        path: 'perfil',
-        loadChildren: () =>
-          import('./features/perfil/perfil.routes').then((rotas) => rotas.ROTAS_PERFIL),
       },
       {
         path: 'simulador',

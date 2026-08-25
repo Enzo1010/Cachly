@@ -1,8 +1,13 @@
 package br.com.cachly.backend.questao;
 
+import br.com.cachly.backend.alternativa.AlternativaRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public record QuestaoRequest(
         @NotNull(message = "A categoria é obrigatória")
@@ -19,6 +24,11 @@ public record QuestaoRequest(
 
         @NotNull(message = "O XP base é obrigatório")
         @Positive(message = "O XP base deve ser maior que zero")
-        Integer xpBase
+        Integer xpBase,
+
+        @Valid
+        @NotNull(message = "As alternativas são obrigatórias")
+        @Size(min = 2, max = 5, message = "A questão deve ter entre 2 e 5 alternativas")
+        List<AlternativaRequest> alternativas
 ) {
 }

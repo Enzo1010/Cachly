@@ -11,7 +11,7 @@
       </div>
       
       <div class="sidebar-content">
-        <app-simulador-form (simular)="onSimular($event)"></app-simulador-form>
+        <app-simulador-form [loading]="loading()" (simular)="onSimular($event)"></app-simulador-form>
         <div *ngIf="error()" style="margin-top: 1rem;">
           <p-message severity="error" [text]="error()!"></p-message>
         </div>

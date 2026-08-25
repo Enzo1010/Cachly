@@ -7,12 +7,7 @@ import org.springframework.stereotype.Service;
 public class XpService {
 
     public int calcularXpGanho(Questao questao) {
-        int multiplicador = switch (questao.getDificuldade()) {
-            case FACIL -> 1;
-            case MEDIO -> 2;
-            case DIFICIL -> 3;
-        };
-        return questao.getXpBase() * multiplicador;
+        return questao.getXpBase() * questao.getDificuldade().getMultiplicador();
     }
 
     /**

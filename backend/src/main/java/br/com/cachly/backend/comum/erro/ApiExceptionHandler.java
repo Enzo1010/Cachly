@@ -133,7 +133,7 @@ public class ApiExceptionHandler {
             Exception exception,
             HttpServletRequest request
     ) {
-        // O ideal é logar a exceção aqui
+        log.error("Erro interno inesperado no path: {}", request.getRequestURI(), exception);
         return criarResposta(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Ocorreu um erro interno inesperado no servidor",

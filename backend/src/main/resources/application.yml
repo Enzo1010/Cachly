@@ -19,3 +19,7 @@ api:
 
 app:
   timezone: America/Sao_Paulo
+
+ranking:
+  historico:
+    top-n: 10

@@ -1,0 +1,1 @@
+ALTER TABLE usuarios ADD COLUMN versao_token BIGINT NOT NULL DEFAULT 0;

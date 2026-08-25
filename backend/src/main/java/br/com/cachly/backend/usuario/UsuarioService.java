@@ -45,7 +45,9 @@ public class UsuarioService {
         return converterParaResponse(usuarioRepository.save(usuario));
     }
 
-    public UsuarioAutenticadoResponse autenticar(AutenticacaoRequest request) {
+    public record AuthResult(UsuarioAutenticadoResponse response, String token) {}
+
+    public AuthResult autenticar(AutenticacaoRequest request) {
         Usuario usuario = usuarioRepository
                 .findByEmailIgnoreCase(normalizarEmail(request.email()))
                 .filter(Usuario::getAtivo)
@@ -59,16 +61,15 @@ public class UsuarioService {
 
         String token = tokenService.gerarToken(usuario);
 
-        return new UsuarioAutenticadoResponse(
+        return new AuthResult(new UsuarioAutenticadoResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getPerfil(),
                 usuario.getXpTotal(),
                 usuario.getNivel(),
-                xpService.nomeDoNivel(usuario.getNivel()),
-                token
-        );
+                xpService.nomeDoNivel(usuario.getNivel())
+        ), token);
     }
 
     private String normalizarEmail(String email) {
@@ -89,5 +90,29 @@ public class UsuarioService {
                 usuario.getCriadoEm(),
                 usuario.getAtualizadoEm()
         );
+    }
+
+    @Transactional
+    public void alterarSenha(Long usuarioId, AlterarSenhaRequest request) {
+        Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioId)
+                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+
+        if (!codificadorSenha.matches(request.senhaAtual(), usuario.getSenhaHash())) {
+            throw new CredenciaisInvalidasException("Senha atual incorreta");
+        }
+
+        usuario.setSenhaHash(codificadorSenha.encode(request.novaSenha()));
+        // CRÍTICO: Invalida todos os tokens JWT emitidos anteriormente
+        usuario.setVersaoToken(System.currentTimeMillis());
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void revogarTokens(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioId)
+                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+        
+        usuario.setVersaoToken(System.currentTimeMillis());
+        usuarioRepository.save(usuario);
     }
 }

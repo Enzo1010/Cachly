@@ -1,5 +1,7 @@
 package br.com.cachly.backend.seguranca;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
@@ -14,16 +16,27 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Profile("!test")
 public class RateLimitingFilter extends OncePerRequestFilter {
 
-    private final Map<String, Bucket> loginBuckets = new ConcurrentHashMap<>();
-    private final Map<String, Bucket> simuladorBuckets = new ConcurrentHashMap<>();
-    private final Map<String, Bucket> apiBuckets = new ConcurrentHashMap<>();
+    // Utiliza expireAfterAccess superior à maior janela de rate limit (1 min) para evitar recriar buckets ativos.
+    // Expiração de 15 minutos é segura. maximumSize limita picos extremos de tráfego.
+    private final Cache<String, Bucket> loginBuckets = Caffeine.newBuilder()
+            .expireAfterAccess(Duration.ofMinutes(15))
+            .maximumSize(10_000)
+            .build();
+
+    private final Cache<String, Bucket> simuladorBuckets = Caffeine.newBuilder()
+            .expireAfterAccess(Duration.ofMinutes(15))
+            .maximumSize(10_000)
+            .build();
+
+    private final Cache<String, Bucket> apiBuckets = Caffeine.newBuilder()
+            .expireAfterAccess(Duration.ofMinutes(15))
+            .maximumSize(10_000)
+            .build();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -35,11 +48,11 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         Bucket bucket = null;
 
         if (path.startsWith("/api/auth/login")) {
-            bucket = loginBuckets.computeIfAbsent(ip, this::createNewLoginBucket);
+            bucket = loginBuckets.get(ip, this::createNewLoginBucket);
         } else if (path.startsWith("/api/simulador/executar")) {
-            bucket = simuladorBuckets.computeIfAbsent(ip, this::createNewSimuladorBucket);
+            bucket = simuladorBuckets.get(ip, this::createNewSimuladorBucket);
         } else if (path.startsWith("/api/")) {
-            bucket = apiBuckets.computeIfAbsent(ip, this::createNewApiBucket);
+            bucket = apiBuckets.get(ip, this::createNewApiBucket);
         }
 
         if (bucket != null) {

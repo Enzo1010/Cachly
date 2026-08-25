@@ -52,8 +52,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 
                 if (email != null && perfil != null) {
                     var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + perfil));
-                    // O principal é o e-mail; o objeto Usuario completo não é necessário aqui.
-                    var authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    Long iat = claims.getIssuedAt() != null ? claims.getIssuedAt().getTime() : 0L;
+                    UsuarioPrincipal principal = new UsuarioPrincipal(email, iat);
+                    
+                    var authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (JwtException | IllegalArgumentException ignored) {

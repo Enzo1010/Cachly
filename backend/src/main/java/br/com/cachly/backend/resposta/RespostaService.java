@@ -1,40 +1,27 @@
 package br.com.cachly.backend.resposta;
 
 import br.com.cachly.backend.alternativa.Alternativa;
-import br.com.cachly.backend.alternativa.AlternativaRepository;
 import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
 import br.com.cachly.backend.questao.Questao;
 import br.com.cachly.backend.questao.QuestaoRepository;
 import br.com.cachly.backend.usuario.Usuario;
-import br.com.cachly.backend.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
 public class RespostaService {
 
     private final QuestaoRepository questaoRepository;
-    private final AlternativaRepository alternativaRepository;
-    private final UsuarioRepository usuarioRepository;
     private final TentativaQuestaoRepository tentativaQuestaoRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final XpService xpService;
 
     @Transactional
-    public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuarioAutenticado) {
-        if (usuarioAutenticado == null || usuarioAutenticado.getId() == null) {
-            throw new ConflitoDeDadosException("Usuário não autenticado");
-        }
-
-        Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioAutenticado.getId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
-
+    public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuario) {
         if (!Boolean.TRUE.equals(usuario.getAtivo())) {
             throw new ConflitoDeDadosException("Usuário inativo não pode responder questões");
         }
@@ -44,26 +31,24 @@ public class RespostaService {
                         "Questão não encontrada ou inativa com o ID: " + questaoId
                 ));
 
-        Alternativa alternativa = alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(
-                request.alternativaId(),
-                questaoId
-        ).orElseThrow(() -> new RecursoNaoEncontradoException(
-                "Alternativa não encontrada, inativa ou não pertence à questão informada"
-        ));
+        Alternativa alternativa = questao.getAlternativas().stream()
+                .filter(a -> a.getId().equals(request.alternativaId()) && Boolean.TRUE.equals(a.getAtiva()))
+                .findFirst()
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Alternativa não encontrada, inativa ou não pertence à questão informada"
+                ));
 
         boolean correta = Boolean.TRUE.equals(alternativa.getCorreta());
-
+        boolean primeiraVezCorreta = false;
         int xpGanho = 0;
+
         if (correta) {
             boolean jaAcertouAntes = tentativaQuestaoRepository.existsByUsuarioIdAndQuestaoIdAndCorretaTrue(
                     usuario.getId(), questao.getId()
             );
-
             if (!jaAcertouAntes) {
+                primeiraVezCorreta = true;
                 xpGanho = xpService.calcularXpGanho(questao);
-                usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
-                usuario.setXpSemanal(usuario.getXpSemanal() + xpGanho);
-                usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
             }
         }
 
@@ -74,55 +59,21 @@ public class RespostaService {
         tentativa.setCorreta(correta);
         tentativa.setXpConcedido(xpGanho);
 
-        atualizarOfensivaSeNecessario(usuario);
-
-        // Se o usuário foi atualizado (XP ou ofensiva), salva.
-        // Já estávamos salvando dentro do if (correta), mas agora a ofensiva também pode modificar o usuário,
-        // então é mais seguro dar um save() aqui garantidamente.
-        usuarioRepository.save(usuario);
-
         TentativaQuestao salva = tentativaQuestaoRepository.save(tentativa);
+
+        eventPublisher.publishEvent(new QuestaoRespondidaEvent(usuario, questao, correta, primeiraVezCorreta));
 
         return new RespostaResponse(
                 salva.getId(),
                 correta,
                 questao.getExplicacao(),
                 xpGanho,
+                // O nível e xp total atuais que serão retornados podem estar defasados pois o evento pode 
+                // rodar antes do flush ou depois, mas como é sincrono e transacional, ele atualiza a mesma 
+                // instância gerenciada pelo Hibernate caso esteja no mesmo escopo. 
                 usuario.getNivel(),
                 xpService.nomeDoNivel(usuario.getNivel()),
                 usuario.getXpTotal()
         );
-    }
-
-    @org.springframework.beans.factory.annotation.Value("${app.timezone:America/Sao_Paulo}")
-    private String timezone;
-
-    private void atualizarOfensivaSeNecessario(Usuario usuario) {
-        ZoneId zoneId = ZoneId.of(timezone);
-        LocalDate hoje = LocalDate.now(zoneId);
-        OffsetDateTime inicioDoDia = hoje.atStartOfDay().atZone(zoneId).toOffsetDateTime();
-        OffsetDateTime fimDoDia = hoje.atTime(23, 59, 59, 999999999).atZone(zoneId).toOffsetDateTime();
-
-        long respostasHoje = tentativaQuestaoRepository.countByUsuarioIdAndRespondidaEmBetween(
-                usuario.getId(), inicioDoDia, fimDoDia
-        );
-
-        // A streak só aumenta se esta for exatamente a 2ª questão do dia.
-        // Se for a 1ª (respostasHoje == 0), ainda não bateu a meta.
-        // Se for a 3ª ou mais (respostasHoje >= 2), a ofensiva já foi calculada.
-        if (respostasHoje == 1) {
-            LocalDate dataUltima = usuario.getDataUltimaOfensiva();
-
-            if (dataUltima != null && dataUltima.equals(hoje.minusDays(1))) {
-                // Ontem o aluno também completou a meta, estende a ofensiva!
-                usuario.setDiasOfensiva(usuario.getDiasOfensiva() + 1);
-            } else if (dataUltima == null || dataUltima.isBefore(hoje.minusDays(1))) {
-                // Perdeu a ofensiva ou é a primeira vez
-                usuario.setDiasOfensiva(1);
-            }
-            
-            // Registra que hoje ele completou a meta
-            usuario.setDataUltimaOfensiva(hoje);
-        }
     }
 }

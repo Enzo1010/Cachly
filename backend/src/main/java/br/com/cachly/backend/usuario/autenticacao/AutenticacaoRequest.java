@@ -9,6 +9,8 @@ public record AutenticacaoRequest(
         String email,
 
         @NotBlank(message = "A senha é obrigatória")
-        String senha
+        String senha,
+
+        Boolean lembrarLogin
 ) {
 }

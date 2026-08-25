@@ -1,15 +1,13 @@
 package br.com.cachly.backend.usuario.autenticacao;
 
-import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
 import br.com.cachly.backend.usuario.Usuario;
-import br.com.cachly.backend.usuario.UsuarioRepository;
+import br.com.cachly.backend.usuario.UsuarioLogadoService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import br.com.cachly.backend.usuario.UsuarioService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,26 +20,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class AutenticacaoController {
 
     private final UsuarioService usuarioService;
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioLogadoService usuarioLogadoService;
 
     @PostMapping("/login")
     public UsuarioAutenticadoResponse autenticar(
             @Valid @RequestBody AutenticacaoRequest request,
             HttpServletResponse response
     ) {
-        UsuarioAutenticadoResponse authResponse = usuarioService.autenticar(request);
+        br.com.cachly.backend.usuario.UsuarioService.AuthResult authResult = usuarioService.autenticar(request);
         
-        ResponseCookie cookie = ResponseCookie.from("token", authResponse.token())
+        long maxAge = Boolean.TRUE.equals(request.lembrarLogin()) ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+
+        ResponseCookie cookie = ResponseCookie.from("token", authResult.token())
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
                 .path("/")
-                .maxAge(24 * 60 * 60)
+                .maxAge(maxAge)
                 .build();
                 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return authResponse;
+        return authResult.response();
     }
     
     @PostMapping("/logout")
@@ -59,11 +59,7 @@ public class AutenticacaoController {
 
     @GetMapping("/me")
     public UsuarioSessaoResponse obterUsuarioAutenticado() {
-        // O principal é o e-mail (String) injetado pelo SecurityFilter a partir das claims do JWT.
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+        Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
 
         return new UsuarioSessaoResponse(
                 usuario.getId(),
@@ -74,6 +70,18 @@ public class AutenticacaoController {
                 usuario.getNivel(),
                 usuario.getDiasOfensiva()
         );
+    }
+
+    @PostMapping("/alterar-senha")
+    public void alterarSenha(@Valid @RequestBody br.com.cachly.backend.usuario.AlterarSenhaRequest request) {
+        Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
+        usuarioService.alterarSenha(usuario.getId(), request);
+    }
+
+    @PostMapping("/revogar-sessoes")
+    public void revogarSessoes() {
+        Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
+        usuarioService.revogarTokens(usuario.getId());
     }
 }
 

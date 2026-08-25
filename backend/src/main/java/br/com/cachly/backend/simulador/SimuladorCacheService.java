@@ -34,28 +34,14 @@ public class SimuladorCacheService {
         TipoMapeamento mapeamento = request.mapeamento();
         PoliticaSubstituicao substituicao = request.substituicao();
 
-        // Mapeamento e Topologia:
-        // Mapeamento Direto: N conjuntos de 1 via.
-        // Totalmente Associativo: 1 conjunto de N vias.
-        // Associativo por Conjuntos: N conjuntos de M vias.
-        int totalConjuntos;
-        int numeroVias;
-
-        if (mapeamento == TipoMapeamento.DIRETO) {
-            totalConjuntos = totalLinhas;
-            numeroVias = 1;
-        } else if (mapeamento == TipoMapeamento.TOTALMENTE_ASSOCIATIVO) {
-            totalConjuntos = 1;
-            numeroVias = totalLinhas;
-        } else {
-            numeroVias = request.numeroVias();
-            totalConjuntos = totalLinhas / numeroVias;
-        }
+        TopologiaCacheStrategy topologiaStrategy = resolverStrategy(mapeamento);
+        int numeroVias = topologiaStrategy.calcularVias(totalLinhas, request);
+        int totalConjuntos = topologiaStrategy.calcularConjuntos(totalLinhas, numeroVias);
+        int bitsIndice = topologiaStrategy.calcularBitsIndice(totalConjuntos);
 
         // Cálculo da divisão de bits do endereço
         // Utilizamos logaritmo na base 2, visto que os tamanhos obrigatoriamente são potências de 2.
         int bitsOffset = log2(tamanhoBloco);
-        int bitsIndice = mapeamento == TipoMapeamento.TOTALMENTE_ASSOCIATIVO ? 0 : log2(totalConjuntos);
         
         // Assumindo uma arquitetura genérica de 32 bits para a largura do barramento de endereços.
         int bitsTag = 32 - bitsIndice - bitsOffset;
@@ -74,15 +60,6 @@ public class SimuladorCacheService {
             int passoNumero = i + 1;
             int endereco = request.enderecos().get(i);
 
-            /*
-             * Extração dos bits usando operadores bit a bit (Bitwise).
-             * 
-             * 1. Offset: Aplicamos uma máscara com os últimos 'bitsOffset' bits em 1.
-             * 2. Indice: Deslocamos o endereço à direita ignorando o offset, e aplicamos a máscara.
-             * 3. Tag: Deslocamos o endereço ignorando offset e índice. 
-             * NOTA: Utilizamos '>>>' (Unsigned Right Shift) para prevenir preenchimento indevido 
-             * com bits de sinal (caso o inteiro extrapole o bit mais significativo no Java).
-             */
             int offsetMask = (1 << bitsOffset) - 1;
             int offset = endereco & offsetMask;
 
@@ -90,7 +67,7 @@ public class SimuladorCacheService {
             int tag = endereco >>> (bitsOffset + bitsIndice);
 
             // Reduz o escopo de busca apenas para as linhas pertencentes ao conjunto calculado (ou todas se for totalmente associativo)
-            List<LinhaCacheInterna> candidatoLinhas = buscarLinhasDoConjunto(linhas, indice, mapeamento, totalLinhas, numeroVias);
+            List<LinhaCacheInterna> candidatoLinhas = topologiaStrategy.buscarLinhasDoConjunto(linhas, indice, numeroVias);
 
             // Verifica se o bloco correspondente à tag já está carregado na memória cache
             LinhaCacheInterna linhaHit = candidatoLinhas.stream()
@@ -198,9 +175,14 @@ public class SimuladorCacheService {
         );
     }
 
-    /**
-     * Valida as restrições matemáticas e as regras de negócio intrínsecas ao projeto de uma memória cache.
-     */
+    private TopologiaCacheStrategy resolverStrategy(TipoMapeamento mapeamento) {
+        return switch (mapeamento) {
+            case DIRETO -> new MapeamentoDiretoStrategy();
+            case TOTALMENTE_ASSOCIATIVO -> new TotalmenteAssociativoStrategy();
+            case CONJUNTO_ASSOCIATIVO -> new ConjuntoAssociativoStrategy();
+        };
+    }
+
     private void validarRequest(SimulacaoRequest request) {
         if (!isPotenciaDeDois(request.tamanhoCacheBytes())) {
             throw new RegraNegocioException("Tamanho da cache deve ser uma potência de 2");
@@ -235,18 +217,6 @@ public class SimuladorCacheService {
             linhas.add(new LinhaCacheInterna(i, conjuntoIndex));
         }
         return linhas;
-    }
-
-    private List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, TipoMapeamento mapeamento, int totalLinhas, int numeroVias) {
-        if (mapeamento == TipoMapeamento.DIRETO) {
-            return List.of(linhas.get(indice));
-        } else if (mapeamento == TipoMapeamento.TOTALMENTE_ASSOCIATIVO) {
-            return linhas;
-        } else {
-            int inicio = indice * numeroVias;
-            int fim = inicio + numeroVias;
-            return linhas.subList(inicio, fim); // SubList opera como view (O(1) memória e alocação leve)
-        }
     }
 
     /**
@@ -284,6 +254,41 @@ public class SimuladorCacheService {
         LinhaCacheInterna(int indiceLinha, Integer conjuntoIndex) {
             this.indiceLinha = indiceLinha;
             this.conjuntoIndex = conjuntoIndex;
+        }
+    }
+
+    private interface TopologiaCacheStrategy {
+        int calcularVias(int totalLinhas, SimulacaoRequest request);
+        int calcularConjuntos(int totalLinhas, int vias);
+        int calcularBitsIndice(int totalConjuntos);
+        List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias);
+    }
+
+    private class MapeamentoDiretoStrategy implements TopologiaCacheStrategy {
+        public int calcularVias(int totalLinhas, SimulacaoRequest request) { return 1; }
+        public int calcularConjuntos(int totalLinhas, int vias) { return totalLinhas; }
+        public int calcularBitsIndice(int totalConjuntos) { return log2(totalConjuntos); }
+        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias) {
+            return List.of(linhas.get(indice));
+        }
+    }
+
+    private class TotalmenteAssociativoStrategy implements TopologiaCacheStrategy {
+        public int calcularVias(int totalLinhas, SimulacaoRequest request) { return totalLinhas; }
+        public int calcularConjuntos(int totalLinhas, int vias) { return 1; }
+        public int calcularBitsIndice(int totalConjuntos) { return 0; }
+        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias) {
+            return linhas;
+        }
+    }
+
+    private class ConjuntoAssociativoStrategy implements TopologiaCacheStrategy {
+        public int calcularVias(int totalLinhas, SimulacaoRequest request) { return request.numeroVias(); }
+        public int calcularConjuntos(int totalLinhas, int vias) { return totalLinhas / vias; }
+        public int calcularBitsIndice(int totalConjuntos) { return log2(totalConjuntos); }
+        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias) {
+            int inicio = indice * vias;
+            return linhas.subList(inicio, inicio + vias);
         }
     }
 }

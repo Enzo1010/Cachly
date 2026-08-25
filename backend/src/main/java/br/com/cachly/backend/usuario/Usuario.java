@@ -59,6 +59,9 @@ public class Usuario {
     @Column(name = "data_ultima_ofensiva")
     private LocalDate dataUltimaOfensiva;
 
+    @Column(name = "versao_token", nullable = false)
+    private Long versaoToken = System.currentTimeMillis();
+
     @Column(name = "criado_em", nullable = false)
     private OffsetDateTime criadoEm;
 

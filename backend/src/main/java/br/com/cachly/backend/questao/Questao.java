@@ -47,4 +47,8 @@ public class Questao extends EntidadeAuditavel {
 
     @Column(nullable = false)
     private Boolean ativa = true;
+
+    @jakarta.persistence.OneToMany(mappedBy = "questao", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 50)
+    private java.util.List<br.com.cachly.backend.alternativa.Alternativa> alternativas = new java.util.ArrayList<>();
 }

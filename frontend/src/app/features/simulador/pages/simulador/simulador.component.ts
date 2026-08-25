@@ -14,6 +14,8 @@ import { SimuladorTabelaComponent } from '../../components/simulador-tabela/simu
 import { SimulacaoRequest, SimulacaoResponse, PassoSimulacaoResponse } from '../../models/simulador.model';
 import { SimuladorCacheService } from '../../services/simulador-cache.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Subject, exhaustMap, tap, catchError, of } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface BreakdownBinario {
   tag: string;
@@ -42,6 +44,32 @@ interface BreakdownBinario {
   styleUrls: ['./simulador.component.scss']
 })
 export class SimuladorPageComponent {
+  private readonly simularSubject = new Subject<SimulacaoRequest>();
+
+  constructor() {
+    this.simularSubject.pipe(
+      tap(() => {
+        this.loading.set(true);
+        this.error.set(null);
+        this.simulacao.set(null);
+        this.passoAtualIndex.set(0);
+      }),
+      exhaustMap((request) => 
+        this.simuladorService.executarSimulacao(request).pipe(
+          tap((response) => {
+            this.simulacao.set(response);
+            this.loading.set(false);
+          }),
+          catchError((err: HttpErrorResponse) => {
+            this.loading.set(false);
+            this.error.set(err.error?.mensagem || 'Erro ao comunicar com o servidor');
+            return of(null);
+          })
+        )
+      ),
+      takeUntilDestroyed()
+    ).subscribe();
+  }
   private readonly simuladorService = inject(SimuladorCacheService);
   
   loading = signal<boolean>(false);
@@ -198,21 +226,7 @@ export class SimuladorPageComponent {
   };
   
   onSimular(request: SimulacaoRequest): void {
-    this.loading.set(true);
-    this.error.set(null);
-    this.simulacao.set(null);
-    this.passoAtualIndex.set(0);
-    
-    this.simuladorService.executarSimulacao(request).subscribe({
-      next: (response) => {
-        this.simulacao.set(response);
-        this.loading.set(false);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.loading.set(false);
-        this.error.set(err.error?.mensagem || 'Erro ao comunicar com o servidor');
-      }
-    });
+    this.simularSubject.next(request);
   }
   
   proximoPasso(): void {

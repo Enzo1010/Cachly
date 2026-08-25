@@ -76,7 +76,8 @@
     label="Iniciar Simulação"
     icon="pi pi-play"
     styleClass="w-full p-button-lg"
-    [disabled]="form.invalid">
+    [disabled]="form.invalid || loading"
+    [loading]="loading">
   </p-button>
 
 </form>

@@ -24,4 +24,16 @@ public class RankingController {
         Page<RankingResponse> ranking = rankingService.listarRanking(pageable);
         return ResponseEntity.ok(ranking);
     }
+
+    @GetMapping("/historico/datas")
+    public ResponseEntity<java.util.List<java.time.LocalDate>> listarDatasHistorico() {
+        return ResponseEntity.ok(rankingService.listarDatasHistorico());
+    }
+
+    @GetMapping("/historico")
+    public ResponseEntity<Page<RankingSemanalHistorico>> listarHistorico(
+            @org.springframework.web.bind.annotation.RequestParam java.time.LocalDate data,
+            @PageableDefault(size = 20, sort = "posicao", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(rankingService.listarHistoricoPorData(data, pageable));
+    }
 }

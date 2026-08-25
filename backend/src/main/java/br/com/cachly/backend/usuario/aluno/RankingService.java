@@ -37,4 +37,16 @@ public class RankingService {
                 projecao.getDiasOfensiva()
         ));
     }
+
+    private final RankingSemanalHistoricoRepository historicoRepository;
+
+    @Transactional(readOnly = true)
+    public java.util.List<java.time.LocalDate> listarDatasHistorico() {
+        return historicoRepository.findDatasDisponiveis();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RankingSemanalHistorico> listarHistoricoPorData(java.time.LocalDate data, Pageable pageable) {
+        return historicoRepository.findByDataSemana(data, pageable);
+    }
 }

@@ -23,11 +23,14 @@ export class SessaoService {
   }
 
   autenticar(request: AutenticacaoRequest, lembrarLogin: boolean): Observable<UsuarioAutenticado> {
-    // lembrarLogin não é mais salvo localmente por motivos de segurança.
-    // O backend agora emite um HttpOnly cookie na resposta de login.
+    const payload = { ...request, lembrarLogin };
     return this.http
-      .post<UsuarioAutenticado>('/api/auth/login', request)
+      .post<UsuarioAutenticado>('/api/auth/login', payload)
       .pipe(tap((usuario) => this.usuarioAtual.set(usuario)));
+  }
+
+  limparSessaoLocal(): void {
+    this.usuarioAtual.set(null);
   }
 
   encerrar(): Observable<void> {

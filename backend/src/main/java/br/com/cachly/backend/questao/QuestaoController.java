@@ -36,6 +36,12 @@ public class QuestaoController {
         return questaoService.listarAtivas();
     }
 
+    @GetMapping("/admin/todas")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<QuestaoResponse> listarTodas() {
+        return questaoService.listarTodas();
+    }
+
     @GetMapping("/estudo")
     public List<QuestaoEstudoResponse> listarParaEstudo(
             @RequestParam(required = false) Long categoriaId,
