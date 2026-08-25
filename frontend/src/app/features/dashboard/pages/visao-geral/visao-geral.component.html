@@ -13,29 +13,47 @@
     </div>
   </section>
 
-  <section class="objetivo" aria-labelledby="titulo-objetivo">
-    <div class="objetivo__conteudo">
-      <p class="objetivo__apoio">
-        <i class="pi pi-bullseye" aria-hidden="true"></i> Algoritmo de recomendação
-      </p>
-      <h2 id="titulo-objetivo">Seu próximo objetivo</h2>
-      <p class="objetivo__texto">
-        @if (piorCategoria()) {
-          Analisamos seu desempenho recente. Você apresenta dificuldade em
-          <strong>{{ piorCategoria()?.categoriaNome }}</strong>. Aqui está sua trilha recomendada para hoje:
-        } @else {
-          Continue respondendo questões para podermos analisar o seu desempenho e recomendar a melhor trilha!
-        }
-      </p>
-      <div class="objetivo__acoes">
-        <button pButton class="botao-revisao" type="button">
-          <i class="pi pi-play" aria-hidden="true"></i>
-          <span>Iniciar Revisão</span>
-        </button>
-        <button pButton class="botao-desafio" type="button">Desafio Aleatório</button>
-      </div>
+  <section class="estatisticas-academicas" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+    <!-- Gráfico de Radar: Visão Geral Pedagógica -->
+    <div class="grafico-container card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+      <h3 style="margin-top: 0; color: #333; font-size: 1.25rem;">Seu Domínio em Arquitetura</h3>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;">Uma visão geral da sua taxa de acerto por conceito.</p>
+      
+      @if (dadosGraficoRadar().labels.length > 0) {
+        <p-chart type="radar" [data]="dadosGraficoRadar()" [options]="opcoesGraficoRadar" height="300px"></p-chart>
+      } @else {
+        <div style="height: 300px; display: flex; align-items: center; justify-content: center; color: #999;">
+          Responda questões para gerar seu gráfico.
+        </div>
+      }
     </div>
-    <i class="objetivo__ornamento pi pi-microchip-ai" aria-hidden="true"></i>
+
+    <!-- Intervenção Ativa (Recomendação) -->
+    <section class="objetivo" aria-labelledby="titulo-objetivo" style="display: flex; flex-direction: column;">
+      <div class="objetivo__conteudo" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+        <p class="objetivo__apoio">
+          <i class="pi pi-bullseye" aria-hidden="true"></i> Intervenção Pedagógica Ativa
+        </p>
+        <h2 id="titulo-objetivo">Sua recomendação</h2>
+        <p class="objetivo__texto">
+          @if (piorCategoria()) {
+            Notamos que sua taxa de acerto em
+            <strong>{{ piorCategoria()?.categoriaNome }}</strong> é de apenas <strong>{{ piorCategoria()?.taxaAcerto }}%</strong>.
+            A melhor forma de fixar este conceito é visualizar como a memória funciona na prática!
+          } @else {
+            Continue respondendo questões para podermos analisar o seu desempenho e recomendar a melhor trilha!
+          }
+        </p>
+        <div class="objetivo__acoes">
+          <button pButton class="botao-revisao" type="button" (click)="irParaSimulador()" style="background: var(--primary-color);">
+            <i class="pi pi-bolt" aria-hidden="true"></i>
+            <span>Ir para o Simulador</span>
+          </button>
+          <button pButton class="botao-desafio" type="button" [routerLink]="['/estudar']">Responder Questões</button>
+        </div>
+      </div>
+      <i class="objetivo__ornamento pi pi-microchip-ai" aria-hidden="true"></i>
+    </section>
   </section>
 
   <section class="indicadores" aria-label="Resumo do desempenho">

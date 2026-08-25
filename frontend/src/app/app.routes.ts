@@ -60,6 +60,11 @@ export const routes: Routes = [
           import('./features/simulador/simulador.routes').then((rotas) => rotas.ROTAS_SIMULADOR),
       },
       {
+        path: 'perfil',
+        loadChildren: () =>
+          import('./features/perfil/perfil.routes').then((rotas) => rotas.ROTAS_PERFIL),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',
