@@ -34,6 +34,9 @@ class AlunoControllerTest {
     @MockitoBean
     private AlunoDesempenhoService alunoDesempenhoService;
 
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
+
     @Test
     void deveCadastrarAlunoERetornarStatusCriadoSemExporSenha() throws Exception {
         when(usuarioService.cadastrarAluno(any(AlunoCadastroRequest.class)))
@@ -137,3 +140,4 @@ class AlunoControllerTest {
         );
     }
 }
+

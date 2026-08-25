@@ -17,15 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class RespostaController {
 
     private final RespostaService respostaService;
+    private final br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
     @PostMapping("/{questaoId}/respostas")
     public RespostaResponse responder(
             @PathVariable Long questaoId,
-            @Valid @RequestBody RespostaRequest request,
-            @AuthenticationPrincipal Usuario usuario
+            @Valid @RequestBody RespostaRequest request
     ) {
-        Usuario usuarioAutenticado = usuario != null ? usuario :
-                (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return respostaService.responder(questaoId, request, usuarioAutenticado);
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+        return respostaService.responder(questaoId, request, usuario);
     }
 }

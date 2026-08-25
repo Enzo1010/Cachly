@@ -33,6 +33,9 @@ class RespostaControllerTest {
     @MockitoBean
     private RespostaService respostaService;
 
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
+
     @BeforeEach
     void setUp() {
         Usuario usuarioMock = new Usuario();
@@ -41,8 +44,9 @@ class RespostaControllerTest {
         usuarioMock.setEmail("aluno@teste.com");
         usuarioMock.setPerfil(PerfilUsuario.ALUNO);
 
-        var auth = new UsernamePasswordAuthenticationToken(usuarioMock, null, List.of());
+        var auth = new UsernamePasswordAuthenticationToken(usuarioMock.getEmail(), null, List.of());
         SecurityContextHolder.getContext().setAuthentication(auth);
+        when(usuarioRepository.findByEmailIgnoreCase("aluno@teste.com")).thenReturn(java.util.Optional.of(usuarioMock));
     }
 
     @Test
@@ -93,3 +97,5 @@ class RespostaControllerTest {
                 .andExpect(jsonPath("$.campos.alternativaId").exists());
     }
 }
+
+

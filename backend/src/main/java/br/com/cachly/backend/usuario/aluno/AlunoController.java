@@ -23,6 +23,7 @@ public class AlunoController {
 
     private final UsuarioService usuarioService;
     private final AlunoDesempenhoService alunoDesempenhoService;
+    private final br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -32,20 +33,19 @@ public class AlunoController {
 
     @GetMapping("/me/historico")
     public Page<HistoricoTentativaResponse> obterHistorico(
-            @AuthenticationPrincipal Usuario usuario,
             Pageable pageable
     ) {
-        Usuario usuarioAutenticado = usuario != null ? usuario :
-                (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return alunoDesempenhoService.obterHistorico(usuarioAutenticado, pageable);
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+        return alunoDesempenhoService.obterHistorico(usuario, pageable);
     }
 
     @GetMapping("/me/desempenho")
-    public DesempenhoResponse obterDesempenho(
-            @AuthenticationPrincipal Usuario usuario
-    ) {
-        Usuario usuarioAutenticado = usuario != null ? usuario :
-                (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return alunoDesempenhoService.obterEstatisticas(usuarioAutenticado);
+    public DesempenhoResponse obterDesempenho() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+        return alunoDesempenhoService.obterEstatisticas(usuario);
     }
 }

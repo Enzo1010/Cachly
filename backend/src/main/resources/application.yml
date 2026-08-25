@@ -16,3 +16,6 @@ api:
     token:
       secret: ${JWT_SECRET:segredo-padrao-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente-para-hmac-sha}
       expiration-hours: ${JWT_EXPIRATION_HOURS:24}
+
+app:
+  timezone: America/Sao_Paulo

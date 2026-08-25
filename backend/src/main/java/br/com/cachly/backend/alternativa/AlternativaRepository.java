@@ -9,6 +9,8 @@ public interface AlternativaRepository extends JpaRepository<Alternativa, Long> 
 
     List<Alternativa> findAllByQuestaoIdAndAtivaTrueOrderByOrdemAsc(Long questaoId);
 
+    List<Alternativa> findAllByQuestaoIdInAndAtivaTrueOrderByOrdemAsc(List<Long> questaoIds);
+
     Optional<Alternativa> findByIdAndQuestaoId(Long id, Long questaoId);
 
     Optional<Alternativa> findByIdAndQuestaoIdAndAtivaTrue(Long id, Long questaoId);

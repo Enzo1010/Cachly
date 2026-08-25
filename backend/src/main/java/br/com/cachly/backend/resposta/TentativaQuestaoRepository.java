@@ -10,7 +10,14 @@ import java.util.List;
 
 public interface TentativaQuestaoRepository extends JpaRepository<TentativaQuestao, Long> {
 
-    Page<TentativaQuestao> findByUsuarioIdOrderByRespondidaEmDesc(Long usuarioId, Pageable pageable);
+    @Query(value = """
+            SELECT t FROM TentativaQuestao t
+            JOIN FETCH t.questao
+            JOIN FETCH t.alternativa
+            WHERE t.usuario.id = :usuarioId
+            ORDER BY t.respondidaEm DESC
+            """, countQuery = "SELECT COUNT(t) FROM TentativaQuestao t WHERE t.usuario.id = :usuarioId")
+    Page<TentativaQuestao> findByUsuarioIdOrderByRespondidaEmDesc(@Param("usuarioId") Long usuarioId, Pageable pageable);
 
     long countByUsuarioId(Long usuarioId);
 

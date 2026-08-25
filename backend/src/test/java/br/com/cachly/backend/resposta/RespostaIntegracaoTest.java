@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -105,7 +106,7 @@ class RespostaIntegracaoTest {
         usuarioRepository.saveAndFlush(aluno);
 
         // 5. Efetuar Login
-        String loginResponseBody = mockMvc.perform(post("/api/auth/login")
+        var result = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -114,13 +115,14 @@ class RespostaIntegracaoTest {
                                 }
                                 """.formatted(email)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn();
 
-        String token = objectMapper.readTree(loginResponseBody).get("token").asText();
+        jakarta.servlet.http.Cookie tokenCookie = result.getResponse().getCookie("token");
 
         // 6. Enviar resposta para a questão
         mockMvc.perform(post("/api/questoes/%d/respostas".formatted(questao.getId()))
-                        .header("Authorization", "Bearer " + token)
+                        .with(csrf())
+                        .cookie(tokenCookie)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

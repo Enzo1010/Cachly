@@ -48,9 +48,17 @@ public class QuestaoService {
                 ? questaoRepository.findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(categoriaId, pageRequest)
                 : questaoRepository.findAllByAtivaTrueOrderByIdAsc(pageRequest);
 
+        List<Long> questaoIds = questoes.stream().map(Questao::getId).toList();
+        
+        List<Alternativa> todasAlternativas = questaoIds.isEmpty() 
+                ? List.of() 
+                : alternativaRepository.findAllByQuestaoIdInAndAtivaTrueOrderByOrdemAsc(questaoIds);
+                
+        var alternativasPorQuestao = todasAlternativas.stream()
+                .collect(java.util.stream.Collectors.groupingBy(a -> a.getQuestao().getId()));
+
         return questoes.stream().map(questao -> {
-            List<Alternativa> alternativas = alternativaRepository
-                    .findAllByQuestaoIdAndAtivaTrueOrderByOrdemAsc(questao.getId());
+            List<Alternativa> alternativas = alternativasPorQuestao.getOrDefault(questao.getId(), List.of());
             
             List<AlternativaEstudoResponse> alternativasResponse = alternativas.stream()
                     .map(alt -> new AlternativaEstudoResponse(alt.getId(), alt.getTexto(), alt.getOrdem()))

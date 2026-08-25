@@ -11,5 +11,5 @@ export interface UsuarioAutenticado {
   readonly xpTotal: number;
   readonly nivel: number;
   readonly diasOfensiva: number;
-  readonly token: string;
+  readonly nomeNivel: string;
 }

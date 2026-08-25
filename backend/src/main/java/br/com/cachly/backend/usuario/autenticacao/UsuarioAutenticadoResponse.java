@@ -10,6 +10,6 @@ public record UsuarioAutenticadoResponse(
         Integer xpTotal,
         Integer nivel,
         String nomeNivel,
-        String token
+        @com.fasterxml.jackson.annotation.JsonIgnore String token
 ) {
 }

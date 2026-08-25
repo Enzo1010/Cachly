@@ -8,12 +8,16 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ExceptionHandler(CredenciaisInvalidasException.class)
     public ResponseEntity<ErroResponse> tratarCredenciaisInvalidas(
@@ -111,6 +115,33 @@ public class ApiExceptionHandler {
         );
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErroResponse> tratarAcessoNegado(
+            org.springframework.security.access.AccessDeniedException exception,
+            HttpServletRequest request
+    ) {
+        return criarResposta(
+                HttpStatus.FORBIDDEN,
+                "Você não tem permissão para acessar este recurso",
+                request.getRequestURI(),
+                Map.of()
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErroResponse> tratarErroInterno(
+            Exception exception,
+            HttpServletRequest request
+    ) {
+        // O ideal é logar a exceção aqui
+        return criarResposta(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Ocorreu um erro interno inesperado no servidor",
+                request.getRequestURI(),
+                Map.of()
+        );
+    }
+
     private ResponseEntity<ErroResponse> criarResposta(
             HttpStatus status,
             String mensagem,
@@ -129,3 +160,4 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(status).body(erro);
     }
 }
+

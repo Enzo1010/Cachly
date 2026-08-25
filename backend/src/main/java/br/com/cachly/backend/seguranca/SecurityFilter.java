@@ -1,46 +1,63 @@
 package br.com.cachly.backend.seguranca;
 
-import br.com.cachly.backend.usuario.Usuario;
-import br.com.cachly.backend.usuario.UsuarioRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Filtro de segurança stateless: constrói o contexto de autenticação
+ * exclusivamente a partir das claims do JWT, sem nenhuma consulta ao banco.
+ *
+ * <p>Claims utilizadas (injetadas em {@link TokenService#gerarToken}):
+ * <ul>
+ *   <li>{@code sub} — e-mail do usuário</li>
+ *   <li>{@code id}  — UUID do usuário</li>
+ *   <li>{@code perfil} — nome do enum de perfil (ex.: "ADMIN", "USUARIO")</li>
+ * </ul>
+ */
 @Component
 @Profile("!test")
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final UsuarioRepository usuarioRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = recuperarToken(request);
 
         if (token != null) {
-            String email = tokenService.validarToken(token);
-            if (email != null) {
-                Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email).orElse(null);
+            try {
+                Claims claims = tokenService.extrairClaims(token);
 
-                if (usuario != null && usuario.getAtivo()) {
-                    var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getPerfil().name()));
-                    var authentication = new UsernamePasswordAuthenticationToken(usuario, null, authorities);
+                String email  = claims.getSubject();
+                String perfil = claims.get("perfil", String.class);
+
+                if (email != null && perfil != null) {
+                    var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + perfil));
+                    // O principal é o e-mail; o objeto Usuario completo não é necessário aqui.
+                    var authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+            } catch (JwtException | IllegalArgumentException ignored) {
+                // Token inválido ou expirado — a requisição prossegue sem autenticação.
             }
         }
 

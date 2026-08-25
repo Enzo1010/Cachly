@@ -67,7 +67,7 @@ describe('SessaoService', () => {
       xpTotal: 0,
       nivel: 1,
       diasOfensiva: 0,
-      token: 'token-de-teste',
+      nomeNivel: 'Iniciante'
     };
   }
 });

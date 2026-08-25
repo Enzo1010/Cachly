@@ -75,7 +75,7 @@ class AutenticacaoIntegracaoTest {
         usuario.setAtivo(true);
         usuarioRepository.saveAndFlush(usuario);
 
-        String responseContent = mockMvc.perform(post("/api/auth/login")
+        var result = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -84,13 +84,12 @@ class AutenticacaoIntegracaoTest {
                                 }
                                 """.formatted(email)))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn();
 
-        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        String token = mapper.readTree(responseContent).get("token").asText();
+        jakarta.servlet.http.Cookie tokenCookie = result.getResponse().getCookie("token");
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/auth/me")
-                        .header("Authorization", "Bearer " + token))
+                        .cookie(tokenCookie))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(usuario.getId()))
                 .andExpect(jsonPath("$.nome").value("Usuário Sessão Teste"))

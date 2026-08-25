@@ -82,6 +82,8 @@ class RespostaServiceTest {
         alternativaIncorreta.setTexto("Byte de 8 bits");
         alternativaIncorreta.setCorreta(false);
         alternativaIncorreta.setAtiva(true);
+
+        org.springframework.test.util.ReflectionTestUtils.setField(respostaService, "timezone", "America/Sao_Paulo");
     }
 
     @Test
@@ -204,3 +206,4 @@ class RespostaServiceTest {
         verify(tentativaQuestaoRepository, never()).save(any());
     }
 }
+

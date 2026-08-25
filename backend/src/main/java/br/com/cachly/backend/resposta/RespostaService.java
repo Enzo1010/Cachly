@@ -94,10 +94,14 @@ public class RespostaService {
         );
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.timezone:America/Sao_Paulo}")
+    private String timezone;
+
     private void atualizarOfensivaSeNecessario(Usuario usuario) {
-        LocalDate hoje = LocalDate.now();
-        OffsetDateTime inicioDoDia = hoje.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime();
-        OffsetDateTime fimDoDia = hoje.atTime(23, 59, 59, 999999999).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        ZoneId zoneId = ZoneId.of(timezone);
+        LocalDate hoje = LocalDate.now(zoneId);
+        OffsetDateTime inicioDoDia = hoje.atStartOfDay().atZone(zoneId).toOffsetDateTime();
+        OffsetDateTime fimDoDia = hoje.atTime(23, 59, 59, 999999999).atZone(zoneId).toOffsetDateTime();
 
         long respostasHoje = tentativaQuestaoRepository.countByUsuarioIdAndRespondidaEmBetween(
                 usuario.getId(), inicioDoDia, fimDoDia

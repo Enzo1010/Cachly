@@ -24,7 +24,8 @@ describe('LayoutPrincipalComponent', () => {
               perfil: 'ALUNO',
               xpTotal: 0,
               nivel: 1,
-              token: 'token-de-teste',
+              diasOfensiva: 0,
+              nomeNivel: 'Iniciante'
             }),
           },
         },

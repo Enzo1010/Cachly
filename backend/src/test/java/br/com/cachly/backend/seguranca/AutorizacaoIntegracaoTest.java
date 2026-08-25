@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -57,7 +58,7 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveCadastrarCategoria() throws Exception {
-        mockMvc.perform(post("/api/categorias")
+        mockMvc.perform(post("/api/categorias").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -71,7 +72,7 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveAtualizarCategoria() throws Exception {
-        mockMvc.perform(put("/api/categorias/1")
+        mockMvc.perform(put("/api/categorias/1").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -85,14 +86,14 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveDesativarCategoria() throws Exception {
-        mockMvc.perform(patch("/api/categorias/1/desativar")
+        mockMvc.perform(patch("/api/categorias/1/desativar").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void alunoNaoDeveCadastrarQuestao() throws Exception {
-        mockMvc.perform(post("/api/questoes")
+        mockMvc.perform(post("/api/questoes").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -111,7 +112,7 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveAtualizarQuestao() throws Exception {
-        mockMvc.perform(put("/api/questoes/1")
+        mockMvc.perform(put("/api/questoes/1").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -130,14 +131,14 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveDesativarQuestao() throws Exception {
-        mockMvc.perform(patch("/api/questoes/1/desativar")
+        mockMvc.perform(patch("/api/questoes/1/desativar").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void alunoNaoDeveCadastrarAlternativa() throws Exception {
-        mockMvc.perform(post("/api/questoes/1/alternativas")
+        mockMvc.perform(post("/api/questoes/1/alternativas").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -153,7 +154,7 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveAtualizarAlternativa() throws Exception {
-        mockMvc.perform(put("/api/questoes/1/alternativas/1")
+        mockMvc.perform(put("/api/questoes/1/alternativas/1").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -169,7 +170,7 @@ class AutorizacaoIntegracaoTest {
 
     @Test
     void alunoNaoDeveDesativarAlternativa() throws Exception {
-        mockMvc.perform(patch("/api/questoes/1/alternativas/1/desativar")
+        mockMvc.perform(patch("/api/questoes/1/alternativas/1/desativar").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno))
                 .andExpect(status().isForbidden());
     }

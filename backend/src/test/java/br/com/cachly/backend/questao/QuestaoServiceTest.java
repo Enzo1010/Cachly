@@ -134,8 +134,12 @@ class QuestaoServiceTest {
         when(questaoRepository.findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(1L, pageRequest))
                 .thenReturn(List.of(questao));
                 
-        when(alternativaRepository.findAllByQuestaoIdAndAtivaTrueOrderByOrdemAsc(1L))
+        when(alternativaRepository.findAllByQuestaoIdInAndAtivaTrueOrderByOrdemAsc(List.of(1L)))
                 .thenReturn(List.of(altCorreta, altIncorreta));
+
+        // Ensure we link alternatives to question for groupingBy to work
+        altCorreta.setQuestao(questao);
+        altIncorreta.setQuestao(questao);
 
         List<QuestaoEstudoResponse> resultado = questaoService.listarParaEstudo(1L, 10);
 

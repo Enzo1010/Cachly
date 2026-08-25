@@ -43,14 +43,21 @@ public class TokenService {
 
     public String validarToken(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSecretKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-            return claims.getSubject();
+            return extrairClaims(token).getSubject();
         } catch (JwtException | IllegalArgumentException e) {
             return null;
         }
+    }
+
+    /**
+     * Extrai todas as claims do token em uma única operação de parse.
+     * Lança {@link JwtException} se o token for inválido ou expirado.
+     */
+    public Claims extrairClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
