@@ -1,4 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
@@ -25,6 +26,7 @@ import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 export class PerfilComponent {
   private readonly router = inject(Router);
   protected readonly sessao = inject(SessaoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly edicaoAberta = signal(false);
   protected readonly usuario = this.sessao.usuario;
@@ -72,8 +74,10 @@ export class PerfilComponent {
   }
 
   protected sair(): void {
-    this.sessao.encerrar().subscribe(() => {
-      void this.router.navigateByUrl('/login');
-    });
+    this.sessao.encerrar()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        void this.router.navigateByUrl('/login');
+      });
   }
 }

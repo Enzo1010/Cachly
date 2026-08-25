@@ -23,6 +23,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByEmailIgnoreCase(String email);
     
+    @Query("SELECT u.versaoToken FROM Usuario u WHERE u.id = :id")
+    Optional<Long> findVersaoTokenById(@Param("id") Long id);
+    
     Page<Usuario> findByPerfil(PerfilUsuario perfil, Pageable pageable);
 
     @Query("""

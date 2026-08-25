@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
@@ -29,6 +30,7 @@ export class LoginComponent {
   private readonly router = inject(Router);
   private readonly sessao = inject(SessaoService);
   private readonly notificacoes = inject(MessageService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly senhaVisivel = signal(false);
   protected readonly carregando = signal(false);
@@ -61,7 +63,10 @@ export class LoginComponent {
 
     this.sessao
       .autenticar({ email, senha }, lembrarLogin)
-      .pipe(finalize(() => this.carregando.set(false)))
+      .pipe(
+        finalize(() => this.carregando.set(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: () => void this.router.navigateByUrl('/dashboard'),
         error: (erro: unknown) => this.exibirErroLogin(erro),

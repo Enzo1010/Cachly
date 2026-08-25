@@ -45,12 +45,10 @@ public class GamificacaoEventListener {
         LocalDate hoje = LocalDate.now(zoneId);
         LocalDate ontem = hoje.minusDays(1);
 
-        int updated = usuarioRepository.atualizarOfensivaSeNecessario(usuario.getId(), hoje, ontem);
-        if (updated > 0) {
-            // Atualiza o estado da entidade na memória para manter a consistência se for retornada ao client
+        if (!hoje.equals(usuario.getDataUltimaOfensiva())) {
             if (ontem.equals(usuario.getDataUltimaOfensiva())) {
                 usuario.setDiasOfensiva(usuario.getDiasOfensiva() + 1);
-            } else if (usuario.getDataUltimaOfensiva() == null || usuario.getDataUltimaOfensiva().isBefore(ontem)) {
+            } else {
                 usuario.setDiasOfensiva(1);
             }
             usuario.setDataUltimaOfensiva(hoje);

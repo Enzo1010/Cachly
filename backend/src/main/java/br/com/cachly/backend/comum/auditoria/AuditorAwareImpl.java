@@ -28,8 +28,8 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof Usuario usuario) {
-            return Optional.of(usuario.getId());
+        if (principal instanceof br.com.cachly.backend.seguranca.UsuarioPrincipal usuarioPrincipal) {
+            return Optional.of(usuarioPrincipal.id());
         }
 
         return Optional.empty();

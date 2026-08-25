@@ -129,13 +129,20 @@ public class QuestaoService {
             throw new ConflitoDeDadosException("A questão deve ter exatamente uma alternativa correta");
         }
 
+        List<br.com.cachly.backend.alternativa.Alternativa> atuais = new java.util.ArrayList<>(questao.getAlternativas());
         questao.getAlternativas().clear();
+        
         request.alternativas().forEach(altReq -> {
-            br.com.cachly.backend.alternativa.Alternativa alt = new br.com.cachly.backend.alternativa.Alternativa();
+            br.com.cachly.backend.alternativa.Alternativa alt = atuais.stream()
+                .filter(a -> a.getTexto().equals(altReq.texto())) // Simple match by text since we don't have IDs in request
+                .findFirst()
+                .orElse(new br.com.cachly.backend.alternativa.Alternativa());
+                
             alt.setTexto(altReq.texto().trim());
             alt.setCorreta(altReq.correta());
             alt.setOrdem(altReq.ordem());
             alt.setQuestao(questao);
+            
             questao.getAlternativas().add(alt);
         });
     }

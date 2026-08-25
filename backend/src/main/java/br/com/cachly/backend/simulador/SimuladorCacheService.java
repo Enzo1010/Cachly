@@ -63,10 +63,11 @@ public class SimuladorCacheService {
             int offsetMask = (1 << bitsOffset) - 1;
             int offset = endereco & offsetMask;
 
-            Integer indice = bitsIndice == 0 ? null : (endereco >>> bitsOffset) & ((1 << bitsIndice) - 1);
+            Integer indiceObj = bitsIndice == 0 ? null : (endereco >>> bitsOffset) & ((1 << bitsIndice) - 1);
             int tag = endereco >>> (bitsOffset + bitsIndice);
 
             // Reduz o escopo de busca apenas para as linhas pertencentes ao conjunto calculado (ou todas se for totalmente associativo)
+            int indice = indiceObj != null ? indiceObj : 0;
             List<LinhaCacheInterna> candidatoLinhas = topologiaStrategy.buscarLinhasDoConjunto(linhas, indice, numeroVias);
 
             // Verifica se o bloco correspondente à tag já está carregado na memória cache
@@ -82,13 +83,13 @@ public class SimuladorCacheService {
             StringBuilder explicacao = new StringBuilder();
             explicacao.append(String.format("Passo %d: O processador solicitou o Endereço %d. ", passoNumero, endereco));
             explicacao.append(String.format("Ao decodificar, encontramos Tag = %d", tag));
-            if (indice != null) {
-                explicacao.append(String.format(", Índice = %d", indice));
+            if (indiceObj != null) {
+                explicacao.append(String.format(", Índice = %d", indiceObj));
             }
             explicacao.append(String.format(" e Offset = %d. ", offset));
             
-            if (indice != null) {
-                explicacao.append(String.format("Procurando pela Tag %d dentro do Conjunto %d... ", tag, indice));
+            if (indiceObj != null) {
+                explicacao.append(String.format("Procurando pela Tag %d dentro do Conjunto %d... ", tag, indiceObj));
             } else {
                 explicacao.append(String.format("Procurando pela Tag %d em toda a cache (Totalmente Associativo)... ", tag));
             }
@@ -145,7 +146,7 @@ public class SimuladorCacheService {
                     passoNumero,
                     endereco,
                     tag,
-                    indice,
+                    indiceObj,
                     offset,
                     isHit,
                     blocoSubstituido,
@@ -261,14 +262,14 @@ public class SimuladorCacheService {
         int calcularVias(int totalLinhas, SimulacaoRequest request);
         int calcularConjuntos(int totalLinhas, int vias);
         int calcularBitsIndice(int totalConjuntos);
-        List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias);
+        List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, int indice, int vias);
     }
 
     private class MapeamentoDiretoStrategy implements TopologiaCacheStrategy {
         public int calcularVias(int totalLinhas, SimulacaoRequest request) { return 1; }
         public int calcularConjuntos(int totalLinhas, int vias) { return totalLinhas; }
         public int calcularBitsIndice(int totalConjuntos) { return log2(totalConjuntos); }
-        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias) {
+        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, int indice, int vias) {
             return List.of(linhas.get(indice));
         }
     }
@@ -277,7 +278,7 @@ public class SimuladorCacheService {
         public int calcularVias(int totalLinhas, SimulacaoRequest request) { return totalLinhas; }
         public int calcularConjuntos(int totalLinhas, int vias) { return 1; }
         public int calcularBitsIndice(int totalConjuntos) { return 0; }
-        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias) {
+        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, int indice, int vias) {
             return linhas;
         }
     }
@@ -286,7 +287,7 @@ public class SimuladorCacheService {
         public int calcularVias(int totalLinhas, SimulacaoRequest request) { return request.numeroVias(); }
         public int calcularConjuntos(int totalLinhas, int vias) { return totalLinhas / vias; }
         public int calcularBitsIndice(int totalConjuntos) { return log2(totalConjuntos); }
-        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, Integer indice, int vias) {
+        public List<LinhaCacheInterna> buscarLinhasDoConjunto(List<LinhaCacheInterna> linhas, int indice, int vias) {
             int inicio = indice * vias;
             return linhas.subList(inicio, inicio + vias);
         }

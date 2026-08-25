@@ -97,18 +97,24 @@ export class SimuladorFormComponent {
       }
     });
   }
-  
+
   onSubmit(): void {
     if (this.form.invalid) return;
     
     const val = this.form.getRawValue();
     
     if (val.tamanhoBlocoBytes > val.tamanhoCacheBytes) {
-      alert('O Bloco não pode ser maior que a Cache!');
+      this.notificacoes.add({ severity: 'error', summary: 'Erro de Configuração', detail: 'O Bloco não pode ser maior que a Cache!' });
       return;
     }
     
-    const enderecos = val.enderecosStr
+    const enderecosStr = val.enderecosStr || '';
+    if (!/^\s*\d+(\s*,\s*\d+)*\s*$/.test(enderecosStr)) {
+       this.notificacoes.add({ severity: 'error', summary: 'Formato Inválido', detail: 'Endereços devem ser números separados por vírgula (ex: 0, 4, 8)' });
+       return;
+    }
+    
+    const enderecos = enderecosStr
       .split(',')
       .map((e: string) => parseInt(e.trim(), 10))
       .filter((e: number) => !isNaN(e));

@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
@@ -19,6 +20,7 @@ export class CadastroComponent {
   private readonly router = inject(Router);
   private readonly cadastroAluno = inject(CadastroAlunoService);
   private readonly notificacoes = inject(MessageService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly senhaVisivel = signal(false);
   protected readonly carregando = signal(false);
@@ -55,7 +57,10 @@ export class CadastroComponent {
 
     this.cadastroAluno
       .cadastrar({ nome, email, senha })
-      .pipe(finalize(() => this.carregando.set(false)))
+      .pipe(
+        finalize(() => this.carregando.set(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: () => {
           this.notificacoes.add({
