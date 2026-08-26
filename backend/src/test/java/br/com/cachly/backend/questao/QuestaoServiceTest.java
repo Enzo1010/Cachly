@@ -218,7 +218,8 @@ class QuestaoServiceTest {
                 "  O que é uma porta AND?  ",
                 "  Uma porta que realiza conjunção lógica.  ",
                 DificuldadeQuestao.FACIL,
-                10
+                10,
+                java.util.Collections.emptyList()
         );
     }
 

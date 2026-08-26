@@ -7,7 +7,6 @@ import br.com.cachly.backend.seguranca.TokenService;
 import br.com.cachly.backend.usuario.aluno.AlunoCadastroRequest;
 import br.com.cachly.backend.usuario.aluno.AlunoResponse;
 import br.com.cachly.backend.usuario.autenticacao.AutenticacaoRequest;
-import br.com.cachly.backend.usuario.autenticacao.UsuarioAutenticadoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class UsuarioService {
         return converterParaResponse(usuarioRepository.save(usuario));
     }
 
-    public record AuthResult(UsuarioAutenticadoResponse response, String token) {}
+    public record AuthResult(br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse response, String token) {}
 
     public AuthResult autenticar(AutenticacaoRequest request) {
         Usuario usuario = usuarioRepository
@@ -61,13 +60,14 @@ public class UsuarioService {
 
         String token = tokenService.gerarToken(usuario);
 
-        return new AuthResult(new UsuarioAutenticadoResponse(
+        return new AuthResult(new br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getPerfil(),
                 usuario.getXpTotal(),
                 usuario.getNivel(),
+                usuario.getDiasOfensiva(),
                 xpService.nomeDoNivel(usuario.getNivel())
         ), token);
     }

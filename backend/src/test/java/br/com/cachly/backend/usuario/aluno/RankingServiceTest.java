@@ -35,6 +35,7 @@ class RankingServiceTest {
     @BeforeEach
     void setUp() {
         usuario1 = new RankingProjection() {
+            public Long getId() { return 1L; }
             public String getNome() { return "Aluno Top 1"; }
             public Integer getNivel() { return 10; }
             public Integer getXpSemanal() { return 500; }
@@ -42,6 +43,7 @@ class RankingServiceTest {
         };
         
         usuario2 = new RankingProjection() {
+            public Long getId() { return 2L; }
             public String getNome() { return "Aluno Top 2"; }
             public Integer getNivel() { return 6; }
             public Integer getXpSemanal() { return 300; }

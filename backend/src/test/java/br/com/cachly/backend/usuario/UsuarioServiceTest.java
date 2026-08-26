@@ -7,7 +7,7 @@ import br.com.cachly.backend.seguranca.TokenService;
 import br.com.cachly.backend.usuario.aluno.AlunoCadastroRequest;
 import br.com.cachly.backend.usuario.aluno.AlunoResponse;
 import br.com.cachly.backend.usuario.autenticacao.AutenticacaoRequest;
-import br.com.cachly.backend.usuario.autenticacao.UsuarioAutenticadoResponse;
+import br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -121,20 +121,21 @@ class UsuarioServiceTest {
         when(tokenService.gerarToken(usuario))
                 .thenReturn("falso-jwt-token");
 
-        UsuarioAutenticadoResponse response = usuarioService.autenticar(
+        br.com.cachly.backend.usuario.UsuarioService.AuthResult authResult = usuarioService.autenticar(
                 new AutenticacaoRequest(
                         "  Ana.Silva@Exemplo.com  ",
-                        "senha-segura"
+                        "senha-segura",
+                        false
                 )
         );
 
-        assertEquals(1L, response.id());
-        assertEquals("Ana Silva", response.nome());
-        assertEquals("ana.silva@exemplo.com", response.email());
-        assertEquals(PerfilUsuario.ALUNO, response.perfil());
-        assertEquals(0, response.xpTotal());
-        assertEquals(1, response.nivel());
-        assertEquals("falso-jwt-token", response.token());
+        assertEquals(1L, authResult.response().id());
+        assertEquals("Ana Silva", authResult.response().nome());
+        assertEquals("ana.silva@exemplo.com", authResult.response().email());
+        assertEquals(PerfilUsuario.ALUNO, authResult.response().perfil());
+        assertEquals(0, authResult.response().xpTotal());
+        assertEquals(1, authResult.response().nivel());
+        assertEquals("falso-jwt-token", authResult.token());
     }
 
     @Test
@@ -146,7 +147,8 @@ class UsuarioServiceTest {
                 CredenciaisInvalidasException.class,
                 () -> usuarioService.autenticar(new AutenticacaoRequest(
                         "inexistente@exemplo.com",
-                        "senha-segura"
+                        "senha-segura",
+                        false
                 ))
         );
 
@@ -165,7 +167,8 @@ class UsuarioServiceTest {
                 CredenciaisInvalidasException.class,
                 () -> usuarioService.autenticar(new AutenticacaoRequest(
                         "ana.silva@exemplo.com",
-                        "senha-incorreta"
+                        "senha-incorreta",
+                        false
                 ))
         );
     }
@@ -181,7 +184,8 @@ class UsuarioServiceTest {
                 CredenciaisInvalidasException.class,
                 () -> usuarioService.autenticar(new AutenticacaoRequest(
                         "ana.silva@exemplo.com",
-                        "senha-segura"
+                        "senha-segura",
+                        false
                 ))
         );
 

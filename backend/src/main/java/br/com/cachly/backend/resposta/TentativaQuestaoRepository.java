@@ -15,7 +15,7 @@ public interface TentativaQuestaoRepository extends JpaRepository<TentativaQuest
             JOIN FETCH t.questao
             JOIN FETCH t.alternativa
             WHERE t.usuario.id = :usuarioId
-            ORDER BY t.respondidaEm DESC
+            ORDER BY t.respondidaEm DESC, t.id DESC
             """, countQuery = "SELECT COUNT(t) FROM TentativaQuestao t WHERE t.usuario.id = :usuarioId")
     Page<TentativaQuestao> findByUsuarioIdOrderByRespondidaEmDesc(@Param("usuarioId") Long usuarioId, Pageable pageable);
 

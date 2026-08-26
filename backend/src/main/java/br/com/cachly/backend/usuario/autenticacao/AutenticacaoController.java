@@ -23,7 +23,7 @@ public class AutenticacaoController {
     private final UsuarioLogadoService usuarioLogadoService;
 
     @PostMapping("/login")
-    public UsuarioAutenticadoResponse autenticar(
+    public UsuarioSessaoResponse autenticar(
             @Valid @RequestBody AutenticacaoRequest request,
             HttpServletResponse response
     ) {
@@ -59,17 +59,7 @@ public class AutenticacaoController {
 
     @GetMapping("/me")
     public UsuarioSessaoResponse obterUsuarioAutenticado() {
-        Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
-
-        return new UsuarioSessaoResponse(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getPerfil(),
-                usuario.getXpTotal(),
-                usuario.getNivel(),
-                usuario.getDiasOfensiva()
-        );
+        return usuarioLogadoService.obterSessaoAtual();
     }
 
     @PostMapping("/alterar-senha")

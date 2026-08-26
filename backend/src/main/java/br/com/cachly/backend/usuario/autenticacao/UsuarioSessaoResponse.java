@@ -9,6 +9,7 @@ public record UsuarioSessaoResponse(
         PerfilUsuario perfil,
         Integer xpTotal,
         Integer nivel,
-        Integer diasOfensiva
+        Integer diasOfensiva,
+        String nomeNivel
 ) {
 }

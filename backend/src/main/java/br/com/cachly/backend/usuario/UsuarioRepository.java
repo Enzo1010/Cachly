@@ -33,7 +33,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
                u.xpSemanal AS xpSemanal
         FROM Usuario u
         WHERE u.perfil = :perfil
-        ORDER BY u.xpSemanal DESC
+        ORDER BY u.xpSemanal DESC, u.id ASC
     """)
     Page<br.com.cachly.backend.usuario.aluno.RankingProjection> findRankingSemanal(
         @Param("perfil") PerfilUsuario perfil, 

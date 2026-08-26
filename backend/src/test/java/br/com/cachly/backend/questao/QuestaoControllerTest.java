@@ -179,16 +179,17 @@ class QuestaoControllerTest {
         return new QuestaoResponse(
                 id,
                 2L,
-                "Portas Lógicas",
-                "O que é uma porta AND?",
-                "Uma porta que realiza conjunção lógica.",
+                "Categoria 1",
+                "Enunciado " + id,
+                "Explicacao " + id,
                 DificuldadeQuestao.FACIL,
                 10,
                 ativa,
+                java.util.Collections.emptyList(),
                 agora,
                 agora,
-                null,
-                null
+                0L,
+                0L
         );
     }
 

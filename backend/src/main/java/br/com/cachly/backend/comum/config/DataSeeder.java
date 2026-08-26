@@ -23,6 +23,7 @@ import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class DataSeeder implements CommandLineRunner {
 
     private final UsuarioRepository usuarioRepository;

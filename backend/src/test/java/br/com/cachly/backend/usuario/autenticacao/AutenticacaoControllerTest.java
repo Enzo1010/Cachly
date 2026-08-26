@@ -64,16 +64,16 @@ class AutenticacaoControllerTest {
     @Test
     void deveAutenticarUsuarioComCredenciaisValidas() throws Exception {
         when(usuarioService.autenticar(any(AutenticacaoRequest.class)))
-                .thenReturn(new UsuarioAutenticadoResponse(
+                .thenReturn(new br.com.cachly.backend.usuario.UsuarioService.AuthResult(new br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse(
                         1L,
                         "Ana Silva",
                         "ana.silva@exemplo.com",
-                        PerfilUsuario.ALUNO,
+                        br.com.cachly.backend.usuario.PerfilUsuario.ALUNO,
                         0,
                         1,
-                        "Estagiário",
-                        "falso-jwt-token"
-                ));
+                        0,
+                        "Estagiário"
+                ), "falso-jwt-token"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

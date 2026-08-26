@@ -14,6 +14,21 @@ public class UsuarioLogadoService {
 
     private final UsuarioRepository usuarioRepository;
     private final HttpServletRequest request;
+    private final br.com.cachly.backend.resposta.XpService xpService;
+
+    public br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse obterSessaoAtual() {
+        Usuario usuario = obterUsuarioAtual();
+        return new br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getPerfil(),
+                usuario.getXpTotal(),
+                usuario.getNivel(),
+                usuario.getDiasOfensiva(),
+                xpService.nomeDoNivel(usuario.getNivel())
+        );
+    }
 
     public Usuario obterUsuarioAtual() {
         // Caching por request para não fazer N queries se chamado várias vezes
