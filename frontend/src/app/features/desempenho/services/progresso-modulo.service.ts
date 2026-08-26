@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { DesempenhoCategoriaResponse } from '../models/desempenho.model';
+import { DesempenhoCategoriaResponse } from '../../../shared/models/desempenho.model';
 import { ProgressoModulo, StatusTopico, TopicoModulo } from '../models/progresso-modulo.model';
 
 // TODO: o backend ainda não tem o conceito de "tópicos" dentro de uma categoria

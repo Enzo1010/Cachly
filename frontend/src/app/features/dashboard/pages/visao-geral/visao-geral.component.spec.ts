@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
-import { DashboardService } from '../../services/dashboard.service';
+import { DesempenhoApiService } from '../../../../shared/services/desempenho-api.service';
 import { VisaoGeralComponent } from './visao-geral.component';
 
 describe('VisaoGeralComponent', () => {
@@ -29,7 +29,7 @@ describe('VisaoGeralComponent', () => {
           },
         },
         {
-          provide: DashboardService,
+          provide: DesempenhoApiService,
           useValue: {
             obterDesempenho: () => of({
               totalTentativas: 10,

@@ -1,9 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { DesempenhoCategoriaResponse } from '../../models/desempenho.model';
+import { DesempenhoCategoriaResponse } from '../../../../shared/models/desempenho.model';
 import { StatusTopico } from '../../models/progresso-modulo.model';
-import { DesempenhoService } from '../../services/desempenho.service';
+import { DesempenhoApiService } from '../../../../shared/services/desempenho-api.service';
 import { ProgressoModuloService } from '../../services/progresso-modulo.service';
 
 type NivelDesempenho = 'alta' | 'media' | 'baixa';
@@ -14,10 +14,10 @@ type NivelDesempenho = 'alta' | 'media' | 'baixa';
   styleUrl: './desempenho.component.scss',
 })
 export class DesempenhoComponent {
-  private readonly desempenhoService = inject(DesempenhoService);
+  private readonly desempenhoApi = inject(DesempenhoApiService);
   private readonly progressoModuloService = inject(ProgressoModuloService);
 
-  protected readonly desempenho = toSignal(this.desempenhoService.obterDesempenho());
+  protected readonly desempenho = toSignal(this.desempenhoApi.obterDesempenho());
   protected readonly categorias = computed(() => this.desempenho()?.estatisticasPorCategoria ?? []);
 
   private readonly categoriaMaisFraca = computed<DesempenhoCategoriaResponse | null>(() => {

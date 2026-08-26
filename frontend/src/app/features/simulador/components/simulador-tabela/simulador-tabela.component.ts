@@ -1,5 +1,4 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { EstadoLinhaCacheResponse } from '../../models/simulador.model';
 
 interface ConjuntoCache {
@@ -9,8 +8,6 @@ interface ConjuntoCache {
 
 @Component({
   selector: 'app-simulador-tabela',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './simulador-tabela.component.html',
   styleUrls: ['./simulador-tabela.component.scss']
 })

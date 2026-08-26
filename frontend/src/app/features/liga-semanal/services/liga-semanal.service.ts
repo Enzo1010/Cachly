@@ -9,6 +9,6 @@ export class LigaSemanalService {
   private readonly http = inject(HttpClient);
 
   obterRanking(): Observable<PaginaRanking> {
-    return this.http.get<PaginaRanking>('/api/ranking', { params: { size: 5 } });
+    return this.http.get<PaginaRanking>('/api/ranking');
   }
 }

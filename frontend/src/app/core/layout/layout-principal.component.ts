@@ -38,7 +38,6 @@ export class LayoutPrincipalComponent {
 
   protected readonly navegacaoPrincipal: readonly ItemNavegacao[] = [
     { icone: 'pi pi-home', rotulo: 'Início', rota: '/dashboard' },
-    { icone: 'pi pi-book', rotulo: 'Estudar', rota: '/estudar' },
     { icone: 'pi pi-server', rotulo: 'Simulador', rota: '/simulador' },
     { icone: 'pi pi-chart-pie', rotulo: 'Desempenho', rota: '/desempenho' },
     { icone: 'pi pi-trophy', rotulo: 'Liga Semanal', rota: '/liga-semanal' },
@@ -70,9 +69,11 @@ export class LayoutPrincipalComponent {
 
   protected sair(): void {
     this.fecharMenu();
-    this.sessao.encerrar().subscribe(() => {
-      void this.router.navigateByUrl('/login');
-    });
+    this.sessao.encerrar()
+      .pipe(takeUntilDestroyed(this.destruir))
+      .subscribe(() => {
+        void this.router.navigateByUrl('/login');
+      });
   }
 
   private atualizarTituloPagina(): void {

@@ -4,54 +4,54 @@
 
 :host {
   display: block;
-}
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
 
-.field-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+  .field-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
 
-// Faz os SelectButtons ocuparem toda a largura
-::ng-deep .p-selectbutton {
-  display: flex;
-  width: 100%;
-}
+  // Faz os SelectButtons ocuparem toda a largura
+  .p-selectbutton {
+    display: flex;
+    width: 100%;
+  }
 
-::ng-deep .p-selectbutton .p-button {
-  flex: 1;
-  justify-content: center;
-  font-size: 0.73rem;
-  font-weight: 700;
-  padding: 0.45rem 0.1rem;
-  white-space: nowrap;
-}
+  .p-selectbutton .p-button {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.73rem;
+    font-weight: 700;
+    padding: 0.45rem 0.1rem;
+    white-space: nowrap;
+  }
 
-// Input de endereços
-::ng-deep .p-inputtext {
-  width: 100%;
-  font-size: 0.9rem;
-}
+  // Input de endereços
+  .p-inputtext {
+    width: 100%;
+    font-size: 0.9rem;
+  }
 
-.field-hint {
-  font-size: 0.7rem;
-  color: #94a3b8;
-  line-height: 1.4;
+  .field-hint {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    line-height: 1.4;
+  }
 }

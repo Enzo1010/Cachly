@@ -1,10 +1,9 @@
 import { Routes } from '@angular/router';
-import { SimuladorPageComponent } from './pages/simulador/simulador.component';
 
 export const ROTAS_SIMULADOR: Routes = [
   {
     path: '',
-    component: SimuladorPageComponent,
+    loadComponent: () => import('./pages/simulador/simulador.component').then(c => c.SimuladorPageComponent),
     title: 'Simulador de Cache | Cachly',
     data: { titulo: 'Simulador' }
   },

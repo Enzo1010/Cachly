@@ -3,9 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonDirective } from 'primeng/button';
 import { ChartModule } from 'primeng/chart';
+import type { ChartOptions } from 'chart.js';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
-import { DashboardService } from '../../services/dashboard.service';
+import { DesempenhoApiService } from '../../../../shared/services/desempenho-api.service';
 
 interface IndicadorVisaoGeral {
   readonly destaque: string;
@@ -22,10 +23,10 @@ interface IndicadorVisaoGeral {
 })
 export class VisaoGeralComponent {
   protected readonly sessao = inject(SessaoService);
-  private readonly dashboardService = inject(DashboardService);
+  private readonly desempenhoApi = inject(DesempenhoApiService);
   private readonly router = inject(Router);
 
-  protected readonly desempenho = toSignal(this.dashboardService.obterDesempenho());
+  protected readonly desempenho = toSignal(this.desempenhoApi.obterDesempenho());
 
   protected readonly indicadores = computed<readonly IndicadorVisaoGeral[]>(() => {
     const d = this.desempenho();
@@ -82,7 +83,7 @@ export class VisaoGeralComponent {
     };
   });
 
-  protected readonly opcoesGraficoRadar = {
+  protected readonly opcoesGraficoRadar: ChartOptions<'radar'> = {
     plugins: {
       legend: {
         labels: {

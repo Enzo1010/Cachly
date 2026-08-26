@@ -1,34 +1,39 @@
 <div class="cache-grid">
-  <div class="conjunto" *ngFor="let conjunto of conjuntos">
-    <!-- Label do Conjunto apenas quando há mais de 1 -->
-    <div class="conjunto__label" *ngIf="conjuntos.length > 1">
-      Conjunto {{ conjunto.id }}
-    </div>
+  @for (conjunto of conjuntos; track conjunto.id) {
+    <div class="conjunto">
+      <!-- Label do Conjunto apenas quando há mais de 1 -->
+      @if (conjuntos.length > 1) {
+        <div class="conjunto__label">
+          Conjunto {{ conjunto.id }}
+        </div>
+      }
 
-    <div class="conjunto__linhas">
-      <div *ngFor="let linha of conjunto.linhas"
-           class="slot"
-           [class.slot--vazio]="!linha.valida"
-           [class.slot--ocupado]="linha.valida && !isLinhaAlterada(linha.indiceLinha)"
-           [class.slot--novo]="linha.valida && isLinhaAlterada(linha.indiceLinha) && !isHit"
-           [class.slot--hit]="linha.valida && isLinhaAlterada(linha.indiceLinha) && isHit">
+      <div class="conjunto__linhas">
+        @for (linha of conjunto.linhas; track linha.indiceLinha) {
+          <div class="slot"
+               [class.slot--vazio]="!linha.valida"
+               [class.slot--ocupado]="linha.valida && !isLinhaAlterada(linha.indiceLinha)"
+               [class.slot--novo]="linha.valida && isLinhaAlterada(linha.indiceLinha) && !isHit"
+               [class.slot--hit]="linha.valida && isLinhaAlterada(linha.indiceLinha) && isHit">
 
-        <span class="slot__linha-id">Linha {{ linha.indiceLinha }}</span>
+            <span class="slot__linha-id">Linha {{ linha.indiceLinha }}</span>
 
-        <ng-container *ngIf="linha.valida">
-          <span class="slot__tag-label">Tag</span>
-          <span class="slot__tag-value">{{ linha.tag }}</span>
-        </ng-container>
+            @if (linha.valida) {
+              <span class="slot__tag-label">Tag</span>
+              <span class="slot__tag-value">{{ linha.tag }}</span>
+            } @else {
+              <span class="slot__tag-value">—</span>
+            }
 
-        <ng-container *ngIf="!linha.valida">
-          <span class="slot__tag-value">—</span>
-        </ng-container>
-
-        <!-- Badge "NEW" ou "HIT" -->
-        <span *ngIf="isLinhaAlterada(linha.indiceLinha) && linha.valida" class="slot__badge">
-          {{ isHit ? 'HIT' : 'NEW' }}
-        </span>
+            <!-- Badge "NEW" ou "HIT" -->
+            @if (isLinhaAlterada(linha.indiceLinha) && linha.valida) {
+              <span class="slot__badge">
+                {{ isHit ? 'HIT' : 'NEW' }}
+              </span>
+            }
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 </div>

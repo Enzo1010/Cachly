@@ -1,15 +1,26 @@
 <section class="liga-semanal">
   <article class="cartao-liga" aria-labelledby="titulo-liga">
     <span class="cartao-liga__selo" aria-hidden="true"><i class="pi pi-star-fill"></i></span>
-    <h2 id="titulo-liga">{{ nomeLiga }}</h2>
+    <h2 id="titulo-liga">{{ nomeLiga() }}</h2>
     <p class="cartao-liga__prazo">
       Termina em: <strong>{{ prazoRestante().dias }} dias e {{ prazoRestante().horas }} horas</strong>
     </p>
     <p class="cartao-liga__regra">
-      Fique entre os {{ vagasParaAvancar }} primeiros para avançar para a {{ proximaLiga }}.
+      Fique entre os {{ vagasParaAvancar }} primeiros para avançar para a {{ proximaLiga() }}.
     </p>
   </article>
 
+@if (carregando()) {
+  <article class="tabela-ranking">
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+      <div class="linha-ranking">
+        <p-skeleton width="2rem" height="1.5rem" />
+        <p-skeleton width="60%" height="1rem" />
+        <p-skeleton width="4rem" height="1rem" />
+      </div>
+    }
+  </article>
+} @else {
   <article class="tabela-ranking" aria-label="Ranking semanal de XP">
     <div class="linha-ranking linha-ranking--cabecalho" role="presentation">
       <span class="coluna-posicao">Pos</span>
@@ -45,4 +56,5 @@
       <p class="tabela-ranking__vazio">Ainda não há alunos no ranking desta semana.</p>
     }
   </article>
+}
 </section>

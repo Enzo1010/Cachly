@@ -1,3 +1,16 @@
+@if (carregando()) {
+  <section class="quadro-medalhas">
+    <div class="grade-conquistas">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="cartao-conquista cartao-conquista--neutro" style="padding: 2rem 1.5rem;">
+          <p-skeleton shape="circle" size="4.5rem" />
+          <p-skeleton height="1.2rem" width="60%" styleClass="mt-3" />
+          <p-skeleton height="0.9rem" width="80%" styleClass="mt-2" />
+        </div>
+      }
+    </div>
+  </section>
+} @else {
 <section class="quadro-medalhas" aria-labelledby="titulo-quadro">
   <header class="quadro-medalhas__cabecalho">
     <h2 id="titulo-quadro"><i class="pi pi-verified" aria-hidden="true"></i>Quadro de Medalhas</h2>
@@ -27,3 +40,4 @@
     }
   </div>
 </section>
+}

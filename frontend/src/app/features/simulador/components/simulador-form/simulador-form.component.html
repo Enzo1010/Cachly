@@ -1,11 +1,12 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
   <div class="field">
-    <label class="field-label">
+    <label class="field-label" id="lbl-tamanho-cache">
       <i class="pi pi-database"></i> Tamanho da Cache
     </label>
     <p-selectButton
       formControlName="tamanhoCacheBytes"
+      aria-labelledby="lbl-tamanho-cache"
       [options]="tamanhoOptions"
       optionLabel="label"
       optionValue="value">
@@ -13,11 +14,12 @@
   </div>
 
   <div class="field">
-    <label class="field-label">
+    <label class="field-label" id="lbl-tamanho-bloco">
       <i class="pi pi-box"></i> Tamanho do Bloco
     </label>
     <p-selectButton
       formControlName="tamanhoBlocoBytes"
+      aria-labelledby="lbl-tamanho-bloco"
       [options]="blocoOptions"
       optionLabel="label"
       optionValue="value">
@@ -25,47 +27,55 @@
   </div>
 
   <div class="field">
-    <label class="field-label">
+    <label class="field-label" id="lbl-mapeamento">
       <i class="pi pi-sitemap"></i> Mapeamento
     </label>
     <p-selectButton
       formControlName="mapeamento"
+      aria-labelledby="lbl-mapeamento"
       [options]="mapeamentoOptions"
       optionLabel="label"
       optionValue="value">
     </p-selectButton>
   </div>
 
-  <div class="field" *ngIf="form.get('mapeamento')?.value === 'CONJUNTO_ASSOCIATIVO'">
-    <label class="field-label">
-      <i class="pi pi-arrows-alt"></i> Número de Vias
-    </label>
-    <p-selectButton
-      formControlName="numeroVias"
-      [options]="viasOptions"
-      optionLabel="label"
-      optionValue="value">
-    </p-selectButton>
-  </div>
+  @if (form.controls.mapeamento.value === 'CONJUNTO_ASSOCIATIVO') {
+    <div class="field">
+      <label class="field-label" id="lbl-numero-vias">
+        <i class="pi pi-arrows-alt"></i> Número de Vias
+      </label>
+      <p-selectButton
+        formControlName="numeroVias"
+        aria-labelledby="lbl-numero-vias"
+        [options]="viasOptions"
+        optionLabel="label"
+        optionValue="value">
+      </p-selectButton>
+    </div>
+  }
 
-  <div class="field" *ngIf="form.get('mapeamento')?.value !== 'DIRETO'">
-    <label class="field-label">
-      <i class="pi pi-sync"></i> Política de Substituição
-    </label>
-    <p-selectButton
-      formControlName="substituicao"
-      [options]="politicaOptions"
-      optionLabel="label"
-      optionValue="value">
-    </p-selectButton>
-  </div>
+  @if (form.controls.mapeamento.value !== 'DIRETO') {
+    <div class="field">
+      <label class="field-label" id="lbl-substituicao">
+        <i class="pi pi-sync"></i> Política de Substituição
+      </label>
+      <p-selectButton
+        formControlName="substituicao"
+        aria-labelledby="lbl-substituicao"
+        [options]="politicaOptions"
+        optionLabel="label"
+        optionValue="value">
+      </p-selectButton>
+    </div>
+  }
 
   <div class="field">
-    <label class="field-label">
+    <label class="field-label" for="enderecosStr">
       <i class="pi pi-list-check"></i> Endereços de Acesso
     </label>
     <input
       pInputText
+      id="enderecosStr"
       formControlName="enderecosStr"
       placeholder="Ex: 0, 4, 8, 12, 0, 4" />
     <span class="field-hint">Separados por vírgula — requisições decimais da CPU.</span>

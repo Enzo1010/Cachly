@@ -1,20 +1,22 @@
 <div class="sim-page">
 
   <!-- ======================== LAYOUT 2 COLUNAS ======================== -->
-  <div class="sim-layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <div class="sim-layout" [class.sidebar-collapsed]="state.sidebarCollapsed()">
 
     <!-- Sidebar de Configuração -->
-    <aside class="sim-sidebar" [class.collapsed]="sidebarCollapsed()">
+    <aside class="sim-sidebar" [class.collapsed]="state.sidebarCollapsed()">
       <div class="sidebar-header">
         <h3><i class="pi pi-microchip" style="margin-right: 0.5rem;"></i>Hardware</h3>
-        <p-button icon="pi pi-bars" (onClick)="toggleSidebar()" styleClass="p-button-rounded p-button-text p-button-plain p-button-sm"></p-button>
+        <p-button icon="pi pi-bars" (onClick)="state.toggleSidebar()" styleClass="p-button-rounded p-button-text p-button-plain p-button-sm"></p-button>
       </div>
       
       <div class="sidebar-content">
-        <app-simulador-form [loading]="loading()" (simular)="onSimular($event)"></app-simulador-form>
-        <div *ngIf="error()" style="margin-top: 1rem;">
-          <p-message severity="error" [text]="error()!"></p-message>
-        </div>
+        <app-simulador-form [loading]="state.loading()" (simular)="state.onSimular($event)"></app-simulador-form>
+        @if (state.error()) {
+          <div style="margin-top: 1rem;">
+            <p-message severity="error" [text]="state.error()!"></p-message>
+          </div>
+        }
       </div>
     </aside>
 
@@ -22,46 +24,50 @@
     <div class="sim-main">
 
       <!-- Estado de Loading -->
-      <div *ngIf="loading()" class="sim-loading">
-        <p-progressSpinner styleClass="w-4rem h-4rem"></p-progressSpinner>
-        <span>Calculando simulação...</span>
-      </div>
+      @if (state.loading()) {
+        <div class="sim-loading">
+          <p-progressSpinner styleClass="w-4rem h-4rem"></p-progressSpinner>
+          <span>Calculando simulação...</span>
+        </div>
+      }
 
       <!-- Estado Vazio -->
-      <div *ngIf="!loading() && !simulacao()" class="sim-empty">
-        <i class="pi pi-server sim-empty__icon"></i>
-        <h2 class="sim-empty__title">Aguardando Configuração</h2>
-        <p class="sim-empty__desc">
-          Configure o hardware ao lado (tamanho de cache, bloco e tipo de mapeamento) e inicie a simulação para visualizar o comportamento dos acessos à memória.
-        </p>
-      </div>
+      @if (!state.loading() && !state.simulacao()) {
+        <div class="sim-empty">
+          <i class="pi pi-server sim-empty__icon"></i>
+          <h2 class="sim-empty__title">Aguardando Configuração</h2>
+          <p class="sim-empty__desc">
+            Configure o hardware ao lado (tamanho de cache, bloco e tipo de mapeamento) e inicie a simulação para visualizar o comportamento dos acessos à memória.
+          </p>
+        </div>
+      }
 
       <!-- ============== SIMULAÇÃO ATIVA ============== -->
-      <ng-container *ngIf="simulacao() && passoAtual()">
+      @if (state.simulacao() && state.passoAtual()) {
 
         <!-- Barra de Controle -->
         <div class="sim-control-bar sim-fadein">
           <div class="step-info">
             <span class="step-badge">
-              Acesso {{ passoAtualIndex() + 1 }} / {{ simulacao()?.totalAcessos }}
+              Acesso {{ state.passoAtualIndex() + 1 }} / {{ state.simulacao()?.totalAcessos }}
             </span>
-            <span class="stat-hit">{{ simulacao()?.totalHits }} Hits</span>
-            <span class="stat-miss">{{ simulacao()?.totalMisses }} Misses</span>
+            <span class="stat-hit">{{ state.simulacao()?.totalHits }} Hits</span>
+            <span class="stat-miss">{{ state.simulacao()?.totalMisses }} Misses</span>
           </div>
           <div class="control-buttons">
             <p-button
               icon="pi pi-angle-left"
               label="Anterior"
-              [disabled]="isFirstStep()"
-              (onClick)="passoAnterior()"
+              [disabled]="state.isFirstStep()"
+              (onClick)="state.passoAnterior()"
               styleClass="p-button-outlined p-button-sm">
             </p-button>
             <p-button
               icon="pi pi-angle-right"
               label="Próximo"
               iconPos="right"
-              [disabled]="isLastStep()"
-              (onClick)="proximoPasso()"
+              [disabled]="state.isLastStep()"
+              (onClick)="state.proximoPasso()"
               styleClass="p-button-sm">
             </p-button>
           </div>
@@ -75,14 +81,14 @@
             <p-chart
               type="doughnut"
               [data]="doughnutData()"
-              [options]="chartOptions"
+              [options]="opcoesGraficoRosca"
               height="160px"
               width="160px">
             </p-chart>
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
-              <span style="color: #22c55e; font-weight: 700;">{{ simulacao()?.taxaHit }}% Hit</span>
+              <span style="color: #22c55e; font-weight: 700;">{{ state.simulacao()?.taxaHit }}% Hit</span>
               &nbsp;/&nbsp;
-              <span style="color: #ef4444; font-weight: 700;">{{ simulacao()?.taxaMiss }}% Miss</span>
+              <span style="color: #ef4444; font-weight: 700;">{{ state.simulacao()?.taxaMiss }}% Miss</span>
             </div>
           </div>
 
@@ -92,7 +98,7 @@
             <p-chart
               type="line"
               [data]="lineData()"
-              [options]="lineChartOptions"
+              [options]="opcoesGraficoLinha"
               height="160px">
             </p-chart>
           </div>
@@ -102,7 +108,7 @@
         <div class="sim-resolution sim-fadein">
 
           <!-- Decoração de fundo -->
-          <div class="sim-resolution__deco">{{ passoAtual()?.hit ? 'H' : 'M' }}</div>
+          <div class="sim-resolution__deco">{{ state.passoAtual()?.hit ? 'H' : 'M' }}</div>
 
           <!-- Grade principal -->
           <div class="sim-resolution__grid">
@@ -110,26 +116,28 @@
             <!-- Endereço -->
             <div class="sim-resolution__address">
               <div class="label">Requisição da CPU</div>
-              <div class="value">{{ passoAtual()?.endereco }}</div>
+              <div class="value">{{ state.passoAtual()?.endereco }}</div>
               <div class="value-sub">endereço decimal</div>
             </div>
 
             <!-- Breakdown Binário -->
             <div class="sim-resolution__bits">
-              <div class="bits-label">Decodificação Binária ({{ totalBits() }} bits)</div>
+              <div class="bits-label">Decodificação Binária ({{ state.totalBits() }} bits)</div>
               <div class="bits-row">
                 <div class="bit-group bit-group--tag" pTooltip="Tag: identifica o bloco na cache" tooltipPosition="top">
-                  <div class="bit-value">{{ binarioBreakdown()?.tag }}</div>
+                  <div class="bit-value">{{ state.binarioBreakdown()?.tag }}</div>
                   <div class="bit-bar"></div>
                   <div class="bit-name">Tag</div>
                 </div>
-                <div *ngIf="(simulacao()?.bitsIndice ?? 0) > 0" class="bit-group bit-group--idx" pTooltip="Índice: aponta o conjunto/linha" tooltipPosition="top">
-                  <div class="bit-value">{{ binarioBreakdown()?.indice }}</div>
-                  <div class="bit-bar"></div>
-                  <div class="bit-name">Índice</div>
-                </div>
+                @if ((state.simulacao()?.bitsIndice ?? 0) > 0) {
+                  <div class="bit-group bit-group--idx" pTooltip="Índice: aponta o conjunto/linha" tooltipPosition="top">
+                    <div class="bit-value">{{ state.binarioBreakdown()?.indice }}</div>
+                    <div class="bit-bar"></div>
+                    <div class="bit-name">Índice</div>
+                  </div>
+                }
                 <div class="bit-group bit-group--off" pTooltip="Offset: posição dentro do bloco" tooltipPosition="top">
-                  <div class="bit-value">{{ binarioBreakdown()?.offset }}</div>
+                  <div class="bit-value">{{ state.binarioBreakdown()?.offset }}</div>
                   <div class="bit-bar"></div>
                   <div class="bit-name">Offset</div>
                 </div>
@@ -138,13 +146,13 @@
 
             <!-- Badge HIT / MISS -->
             <div class="sim-resolution__result"
-                 [class.sim-resolution__result--hit]="passoAtual()?.hit"
-                 [class.sim-resolution__result--miss]="!passoAtual()?.hit">
+                 [class.sim-resolution__result--hit]="state.passoAtual()?.hit"
+                 [class.sim-resolution__result--miss]="!state.passoAtual()?.hit">
               <i class="pi result-icon"
-                 [class.pi-check-circle]="passoAtual()?.hit"
-                 [class.pi-times-circle]="!passoAtual()?.hit">
+                 [class.pi-check-circle]="state.passoAtual()?.hit"
+                 [class.pi-times-circle]="!state.passoAtual()?.hit">
               </i>
-              <div class="result-text">{{ passoAtual()?.hit ? 'HIT' : 'MISS' }}</div>
+              <div class="result-text">{{ state.passoAtual()?.hit ? 'HIT' : 'MISS' }}</div>
             </div>
 
           </div>
@@ -152,7 +160,7 @@
           <!-- Explicação Didática -->
           <div class="sim-resolution__explain">
             <i class="pi pi-lightbulb explain-icon"></i>
-            <span>{{ passoAtual()?.explicacao }}</span>
+            <span>{{ state.passoAtual()?.explicacao }}</span>
           </div>
         </div>
 
@@ -163,13 +171,13 @@
             <h4>Estado Atual da Memória Cache</h4>
           </div>
           <app-simulador-tabela
-            [estadoCache]="estadoCacheAtual()"
-            [blocoAlterado]="passoAtual()!.blocoSubstituido"
-            [isHit]="passoAtual()!.hit">
+            [estadoCache]="state.estadoCacheAtual()"
+            [blocoAlterado]="state.passoAtual()!.blocoSubstituido"
+            [isHit]="state.passoAtual()!.hit">
           </app-simulador-tabela>
         </div>
 
-      </ng-container>
+      }
 
     </div>
   </div>

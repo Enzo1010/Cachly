@@ -1,6 +1,8 @@
 import { Component, computed, inject, signal, OnInit, DestroyRef } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MessageService } from 'primeng/api';
+import { SkeletonModule } from 'primeng/skeleton';
+import { PaginaRanking } from '../../models/ranking.model';
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 import { LigaSemanalService } from '../../services/liga-semanal.service';
 
@@ -11,6 +13,7 @@ interface PrazoRestante {
 
 @Component({
   selector: 'app-liga-semanal',
+  imports: [SkeletonModule],
   templateUrl: './liga-semanal.component.html',
   styleUrl: './liga-semanal.component.scss',
 })
@@ -18,14 +21,17 @@ export class LigaSemanalComponent implements OnInit {
   protected readonly sessao = inject(SessaoService);
   private readonly ligaSemanalService = inject(LigaSemanalService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly messageService = inject(MessageService);
 
-  protected readonly ranking = toSignal(this.ligaSemanalService.obterRanking(), {
-    initialValue: null,
-  });
+  protected readonly ranking = signal<PaginaRanking | null>(null);
   protected readonly alunos = computed(() => this.ranking()?.content ?? []);
+  protected readonly carregando = signal(true);
 
-  protected readonly nomeLiga = 'Liga Prata';
-  protected readonly proximaLiga = 'Liga Ouro';
+  protected readonly nomeLiga = computed(() => this.sessao.usuario()?.nomeNivel ?? 'Liga Iniciante');
+  protected readonly proximaLiga = computed(() => {
+    const nivelAtual = this.sessao.usuario()?.nivel ?? 1;
+    return `Nível ${nivelAtual + 1}`;
+  });
   protected readonly vagasParaAvancar = 5;
   protected readonly prazoRestante = signal<PrazoRestante>(this.calcularPrazoRestante());
 
@@ -37,6 +43,23 @@ export class LigaSemanalComponent implements OnInit {
 
     // Garante que o timer seja limpo quando o componente for destruído (evita vazamento de memória)
     this.destroyRef.onDestroy(() => clearInterval(intervalId));
+
+    this.ligaSemanalService.obterRanking()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+      next: (dados) => {
+        this.ranking.set(dados);
+        this.carregando.set(false);
+      },
+      error: () => {
+        this.carregando.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Falha ao carregar ranking.',
+        });
+      },
+    });
   }
 
   protected ehUsuarioAtual(nome: string): boolean {

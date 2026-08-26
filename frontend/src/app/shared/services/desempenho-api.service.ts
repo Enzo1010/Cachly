@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { DesempenhoResponse } from '../models/desempenho.model';
 
 @Injectable({ providedIn: 'root' })
-export class DashboardService {
+export class DesempenhoApiService {
   private readonly http = inject(HttpClient);
 
   obterDesempenho(): Observable<DesempenhoResponse> {
