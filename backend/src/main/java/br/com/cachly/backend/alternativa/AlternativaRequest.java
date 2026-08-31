@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record AlternativaRequest(
+        Long id,
+
         @NotBlank(message = "O texto da alternativa é obrigatório")
         String texto,
 

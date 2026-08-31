@@ -33,6 +33,9 @@ class AutenticacaoControllerTest {
     @MockitoBean
     private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioLogadoService usuarioLogadoService;
+
     @Test
     void deveRetornarUsuarioAutenticado() throws Exception {
         Usuario usuarioMock = new Usuario();
@@ -48,6 +51,8 @@ class AutenticacaoControllerTest {
         );
         org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(auth);
         when(usuarioRepository.findByEmailIgnoreCase("ana.silva@exemplo.com")).thenReturn(java.util.Optional.of(usuarioMock));
+        when(usuarioLogadoService.obterSessaoAtual()).thenReturn(new br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse(
+                        1L, "Ana Silva", "ana.silva@exemplo.com", br.com.cachly.backend.usuario.PerfilUsuario.ALUNO, 0, 1, 0, "Estagiário"));
 
         mockMvc.perform(get("/api/auth/me"))
                 .andExpect(status().isOk())

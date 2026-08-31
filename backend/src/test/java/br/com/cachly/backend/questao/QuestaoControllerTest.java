@@ -96,7 +96,7 @@ class QuestaoControllerTest {
         mockMvc.perform(get("/api/questoes/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.enunciado").value("O que é uma porta AND?"));
+                .andExpect(jsonPath("$.enunciado").value("Enunciado 1"));
     }
 
     @Test
@@ -109,7 +109,7 @@ class QuestaoControllerTest {
                         .content(criarJsonValido()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.categoriaNome").value("Portas Lógicas"));
+                .andExpect(jsonPath("$.categoriaNome").value("Categoria 1"));
     }
 
     @Test
@@ -200,7 +200,11 @@ class QuestaoControllerTest {
                   "enunciado": "O que é uma porta AND?",
                   "explicacao": "Uma porta que realiza conjunção lógica.",
                   "dificuldade": "FACIL",
-                  "xpBase": 10
+                  "xpBase": 10,
+                  "alternativas": [
+                    { "id": null, "texto": "Alt 1", "correta": true, "ordem": 1 },
+                    { "id": null, "texto": "Alt 2", "correta": false, "ordem": 2 }
+                  ]
                 }
                 """;
     }

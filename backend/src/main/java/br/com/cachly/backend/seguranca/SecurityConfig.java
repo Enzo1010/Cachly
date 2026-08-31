@@ -13,8 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,33 +32,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        /*
-         * CSRF — defense-in-depth via Double Submit Cookie pattern.
-         *
-         * O Spring gera o cookie XSRF-TOKEN (não-HttpOnly) a cada requisição.
-         * O Angular lê esse cookie e o reenvia automaticamente no header
-         * X-XSRF-TOKEN em todo POST/PUT/PATCH/DELETE (comportamento nativo do
-         * HttpClient com withXsrfConfiguration).
-         *
-         * Rotas isentas: login e logout são POSTs públicos realizados antes
-         * de o cliente possuir o cookie XSRF-TOKEN.
-         */
-        CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
 
         return http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(csrfTokenRepository)
-                        .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers(
-                                "/api/auth/login",
-                                "/api/auth/logout",
-                                "/api/alunos",
-                                "/api/simulador/executar",
-                                "/v3/api-docs", "/v3/api-docs/**",
-                                "/swagger-ui/**", "/swagger-ui.html"
-                        )
-                )
+                /*
+                 * CSRF desabilitado — a proteção contra CSRF é fornecida pelo
+                 * atributo SameSite=Strict no cookie JWT (definido em AutenticacaoController).
+                 *
+                 * SameSite=Strict impede que o navegador envie o cookie em qualquer
+                 * requisição cross-site, tornando ataques CSRF inviáveis.
+                 * Isso elimina a necessidade do padrão Double Submit Cookie do Spring,
+                 * que é complexo de manter com SPAs + sessões stateless.
+                 */
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {

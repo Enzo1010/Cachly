@@ -22,6 +22,18 @@ export class SessaoService {
     );
   }
 
+  atualizarAposResposta(xpTotal: number, nivel: number, nomeNivel: string): void {
+    const atual = this.usuarioAtual();
+    if (atual) {
+      this.usuarioAtual.set({
+        ...atual,
+        xpTotal,
+        nivel,
+        nomeNivel
+      });
+    }
+  }
+
   autenticar(request: AutenticacaoRequest, lembrarLogin: boolean): Observable<UsuarioAutenticado> {
     const payload = { ...request, lembrarLogin };
     return this.http

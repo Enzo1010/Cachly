@@ -23,7 +23,7 @@ public class RespostaService {
     @Transactional
     public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuario) {
         if (!Boolean.TRUE.equals(usuario.getAtivo())) {
-            throw new ConflitoDeDadosException("Usuário inativo não pode responder questões");
+            throw new br.com.cachly.backend.comum.erro.RegraNegocioException("Usuário inativo não pode responder questões");
         }
 
         Questao questao = questaoRepository.findByIdAndAtivaTrue(questaoId)
@@ -63,9 +63,16 @@ public class RespostaService {
 
         eventPublisher.publishEvent(new QuestaoRespondidaEvent(usuario, questao, correta, primeiraVezCorreta));
 
+        Long alternativaCorretaId = questao.getAlternativas().stream()
+                .filter(a -> Boolean.TRUE.equals(a.getCorreta()))
+                .map(Alternativa::getId)
+                .findFirst()
+                .orElse(null);
+
         return new RespostaResponse(
                 salva.getId(),
                 correta,
+                alternativaCorretaId,
                 questao.getExplicacao(),
                 xpGanho,
                 // O nível e xp total atuais que serão retornados podem estar defasados pois o evento pode 

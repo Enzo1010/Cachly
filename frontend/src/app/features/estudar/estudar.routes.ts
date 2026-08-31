@@ -4,8 +4,8 @@ export const ROTAS_ESTUDAR: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../shared/components/pagina-titulo/pagina-titulo.component').then(
-        (componente) => componente.PaginaTituloComponent,
+      import('./pages/estudar-page/estudar-page.component').then(
+        (m) => m.EstudarPageComponent,
       ),
     data: { titulo: 'Estudar' },
     title: 'Estudar | Cachly',

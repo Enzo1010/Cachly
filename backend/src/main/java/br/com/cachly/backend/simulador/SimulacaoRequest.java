@@ -22,5 +22,6 @@ public record SimulacaoRequest(
     PoliticaSubstituicao substituicao,
 
     @NotEmpty(message = "A lista de endereços não pode estar vazia")
-    List<Integer> enderecos
+    @jakarta.validation.constraints.Size(max = 200, message = "A lista não pode exceder 200 endereços")
+    List<@NotNull Integer> enderecos
 ) {}

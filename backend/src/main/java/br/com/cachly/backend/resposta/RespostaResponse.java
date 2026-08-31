@@ -3,6 +3,7 @@ package br.com.cachly.backend.resposta;
 public record RespostaResponse(
         Long tentativaId,
         Boolean correta,
+        Long alternativaCorretaId,
         String explicacao,
         Integer xpConcedido,
         Integer nivelAtual,
@@ -10,3 +11,4 @@ public record RespostaResponse(
         Integer xpTotal
 ) {
 }
+

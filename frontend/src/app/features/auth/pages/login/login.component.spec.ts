@@ -84,6 +84,7 @@ describe('LoginComponent', () => {
     expect(requisicao.request.body).toEqual({
       email: 'ana.silva@exemplo.com',
       senha: 'senha-segura',
+      lembrarLogin: false,
     });
     requisicao.flush(criarUsuario());
 

@@ -35,6 +35,9 @@ class AlunoControllerTest {
     private AlunoDesempenhoService alunoDesempenhoService;
 
     @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioLogadoService usuarioLogadoService;
+
+    @MockitoBean
     private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
     @Test

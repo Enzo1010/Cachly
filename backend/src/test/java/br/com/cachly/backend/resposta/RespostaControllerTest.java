@@ -36,6 +36,9 @@ class RespostaControllerTest {
     @MockitoBean
     private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioLogadoService usuarioLogadoService;
+
     @BeforeEach
     void setUp() {
         Usuario usuarioMock = new Usuario();
@@ -47,12 +50,13 @@ class RespostaControllerTest {
         var auth = new UsernamePasswordAuthenticationToken(usuarioMock.getEmail(), null, List.of());
         SecurityContextHolder.getContext().setAuthentication(auth);
         when(usuarioRepository.findByEmailIgnoreCase("aluno@teste.com")).thenReturn(java.util.Optional.of(usuarioMock));
+        when(usuarioLogadoService.obterUsuarioAtual()).thenReturn(usuarioMock);
     }
 
     @Test
     void deveResponderQuestaoERetornarStatusOk() throws Exception {
         when(respostaService.responder(eq(1L), any(RespostaRequest.class), any(Usuario.class)))
-                .thenReturn(new RespostaResponse(100L, true, "Explicação da questão", 10, 1, "Estagiário", 10));
+                .thenReturn(new RespostaResponse(100L, true, 10L, "Explicação da questão", 10, 1, "Estagiário", 10));
 
         mockMvc.perform(post("/api/questoes/1/respostas")
                         .contentType(MediaType.APPLICATION_JSON)

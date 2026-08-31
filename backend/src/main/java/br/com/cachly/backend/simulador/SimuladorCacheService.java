@@ -60,7 +60,7 @@ public class SimuladorCacheService {
             int passoNumero = i + 1;
             int endereco = request.enderecos().get(i);
 
-            int offsetMask = (1 << bitsOffset) - 1;
+            int offsetMask = (bitsOffset >= 32) ? -1 : (1 << bitsOffset) - 1;
             int offset = endereco & offsetMask;
 
             Integer indiceObj = bitsIndice == 0 ? null : (endereco >>> bitsOffset) & ((1 << bitsIndice) - 1);

@@ -140,4 +140,33 @@ class SimuladorCacheServiceTest {
         );
         assertEquals("Tamanho do bloco não pode ser maior que o tamanho da cache", exception.getMessage());
     }
+
+    @Test
+    @DisplayName("Deve simular com valor maximo possivel para tamanho de bloco (evitando overflow bitwise)")
+    void deveSimularComMaximoBlocoPossivel() {
+        // O limite maximo de potência de 2 em Integer positivo é 2^30 = 1073741824
+        int maxBloco = 1 << 30;
+        SimulacaoRequest request = new SimulacaoRequest(
+                maxBloco,
+                maxBloco,
+                null,
+                TipoMapeamento.DIRETO,
+                null,
+                List.of(maxBloco - 1, maxBloco)
+        );
+
+        SimulacaoResponse response = service.executarSimulacao(request);
+
+        assertEquals(30, response.bitsOffset());
+        assertEquals(0, response.bitsIndice());
+        assertEquals(2, response.bitsTag()); 
+        
+        // Acesso 1: (maxBloco - 1) tem tag 0, offset maxBloco - 1
+        assertEquals(0, response.passos().get(0).tag());
+        assertEquals(maxBloco - 1, response.passos().get(0).offset());
+        
+        // Acesso 2: maxBloco tem tag 1, offset 0
+        assertEquals(1, response.passos().get(1).tag());
+        assertEquals(0, response.passos().get(1).offset());
+    }
 }

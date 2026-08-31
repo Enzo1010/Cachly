@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
-import java.time.OffsetDateTime;
 
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
@@ -43,8 +42,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Usuario u SET u.xpSemanal = 0")
     void resetarXpSemanal();
-
-    @org.springframework.data.jpa.repository.Modifying
-    @Query("UPDATE Usuario u SET u.diasOfensiva = CASE WHEN (u.dataUltimaOfensiva = :ontem) THEN u.diasOfensiva + 1 ELSE 1 END, u.dataUltimaOfensiva = :hoje WHERE u.id = :id AND (u.dataUltimaOfensiva IS NULL OR u.dataUltimaOfensiva != :hoje)")
-    int atualizarOfensivaSeNecessario(@Param("id") Long id, @Param("hoje") java.time.LocalDate hoje, @Param("ontem") java.time.LocalDate ontem);
 }

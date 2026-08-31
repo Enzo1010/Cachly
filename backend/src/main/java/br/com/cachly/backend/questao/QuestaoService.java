@@ -2,10 +2,8 @@ package br.com.cachly.backend.questao;
 
 import br.com.cachly.backend.categoria.Categoria;
 import br.com.cachly.backend.categoria.CategoriaRepository;
-import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
 import br.com.cachly.backend.alternativa.Alternativa;
-import br.com.cachly.backend.alternativa.AlternativaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -107,7 +105,7 @@ public class QuestaoService {
                 ));
 
         if (!Boolean.TRUE.equals(categoria.getAtiva())) {
-            throw new ConflitoDeDadosException("A categoria informada está inativa");
+            throw new br.com.cachly.backend.comum.erro.RegraNegocioException("A categoria informada está inativa");
         }
 
         return categoria;
@@ -126,7 +124,7 @@ public class QuestaoService {
 
         long corretas = request.alternativas().stream().filter(br.com.cachly.backend.alternativa.AlternativaRequest::correta).count();
         if (corretas != 1) {
-            throw new ConflitoDeDadosException("A questão deve ter exatamente uma alternativa correta");
+            throw new br.com.cachly.backend.comum.erro.RegraNegocioException("A questão deve ter exatamente uma alternativa correta");
         }
 
         List<br.com.cachly.backend.alternativa.Alternativa> atuais = new java.util.ArrayList<>(questao.getAlternativas());
@@ -134,7 +132,7 @@ public class QuestaoService {
         
         request.alternativas().forEach(altReq -> {
             br.com.cachly.backend.alternativa.Alternativa alt = atuais.stream()
-                .filter(a -> a.getTexto().equals(altReq.texto())) // Simple match by text since we don't have IDs in request
+                .filter(a -> a.getId() != null && a.getId().equals(altReq.id()))
                 .findFirst()
                 .orElse(new br.com.cachly.backend.alternativa.Alternativa());
                 

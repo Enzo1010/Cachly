@@ -44,7 +44,7 @@ class TentativaQuestaoRepositoryTest {
     void deveGarantirOrdemDeterministicaComTimestampsIdenticos() {
         Usuario usuario = new Usuario();
         usuario.setNome("Tester");
-        usuario.setEmail("tester@exemplo.com");
+        usuario.setEmail("tester." + java.util.UUID.randomUUID() + "@exemplo.com");
         usuario.setSenhaHash("hash");
         usuario.setPerfil(PerfilUsuario.ALUNO);
         usuario.setNivel(1);
@@ -52,7 +52,7 @@ class TentativaQuestaoRepositoryTest {
         usuario = usuarioRepository.save(usuario);
 
         Categoria categoria = new Categoria();
-        categoria.setNome("Cat Teste");
+        categoria.setNome("Cat Teste " + java.util.UUID.randomUUID());
         categoria.setDescricao("Desc");
         categoria = categoriaRepository.save(categoria);
 

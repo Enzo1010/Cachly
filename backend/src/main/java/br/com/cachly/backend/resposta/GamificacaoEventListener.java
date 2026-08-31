@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Component
@@ -16,7 +15,6 @@ import java.time.ZoneId;
 public class GamificacaoEventListener {
 
     private final UsuarioRepository usuarioRepository;
-    private final TentativaQuestaoRepository tentativaQuestaoRepository;
     private final XpService xpService;
 
     @org.springframework.beans.factory.annotation.Value("${app.timezone:America/Sao_Paulo}")

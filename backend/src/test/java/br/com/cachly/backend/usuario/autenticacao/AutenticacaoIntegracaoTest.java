@@ -98,4 +98,51 @@ class AutenticacaoIntegracaoTest {
                 .andExpect(jsonPath("$.xpTotal").value(120))
                 .andExpect(jsonPath("$.nivel").value(3));
     }
+
+    @Test
+    void deveRevogarTokenAnteriorAposAlteracaoDeSenha() throws Exception {
+        String email = "revogacao.integracao.%s@cachly.local".formatted(UUID.randomUUID());
+
+        Usuario usuario = new Usuario();
+        usuario.setNome("Usuário Revogação Teste");
+        usuario.setEmail(email);
+        usuario.setSenhaHash(codificadorSenha.encode("senha-antiga"));
+        usuario.setPerfil(PerfilUsuario.ALUNO);
+        usuario.setXpTotal(0);
+        usuario.setNivel(1);
+        usuario.setAtivo(true);
+        usuarioRepository.saveAndFlush(usuario);
+
+        var loginResult = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "email": "%s",
+                                  "senha": "senha-antiga"
+                                }
+                                """.formatted(email)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        jakarta.servlet.http.Cookie tokenCookie = loginResult.getResponse().getCookie("token");
+
+        // Intervalo para garantir que a nova versaoToken no BD seja estritamente posterior ao iat do token T1
+        Thread.sleep(1100);
+
+        mockMvc.perform(post("/api/auth/alterar-senha")
+                        .cookie(tokenCookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "senhaAtual": "senha-antiga",
+                                  "novaSenha": "nova-senha-123"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        // Requisição subsequente utilizando o token T1 anterior deve ser rejeitada com HTTP 401
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/auth/me")
+                        .cookie(tokenCookie))
+                .andExpect(status().isUnauthorized());
+    }
 }

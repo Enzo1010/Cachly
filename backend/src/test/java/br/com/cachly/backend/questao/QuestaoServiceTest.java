@@ -91,7 +91,7 @@ class QuestaoServiceTest {
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
 
         assertThrows(
-                ConflitoDeDadosException.class,
+                br.com.cachly.backend.comum.erro.RegraNegocioException.class,
                 () -> questaoService.cadastrar(request)
         );
 
@@ -123,23 +123,23 @@ class QuestaoServiceTest {
         altCorreta.setTexto("0 ou 1");
         altCorreta.setCorreta(true);
         altCorreta.setOrdem((short) 1);
+        altCorreta.setAtiva(true);
         
         Alternativa altIncorreta = new Alternativa();
         altIncorreta.setId(11L);
         altIncorreta.setTexto("8 bytes");
         altIncorreta.setCorreta(false);
         altIncorreta.setOrdem((short) 2);
+        altIncorreta.setAtiva(true);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
         when(questaoRepository.findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(1L, pageRequest))
                 .thenReturn(List.of(questao));
-                
-        when(alternativaRepository.findAllByQuestaoIdInAndAtivaTrueOrderByOrdemAsc(List.of(1L)))
-                .thenReturn(List.of(altCorreta, altIncorreta));
 
         // Ensure we link alternatives to question for groupingBy to work
         altCorreta.setQuestao(questao);
         altIncorreta.setQuestao(questao);
+        questao.getAlternativas().addAll(List.of(altCorreta, altIncorreta));
 
         List<QuestaoEstudoResponse> resultado = questaoService.listarParaEstudo(1L, 10);
 
@@ -212,6 +212,37 @@ class QuestaoServiceTest {
         verify(questaoRepository, never()).delete(any(Questao.class));
     }
 
+    @Test
+    void deveAtualizarQuestaoMantendoAlternativasPeloId() {
+        Categoria categoria = criarCategoria(1L, true);
+        Questao questao = criarQuestao(1L, categoria, "Antigo", true);
+        
+        Alternativa altExistente = new Alternativa();
+        altExistente.setId(10L);
+        altExistente.setTexto("Texto Antigo");
+        altExistente.setCorreta(true);
+        questao.getAlternativas().add(altExistente);
+
+        br.com.cachly.backend.alternativa.AlternativaRequest altReq = 
+            new br.com.cachly.backend.alternativa.AlternativaRequest(
+                10L, "Texto Novo", true, (short)1
+            );
+        
+        QuestaoRequest request = new QuestaoRequest(
+                1L, "Novo", "Novo", DificuldadeQuestao.FACIL, 10, List.of(altReq)
+        );
+
+        when(questaoRepository.findById(1L)).thenReturn(Optional.of(questao));
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+        when(questaoRepository.save(questao)).thenReturn(questao);
+
+        questaoService.atualizar(1L, request);
+
+        assertEquals(1, questao.getAlternativas().size());
+        assertEquals(10L, questao.getAlternativas().get(0).getId());
+        assertEquals("Texto Novo", questao.getAlternativas().get(0).getTexto());
+    }
+
     private QuestaoRequest criarRequest(Long categoriaId) {
         return new QuestaoRequest(
                 categoriaId,
@@ -219,7 +250,9 @@ class QuestaoServiceTest {
                 "  Uma porta que realiza conjunção lógica.  ",
                 DificuldadeQuestao.FACIL,
                 10,
-                java.util.Collections.emptyList()
+                List.of(
+                        new br.com.cachly.backend.alternativa.AlternativaRequest(null, "Alt 1", true, (short) 1)
+                )
         );
     }
 

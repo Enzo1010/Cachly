@@ -128,6 +128,32 @@ public class ApiExceptionHandler {
         );
     }
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErroResponse> tratarErroDeParsingHTTP(
+            org.springframework.http.converter.HttpMessageNotReadableException exception,
+            HttpServletRequest request
+    ) {
+        return criarResposta(
+                HttpStatus.BAD_REQUEST,
+                "O formato da requisição é inválido ou contém dados mal formatados",
+                request.getRequestURI(),
+                Map.of()
+        );
+    }
+
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ErroResponse> tratarRecursoNaoEncontradoSpring(
+            org.springframework.web.servlet.resource.NoResourceFoundException exception,
+            HttpServletRequest request
+    ) {
+        return criarResposta(
+                HttpStatus.NOT_FOUND,
+                "Recurso não encontrado na URL solicitada",
+                request.getRequestURI(),
+                Map.of()
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> tratarErroInterno(
             Exception exception,

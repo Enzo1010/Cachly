@@ -15,7 +15,14 @@ export const autenticacaoInterceptor: HttpInterceptorFn = (req, next) => {
   return next(requisicaoClonada).pipe(
     catchError((erro) => {
       if (erro instanceof HttpErrorResponse && erro.status === 401) {
-        if (!req.url.includes('/login') && !req.url.includes('/refresh-token')) {
+        // Só redireciona para login em chamadas de sessão (GET /api/auth/me)
+        // ou quando o SecurityFilter rejeita o token (resposta sem corpo JSON do app).
+        // Não redireciona em erros 401 de endpoints de negócio para não mascarar bugs.
+        const isRotaDeLogin = req.url.includes('/login') || req.url.includes('/refresh-token');
+        const isChecagemDeSessao = req.url.includes('/api/auth/me');
+        const isRespostaDoSpring = !erro.error?.timestamp; // ErroResponse do app tem timestamp
+
+        if (!isRotaDeLogin && (isChecagemDeSessao || isRespostaDoSpring)) {
           sessao.limparSessaoLocal();
           void router.navigate(['/login']);
         }

@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
@@ -13,6 +14,7 @@ describe('VisaoGeralComponent', () => {
     await TestBed.configureTestingModule({
       imports: [VisaoGeralComponent],
       providers: [
+        provideRouter([]),
         {
           provide: SessaoService,
           useValue: {
@@ -51,6 +53,6 @@ describe('VisaoGeralComponent', () => {
 
     expect(conteudo.querySelector('h2')?.textContent).toContain('Olá, Ana Silva!');
     expect(conteudo.querySelectorAll('.indicador')).toHaveLength(3);
-    expect(conteudo.textContent).toContain('Seu próximo objetivo');
+    expect(conteudo.textContent).toContain('Sua recomendação');
   });
 });

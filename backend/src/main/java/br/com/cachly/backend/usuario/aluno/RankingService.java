@@ -11,12 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import java.time.OffsetDateTime;
-import java.time.DayOfWeek;
-import java.time.temporal.TemporalAdjusters;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-
 @Service
 @RequiredArgsConstructor
 public class RankingService {
@@ -46,7 +40,12 @@ public class RankingService {
     }
 
     @Transactional(readOnly = true)
-    public Page<RankingSemanalHistorico> listarHistoricoPorData(java.time.LocalDate data, Pageable pageable) {
-        return historicoRepository.findByDataSemana(data, pageable);
+    public Page<RankingHistoricoResponse> listarHistoricoPorData(java.time.LocalDate data, Pageable pageable) {
+        return historicoRepository.findByDataSemana(data, pageable).map(historico -> new RankingHistoricoResponse(
+                historico.getUsuario().getNome(),
+                historico.getXpFinal(),
+                historico.getPosicao(),
+                historico.getDataSemana()
+        ));
     }
 }

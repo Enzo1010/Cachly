@@ -1,15 +1,12 @@
 package br.com.cachly.backend.resposta;
 
 import br.com.cachly.backend.alternativa.Alternativa;
-import br.com.cachly.backend.alternativa.AlternativaRepository;
-import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
 import br.com.cachly.backend.questao.DificuldadeQuestao;
 import br.com.cachly.backend.questao.Questao;
 import br.com.cachly.backend.questao.QuestaoRepository;
 import br.com.cachly.backend.usuario.PerfilUsuario;
 import br.com.cachly.backend.usuario.Usuario;
-import br.com.cachly.backend.usuario.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
@@ -31,13 +29,10 @@ class RespostaServiceTest {
     private QuestaoRepository questaoRepository;
 
     @Mock
-    private AlternativaRepository alternativaRepository;
-
-    @Mock
-    private UsuarioRepository usuarioRepository;
-
-    @Mock
     private TentativaQuestaoRepository tentativaQuestaoRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @Mock
     private XpService xpService;
@@ -83,17 +78,16 @@ class RespostaServiceTest {
         alternativaIncorreta.setCorreta(false);
         alternativaIncorreta.setAtiva(true);
 
-        org.springframework.test.util.ReflectionTestUtils.setField(respostaService, "timezone", "America/Sao_Paulo");
+        questao.getAlternativas().add(alternativaCorreta);
+        questao.getAlternativas().add(alternativaIncorreta);
     }
 
     @Test
     void deveRegistrarRespostaCorretaEConcederXp() {
-        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
-        when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(100L, 1L)).thenReturn(Optional.of(alternativaCorreta));
+        when(tentativaQuestaoRepository.existsByUsuarioIdAndQuestaoIdAndCorretaTrue(10L, 1L)).thenReturn(false);
         when(xpService.calcularXpGanho(questao)).thenReturn(10);
-        when(xpService.calcularNivel(10)).thenReturn(1);
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+        when(xpService.nomeDoNivel(1)).thenReturn("Estagiário");
 
         TentativaQuestao tentativaSalva = new TentativaQuestao();
         tentativaSalva.setId(500L);
@@ -105,10 +99,11 @@ class RespostaServiceTest {
         assertNotNull(response);
         assertEquals(500L, response.tentativaId());
         assertTrue(response.correta());
+        assertEquals(100L, response.alternativaCorretaId());
         assertEquals("Bit é a menor unidade de informação em computação.", response.explicacao());
         assertEquals(10, response.xpConcedido());
         assertEquals(1, response.nivelAtual());
-        assertEquals(10, response.xpTotal());
+        assertEquals(0, response.xpTotal()); // XP Total is not updated here because it's updated in the event
 
         ArgumentCaptor<TentativaQuestao> captor = ArgumentCaptor.forClass(TentativaQuestao.class);
         verify(tentativaQuestaoRepository).save(captor.capture());
@@ -119,16 +114,16 @@ class RespostaServiceTest {
         assertTrue(capturada.getCorreta());
         assertEquals(10, capturada.getXpConcedido());
 
-        verify(usuarioRepository).save(usuario);
-        assertEquals(10, usuario.getXpTotal());
-        assertEquals(1, usuario.getNivel());
+        ArgumentCaptor<QuestaoRespondidaEvent> eventCaptor = ArgumentCaptor.forClass(QuestaoRespondidaEvent.class);
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        assertTrue(eventCaptor.getValue().correta());
+        assertTrue(eventCaptor.getValue().primeiraVezCorreta());
     }
 
     @Test
     void deveRegistrarRespostaIncorretaSemConcederXp() {
-        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
-        when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(101L, 1L)).thenReturn(Optional.of(alternativaIncorreta));
+        when(xpService.nomeDoNivel(1)).thenReturn("Estagiário");
 
         TentativaQuestao tentativaSalva = new TentativaQuestao();
         tentativaSalva.setId(501L);
@@ -140,70 +135,51 @@ class RespostaServiceTest {
         assertNotNull(response);
         assertEquals(501L, response.tentativaId());
         assertFalse(response.correta());
+        assertEquals(100L, response.alternativaCorretaId());
         assertEquals("Bit é a menor unidade de informação em computação.", response.explicacao());
         assertEquals(0, response.xpConcedido());
         assertEquals(1, response.nivelAtual());
         assertEquals(0, response.xpTotal());
 
         verify(xpService, never()).calcularXpGanho(any());
-        verify(usuarioRepository, times(1)).save(any(Usuario.class));
-    }
 
-    @Test
-    void deveSubirDeNivelQuandoXpAtingirOLimiar() {
-        usuario.setXpTotal(90);
-        usuario.setNivel(1);
-
-        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
-        when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
-        when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(100L, 1L)).thenReturn(Optional.of(alternativaCorreta));
-        when(xpService.calcularXpGanho(questao)).thenReturn(10);
-        when(xpService.calcularNivel(100)).thenReturn(2);
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
-
-        TentativaQuestao tentativaSalva = new TentativaQuestao();
-        tentativaSalva.setId(502L);
-        when(tentativaQuestaoRepository.save(any(TentativaQuestao.class))).thenReturn(tentativaSalva);
-
-        RespostaResponse response = respostaService.responder(1L, new RespostaRequest(100L), usuario);
-
-        assertEquals(2, response.nivelAtual());
-        assertEquals(100, response.xpTotal());
-        assertEquals(10, response.xpConcedido());
+        ArgumentCaptor<QuestaoRespondidaEvent> eventCaptor = ArgumentCaptor.forClass(QuestaoRespondidaEvent.class);
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        assertFalse(eventCaptor.getValue().correta());
+        assertFalse(eventCaptor.getValue().primeiraVezCorreta());
     }
 
     @Test
     void deveLancarExcecaoQuandoQuestaoInexistenteOuInativa() {
-        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(99L)).thenReturn(Optional.empty());
 
         RespostaRequest request = new RespostaRequest(100L);
 
         assertThrows(RecursoNaoEncontradoException.class, () -> respostaService.responder(99L, request, usuario));
         verify(tentativaQuestaoRepository, never()).save(any());
+        verify(eventPublisher, never()).publishEvent(any());
     }
 
     @Test
     void deveLancarExcecaoQuandoAlternativaInexistenteInativaOuNaoPertencenteAQuestao() {
-        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
-        when(alternativaRepository.findByIdAndQuestaoIdAndAtivaTrue(999L, 1L)).thenReturn(Optional.empty());
 
-        RespostaRequest request = new RespostaRequest(999L);
+        RespostaRequest request = new RespostaRequest(999L); // Alternativa não existe
 
         assertThrows(RecursoNaoEncontradoException.class, () -> respostaService.responder(1L, request, usuario));
         verify(tentativaQuestaoRepository, never()).save(any());
+        verify(eventPublisher, never()).publishEvent(any());
     }
 
     @Test
     void deveLancarExcecaoQuandoUsuarioInativo() {
         usuario.setAtivo(false);
-        when(usuarioRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(usuario));
 
         RespostaRequest request = new RespostaRequest(100L);
 
-        assertThrows(ConflitoDeDadosException.class, () -> respostaService.responder(1L, request, usuario));
+        assertThrows(br.com.cachly.backend.comum.erro.RegraNegocioException.class, () -> respostaService.responder(1L, request, usuario));
         verify(tentativaQuestaoRepository, never()).save(any());
+        verify(eventPublisher, never()).publishEvent(any());
     }
 }
 

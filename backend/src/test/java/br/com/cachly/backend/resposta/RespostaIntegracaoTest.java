@@ -92,6 +92,8 @@ class RespostaIntegracaoTest {
         altIncorreta.setAtiva(true);
 
         alternativaRepository.saveAllAndFlush(List.of(altCorreta, altIncorreta));
+        questao.getAlternativas().clear();
+        questao.getAlternativas().addAll(List.of(altCorreta, altIncorreta));
 
         // 4. Criar Aluno
         String email = "aluno.resposta.%s@cachly.local".formatted(UUID.randomUUID());
@@ -131,14 +133,16 @@ class RespostaIntegracaoTest {
                                 """.formatted(altCorreta.getId())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correta").value(true))
+                .andExpect(jsonPath("$.alternativaCorretaId").value(altCorreta.getId()))
                 .andExpect(jsonPath("$.explicacao").value("A porta AND resulta em 1 apenas quando todas as entradas forem 1."))
                 .andExpect(jsonPath("$.xpConcedido").value(10))
                 .andExpect(jsonPath("$.nivelAtual").value(1))
                 .andExpect(jsonPath("$.xpTotal").value(10));
 
         // 7. Verificar banco de dados
-        assertEquals(1, tentativaQuestaoRepository.count());
-        TentativaQuestao tentativa = tentativaQuestaoRepository.findAll().get(0);
+        List<TentativaQuestao> tentativasAluno = tentativaQuestaoRepository.findByUsuarioIdOrderByRespondidaEmDesc(aluno.getId(), org.springframework.data.domain.PageRequest.of(0, 10)).getContent();
+        assertEquals(1, tentativasAluno.size());
+        TentativaQuestao tentativa = tentativasAluno.get(0);
         assertEquals(aluno.getId(), tentativa.getUsuario().getId());
         assertEquals(questao.getId(), tentativa.getQuestao().getId());
         assertEquals(altCorreta.getId(), tentativa.getAlternativa().getId());

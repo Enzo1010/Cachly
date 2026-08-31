@@ -104,7 +104,11 @@ class AutorizacaoIntegracaoTest {
                                   "categoriaId": 1,
                                   "tipo": "MULTIPLA_ESCOLHA",
                                   "xpBase": 10,
-                                  "explicacao": "Explicacao"
+                                  "explicacao": "Explicacao",
+                                  "alternativas": [
+                                    { "id": null, "texto": "Alt 1", "correta": true, "ordem": 1 },
+                                    { "id": null, "texto": "Alt 2", "correta": false, "ordem": 2 }
+                                  ]
                                 }
                                 """))
                 .andExpect(status().isForbidden());
@@ -123,7 +127,11 @@ class AutorizacaoIntegracaoTest {
                                   "categoriaId": 1,
                                   "tipo": "MULTIPLA_ESCOLHA",
                                   "xpBase": 10,
-                                  "explicacao": "Explicacao"
+                                  "explicacao": "Explicacao",
+                                  "alternativas": [
+                                    { "id": null, "texto": "Alt 1", "correta": true, "ordem": 1 },
+                                    { "id": null, "texto": "Alt 2", "correta": false, "ordem": 2 }
+                                  ]
                                 }
                                 """))
                 .andExpect(status().isForbidden());
@@ -143,35 +151,33 @@ class AutorizacaoIntegracaoTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "texto": "Teste",
+                                  "texto": "Alt 1",
                                   "correta": true,
-                                  "justificativa": "Justificativa",
                                   "ordem": 1
                                 }
                                 """))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void alunoNaoDeveAtualizarAlternativa() throws Exception {
-        mockMvc.perform(put("/api/questoes/1/alternativas/1").with(csrf())
+        mockMvc.perform(put("/api/questoes/1/alternativas/10").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "texto": "Teste",
+                                  "texto": "Alt 1",
                                   "correta": true,
-                                  "justificativa": "Justificativa",
                                   "ordem": 1
                                 }
                                 """))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void alunoNaoDeveDesativarAlternativa() throws Exception {
-        mockMvc.perform(patch("/api/questoes/1/alternativas/1/desativar").with(csrf())
+        mockMvc.perform(patch("/api/questoes/1/alternativas/10/desativar").with(csrf())
                         .header("Authorization", "Bearer " + tokenAluno))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
     }
 }
