@@ -1,0 +1,436 @@
+﻿.guia-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  &__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  &__subtitle {
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+}
+
+.guia-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// Navegação de Abas
+.guia-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  background: #f8fafc;
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 0.95rem;
+    }
+
+    &:hover {
+      color: #1e293b;
+      background: rgba(255,255,255,0.6);
+    }
+
+    &--active {
+      background: #fff !important;
+      color: #2563eb !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  }
+}
+
+.guia-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.guia-intro {
+  h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+  }
+}
+
+// Contexto Dinâmico
+.card-contexto {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  &__titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #166534;
+    font-size: 0.85rem;
+  }
+
+  &__valores {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+
+    span {
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .badge-tag { background: #dbeafe; color: #1e40af; }
+    .badge-idx { background: #fef3c7; color: #92400e; }
+    .badge-off { background: #fce7f3; color: #9d174d; }
+  }
+}
+
+// Grade de Campos (Aritmética)
+.grade-campos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-campo {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: all 0.3s ease;
+
+  &__topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &.pill--tag { background: #dbeafe; color: #1e40af; }
+    &.pill--idx { background: #fef3c7; color: #92400e; }
+    &.pill--off { background: #fce7f3; color: #9d174d; }
+  }
+
+  &__formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #64748b;
+    background: #f8fafc;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  &__exemplo {
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: #334155;
+    line-height: 1.4;
+
+    code {
+      background: #e2e8f0;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  }
+
+  &--destaque {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+    transform: translateY(-2px);
+  }
+}
+
+// Grade de Mapeamentos
+.grade-mapeamentos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-map {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &--destaque {
+    border-color: #93c5fd;
+    background: #f8fbff;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #0f172a;
+      font-weight: 700;
+    }
+  }
+
+  &__badge {
+    align-self: flex-start;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+
+    &--destaque {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.5;
+
+    code {
+      background: #e2e8f0;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  }
+
+  &__lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #334155;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      line-height: 1.4;
+
+      i {
+        margin-top: 0.15rem;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+// Grade de Substituição
+.grade-substituicao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-sub {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  }
+
+  &__icon {
+    font-size: 1.5rem;
+    color: #3b82f6;
+    background: #eff6ff;
+    padding: 0.6rem;
+    border-radius: 10px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  &__box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    color: #334155;
+    line-height: 1.4;
+  }
+}
+
+// Grade de Hit vs Miss
+.grade-hitmiss {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-hm {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid #e2e8f0;
+
+  &__badge {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .badge--hit { background: #dcfce7; color: #15803d; }
+  .badge--cold { background: #e0f2fe; color: #0369a1; }
+  .badge--conflict { background: #fef3c7; color: #b45309; }
+  .badge--capacity { background: #f3e8ff; color: #7e22ce; }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+}
+
+.guia-footer {
+  display: flex;
+  justify-content: flex-end;
+}

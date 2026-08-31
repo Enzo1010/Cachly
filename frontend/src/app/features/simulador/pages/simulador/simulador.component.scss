@@ -54,6 +54,12 @@
       letter-spacing: 0.1em;
       color: #64748b;
     }
+
+    .sidebar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
   }
 
   &.collapsed {
@@ -284,13 +290,35 @@
     text-align: center;
     backdrop-filter: blur(8px);
 
-    .bits-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #475569;
-      margin-bottom: 1rem;
+    .bits-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+      flex-wrap: wrap;
+
+      .bits-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #475569;
+        margin-bottom: 0;
+      }
+
+      .bits-hint {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+
+        i {
+          font-size: 0.75rem;
+          color: #60a5fa;
+        }
+      }
     }
 
     .bits-row {
@@ -326,6 +354,46 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        &__icon {
+          font-size: 0.55rem;
+          opacity: 0.6;
+        }
+      }
+
+      &--clickable {
+        cursor: pointer;
+        padding: 0.4rem 0.65rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.2s ease;
+        user-select: none;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+          .bit-name__icon {
+            opacity: 1;
+          }
+        }
+
+        &.bit-group--tag:hover {
+          border-color: rgba(96, 165, 250, 0.6);
+        }
+
+        &.bit-group--idx:hover {
+          border-color: rgba(251, 191, 36, 0.6);
+        }
+
+        &.bit-group--off:hover {
+          border-color: rgba(244, 114, 182, 0.6);
+        }
       }
 
       &--tag .bit-value  { color: #60a5fa; }

@@ -1,4 +1,4 @@
-<div class="sim-page">
+﻿<div class="sim-page">
 
   <!-- ======================== LAYOUT 2 COLUNAS ======================== -->
   <div class="sim-layout" [class.sidebar-collapsed]="state.sidebarCollapsed()">
@@ -7,7 +7,21 @@
     <aside class="sim-sidebar" [class.collapsed]="state.sidebarCollapsed()">
       <div class="sidebar-header">
         <h3><i class="pi pi-microchip" style="margin-right: 0.5rem;"></i>Hardware</h3>
-        <p-button icon="pi pi-bars" (onClick)="state.toggleSidebar()" styleClass="p-button-rounded p-button-text p-button-plain p-button-sm"></p-button>
+        <div class="sidebar-actions">
+          <p-button
+            icon="pi pi-book"
+            label="Guia"
+            pTooltip="Abrir Guia Conceitual"
+            tooltipPosition="bottom"
+            (onClick)="abrirGuia()"
+            styleClass="p-button-outlined p-button-sm p-button-info">
+          </p-button>
+          <p-button
+            icon="pi pi-bars"
+            (onClick)="state.toggleSidebar()"
+            styleClass="p-button-rounded p-button-text p-button-plain p-button-sm">
+          </p-button>
+        </div>
       </div>
       
       <div class="sidebar-content">
@@ -39,6 +53,14 @@
           <p class="sim-empty__desc">
             Configure o hardware ao lado (tamanho de cache, bloco e tipo de mapeamento) e inicie a simulação para visualizar o comportamento dos acessos à memória.
           </p>
+          <div style="margin-top: 0.5rem;">
+            <p-button
+              icon="pi pi-book"
+              label="Entender Teoria e Fórmulas de Cache"
+              (onClick)="abrirGuia()"
+              styleClass="p-button-outlined p-button-sm">
+            </p-button>
+          </div>
         </div>
       }
 
@@ -55,6 +77,14 @@
             <span class="stat-miss">{{ state.simulacao()?.totalMisses }} Misses</span>
           </div>
           <div class="control-buttons">
+            <p-button
+              icon="pi pi-book"
+              label="Guia Teórico"
+              pTooltip="Ver explicação de conceitos"
+              tooltipPosition="bottom"
+              (onClick)="abrirGuia()"
+              styleClass="p-button-text p-button-sm">
+            </p-button>
             <p-button
               icon="pi pi-angle-left"
               label="Anterior"
@@ -120,26 +150,66 @@
               <div class="value-sub">endereço decimal</div>
             </div>
 
-            <!-- Breakdown Binário -->
+            <!-- Breakdown Binário Interativo -->
             <div class="sim-resolution__bits">
-              <div class="bits-label">Decodificação Binária ({{ state.totalBits() }} bits)</div>
+              <div class="bits-header">
+                <div class="bits-label">Decodificação Binária ({{ state.totalBits() }} bits)</div>
+                <div class="bits-hint">
+                  <i class="pi pi-info-circle"></i> Clique nos campos para ver fórmulas
+                </div>
+              </div>
               <div class="bits-row">
-                <div class="bit-group bit-group--tag" pTooltip="Tag: identifica o bloco na cache" tooltipPosition="top">
+                <div
+                  class="bit-group bit-group--tag bit-group--clickable"
+                  role="button"
+                  tabindex="0"
+                  (click)="abrirGuiaCampo('tag')"
+                  (keydown.enter)="abrirGuiaCampo('tag')"
+                  pTooltip="Tag: identifica o bloco (Clique para detalhes)"
+                  tooltipPosition="top"
+                >
                   <div class="bit-value">{{ state.binarioBreakdown()?.tag }}</div>
                   <div class="bit-bar"></div>
-                  <div class="bit-name">Tag</div>
+                  <div class="bit-name">
+                    <span>Tag</span>
+                    <i class="pi pi-search bit-name__icon"></i>
+                  </div>
                 </div>
+
                 @if ((state.simulacao()?.bitsIndice ?? 0) > 0) {
-                  <div class="bit-group bit-group--idx" pTooltip="Índice: aponta o conjunto/linha" tooltipPosition="top">
+                  <div
+                    class="bit-group bit-group--idx bit-group--clickable"
+                    role="button"
+                    tabindex="0"
+                    (click)="abrirGuiaCampo('indice')"
+                    (keydown.enter)="abrirGuiaCampo('indice')"
+                    pTooltip="Índice: aponta o conjunto (Clique para detalhes)"
+                    tooltipPosition="top"
+                  >
                     <div class="bit-value">{{ state.binarioBreakdown()?.indice }}</div>
                     <div class="bit-bar"></div>
-                    <div class="bit-name">Índice</div>
+                    <div class="bit-name">
+                      <span>Índice</span>
+                      <i class="pi pi-search bit-name__icon"></i>
+                    </div>
                   </div>
                 }
-                <div class="bit-group bit-group--off" pTooltip="Offset: posição dentro do bloco" tooltipPosition="top">
+
+                <div
+                  class="bit-group bit-group--off bit-group--clickable"
+                  role="button"
+                  tabindex="0"
+                  (click)="abrirGuiaCampo('offset')"
+                  (keydown.enter)="abrirGuiaCampo('offset')"
+                  pTooltip="Offset: deslocamento no bloco (Clique para detalhes)"
+                  tooltipPosition="top"
+                >
                   <div class="bit-value">{{ state.binarioBreakdown()?.offset }}</div>
                   <div class="bit-bar"></div>
-                  <div class="bit-name">Offset</div>
+                  <div class="bit-name">
+                    <span>Offset</span>
+                    <i class="pi pi-search bit-name__icon"></i>
+                  </div>
                 </div>
               </div>
             </div>
@@ -181,4 +251,14 @@
 
     </div>
   </div>
+
+  <!-- Modal do Guia Conceitual Interativo -->
+  <app-simulador-guia
+    [visivel]="guiaAberto()"
+    (visivelChange)="guiaAberto.set($event)"
+    [abaAtiva]="abaAtivaGuia()"
+    (abaAtivaChange)="abaAtivaGuia.set($event)"
+    [destaqueCampo]="destaqueCampoGuia()"
+    [simulacao]="state.simulacao()"
+  ></app-simulador-guia>
 </div>

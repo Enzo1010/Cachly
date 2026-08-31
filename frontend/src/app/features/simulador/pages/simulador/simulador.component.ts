@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+﻿import { Component, computed, inject, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import { SimuladorFormComponent } from '../../components/simulador-form/simulador-form.component';
 import { SimuladorTabelaComponent } from '../../components/simulador-tabela/simulador-tabela.component';
+import { SimuladorGuiaComponent, AbaGuia } from '../../components/simulador-guia/simulador-guia.component';
 import { SimuladorStateService } from '../../services/simulador-state.service';
 import {
   criarDadosRosca,
@@ -20,6 +21,7 @@ import {
 
 @Component({
   selector: 'app-simulador-page',
+  standalone: true,
   imports: [
     PanelModule,
     ButtonModule,
@@ -31,7 +33,8 @@ import {
     TooltipModule,
     ChartModule,
     SimuladorFormComponent,
-    SimuladorTabelaComponent
+    SimuladorTabelaComponent,
+    SimuladorGuiaComponent
   ],
   providers: [SimuladorStateService],
   templateUrl: './simulador.component.html',
@@ -39,6 +42,10 @@ import {
 })
 export class SimuladorPageComponent {
   readonly state = inject(SimuladorStateService);
+
+  readonly guiaAberto = signal<boolean>(false);
+  readonly abaAtivaGuia = signal<AbaGuia>('aritmetica');
+  readonly destaqueCampoGuia = signal<'tag' | 'indice' | 'offset' | null>(null);
 
   readonly opcoesGraficoRosca = OPCOES_GRAFICO_ROSCA;
   readonly opcoesGraficoLinha = OPCOES_GRAFICO_LINHA;
@@ -53,4 +60,14 @@ export class SimuladorPageComponent {
     const currentIndex = this.state.passoAtualIndex();
     return sim ? criarDadosLinha(sim, currentIndex) : null;
   });
+
+  abrirGuia(aba: AbaGuia = 'aritmetica', destaque: 'tag' | 'indice' | 'offset' | null = null): void {
+    this.abaAtivaGuia.set(aba);
+    this.destaqueCampoGuia.set(destaque);
+    this.guiaAberto.set(true);
+  }
+
+  abrirGuiaCampo(campo: 'tag' | 'indice' | 'offset'): void {
+    this.abrirGuia('aritmetica', campo);
+  }
 }

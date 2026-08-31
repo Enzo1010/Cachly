@@ -1,0 +1,301 @@
+﻿<p-dialog
+  [visible]="visivel()"
+  (visibleChange)="visivel.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ width: 'min(54rem, calc(100vw - 2rem))', maxHeight: '90vh' }"
+  styleClass="guia-dialog"
+  (onHide)="aoFechar()"
+>
+  <ng-template pTemplate="header">
+    <div class="guia-header">
+      <div class="guia-header__icon">
+        <i class="pi pi-book"></i>
+      </div>
+      <div>
+        <h2 class="guia-header__title">Guia Conceitual do Simulador</h2>
+        <p class="guia-header__subtitle">Entenda a teoria e a matemática por trás da Memória Cache</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="guia-container">
+    <!-- Barra de Navegação por Abas -->
+    <nav class="guia-nav" aria-label="Abas do guia">
+      <button
+        type="button"
+        class="guia-nav__btn"
+        [class.guia-nav__btn--active]="abaAtiva() === 'aritmetica'"
+        (click)="selecionarAba('aritmetica')"
+      >
+        <i class="pi pi-hashtag"></i>
+        <span>Tag, Índice e Offset</span>
+      </button>
+
+      <button
+        type="button"
+        class="guia-nav__btn"
+        [class.guia-nav__btn--active]="abaAtiva() === 'mapeamento'"
+        (click)="selecionarAba('mapeamento')"
+      >
+        <i class="pi pi-sitemap"></i>
+        <span>Mapeamentos</span>
+      </button>
+
+      <button
+        type="button"
+        class="guia-nav__btn"
+        [class.guia-nav__btn--active]="abaAtiva() === 'substituicao'"
+        (click)="selecionarAba('substituicao')"
+      >
+        <i class="pi pi-sync"></i>
+        <span>Substituição (LRU/FIFO)</span>
+      </button>
+
+      <button
+        type="button"
+        class="guia-nav__btn"
+        [class.guia-nav__btn--active]="abaAtiva() === 'hitmiss'"
+        (click)="selecionarAba('hitmiss')"
+      >
+        <i class="pi pi-bolt"></i>
+        <span>Hit vs Miss</span>
+      </button>
+    </nav>
+
+    <!-- Conteúdo da Aba 1: Aritmética de Endereços -->
+    @if (abaAtiva() === 'aritmetica') {
+      <section class="guia-secao">
+        <div class="guia-intro">
+          <h3>Como a CPU localiza dados na Cache?</h3>
+          <p>
+            Quando a CPU gera um endereço de memória (em formato decimal ou binário), o hardware da cache divide esse endereço em <strong>3 partes fundamentais</strong>:
+          </p>
+        </div>
+
+        <!-- Banner Dinâmico da Simulação Ativa -->
+        @if (simulacao(); as sim) {
+          <div class="card-contexto">
+            <div class="card-contexto__titulo">
+              <i class="pi pi-info-circle"></i>
+              <strong>Sua Simulação Atual ({{ sim.bitsTag + sim.bitsIndice + sim.bitsOffset }} bits no total):</strong>
+            </div>
+            <div class="card-contexto__valores">
+              <span class="badge-tag">Tag: <strong>{{ sim.bitsTag }} bits</strong></span>
+              <span class="badge-idx">Índice: <strong>{{ sim.bitsIndice }} bits</strong></span>
+              <span class="badge-off">Offset: <strong>{{ sim.bitsOffset }} bits</strong></span>
+            </div>
+          </div>
+        }
+
+        <div class="grade-campos">
+          <!-- Card OFFSET -->
+          <article class="card-campo card-campo--off" [class.card-campo--destaque]="destaqueCampo() === 'offset'">
+            <div class="card-campo__topo">
+              <span class="card-campo__pill pill--off">OFFSET (Deslocamento)</span>
+              <span class="card-campo__formula">log₂(Tamanho do Bloco)</span>
+            </div>
+            <h4>Onde está o byte dentro do bloco?</h4>
+            <p>
+              A memória principal envia blocos completos de dados (ex: 16 ou 32 bytes). O <strong>Offset</strong> indica a posição exata do byte desejado pela CPU dentro desse bloco carregado.
+            </p>
+            <div class="card-campo__exemplo">
+              <strong>Exemplo:</strong> Se o bloco tem <code>16 Bytes</code>, temos <code>log₂(16) = 4 bits</code> de offset (permite endereçar os bytes de 0 a 15).
+            </div>
+          </article>
+
+          <!-- Card ÍNDICE -->
+          <article class="card-campo card-campo--idx" [class.card-campo--destaque]="destaqueCampo() === 'indice'">
+            <div class="card-campo__topo">
+              <span class="card-campo__pill pill--idx">ÍNDICE (Index / Set)</span>
+              <span class="card-campo__formula">log₂(Total de Conjuntos)</span>
+            </div>
+            <h4>Em qual conjunto/linha procurar?</h4>
+            <p>
+              Funciona como o "endereço da prateleira". O <strong>Índice</strong> aponta diretamente para qual linha (no mapeamento direto) ou conjunto de vias a cache deve consultar.
+            </p>
+            <div class="card-campo__exemplo">
+              <strong>Exemplo:</strong> Se a cache tem <code>4 conjuntos</code>, temos <code>log₂(4) = 2 bits</code> de índice. No mapeamento totalmente associativo, o índice é <code>0 bits</code>.
+            </div>
+          </article>
+
+          <!-- Card TAG -->
+          <article class="card-campo card-campo--tag" [class.card-campo--destaque]="destaqueCampo() === 'tag'">
+            <div class="card-campo__topo">
+              <span class="card-campo__pill pill--tag">TAG (Rótulo)</span>
+              <span class="card-campo__formula">Total Bits − (Índice + Offset)</span>
+            </div>
+            <h4>O dado que está ali é o correto?</h4>
+            <p>
+              Como vários blocos da RAM compartilham a mesma linha da cache, o <strong>Tag</strong> armazena os bits restantes mais significativos. O comparador de hardware valida se o Tag guardado na linha é idêntico ao solicitado pela CPU.
+            </p>
+            <div class="card-campo__exemplo">
+              <strong>Exemplo:</strong> Em um endereço de 8 bits com 2 bits de índice e 4 de offset, sobram <code>8 − (2 + 4) = 2 bits</code> para a Tag.
+            </div>
+          </article>
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 2: Mapeamentos de Cache -->
+    @if (abaAtiva() === 'mapeamento') {
+      <section class="guia-secao">
+        <div class="guia-intro">
+          <h3>Como os blocos são distribuídos na Cache?</h3>
+          <p>
+            O tipo de mapeamento define a liberdade que um bloco da memória principal tem para ser alocado nas linhas da memória cache:
+          </p>
+        </div>
+
+        <div class="grade-mapeamentos">
+          <!-- Mapeamento Direto -->
+          <article class="card-map">
+            <div class="card-map__header">
+              <span class="card-map__badge">1 Via por Conjunto</span>
+              <h4>Mapeamento Direto</h4>
+            </div>
+            <p class="card-map__desc">
+              Cada bloco da RAM mapeia para <strong>uma única linha específica</strong> da cache calculada por <code>Linha = Bloco mod (Total de Linhas)</code>.
+            </p>
+            <ul class="card-map__lista">
+              <li><i class="pi pi-check text-green-500"></i> <strong>Vantagem:</strong> Circuito simples, menor tempo de busca e baixo consumo.</li>
+              <li><i class="pi pi-times text-red-500"></i> <strong>Desvantagem:</strong> Alto número de faltas por conflito se dois endereços frequentes disputarem a mesma linha.</li>
+            </ul>
+          </article>
+
+          <!-- Associativo por Conjunto -->
+          <article class="card-map card-map--destaque">
+            <div class="card-map__header">
+              <span class="card-map__badge card-map__badge--destaque">N Vias por Conjunto</span>
+              <h4>Associativo por Conjunto (Set-Associative)</h4>
+            </div>
+            <p class="card-map__desc">
+              A cache é dividida em conjuntos, e cada conjunto contém <strong>N linhas (vias)</strong>. O bloco é direcionado ao conjunto pelo Índice, mas pode ocupar qualquer via livre desse conjunto.
+            </p>
+            <ul class="card-map__lista">
+              <li><i class="pi pi-check text-green-500"></i> <strong>Vantagem:</strong> Reduz drasticamente colisões com excelente relação custo-benefício (padrão em processadores modernos).</li>
+              <li><i class="pi pi-info-circle text-blue-500"></i> <strong>Trade-off:</strong> Requer política de substituição (LRU/FIFO) para decidir qual via desocupar.</li>
+            </ul>
+          </article>
+
+          <!-- Totalmente Associativo -->
+          <article class="card-map">
+            <div class="card-map__header">
+              <span class="card-map__badge">1 Único Conjunto</span>
+              <h4>Totalmente Associativo</h4>
+            </div>
+            <p class="card-map__desc">
+              Um bloco pode ser posicionado em <strong>qualquer linha livre</strong> da memória cache. Não há bits de índice no endereço.
+            </p>
+            <ul class="card-map__lista">
+              <li><i class="pi pi-check text-green-500"></i> <strong>Vantagem:</strong> Elimina 100% das faltas por conflito de mapeamento.</li>
+              <li><i class="pi pi-times text-red-500"></i> <strong>Desvantagem:</strong> Requer comparadores de Tag em todas as linhas em paralelo, encarecendo o hardware.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 3: Políticas de Substituição -->
+    @if (abaAtiva() === 'substituicao') {
+      <section class="guia-secao">
+        <div class="guia-intro">
+          <h3>O que acontece quando a Cache enche?</h3>
+          <p>
+            Quando todas as linhas de um conjunto estão ocupadas e ocorre uma falta (*miss*), o processador deve escolher uma linha para ser descartada ou sobrescrita:
+          </p>
+        </div>
+
+        <div class="grade-substituicao">
+          <!-- LRU -->
+          <article class="card-sub">
+            <div class="card-sub__header">
+              <i class="pi pi-history card-sub__icon"></i>
+              <div>
+                <h4>LRU — Least Recently Used</h4>
+                <span>Menos Recentemente Utilizado</span>
+              </div>
+            </div>
+            <p>
+              Descarta o bloco que ficou o <strong>maior período de tempo sem nenhum acesso</strong> pela CPU.
+            </p>
+            <div class="card-sub__box">
+              <strong>Princípio Físico:</strong> Baseia-se na <em>Localidade Temporal</em> (dados acessados recentemente têm maior probabilidade de serem acessados novamente). É a política mais eficiente para a maioria dos programas.
+            </div>
+          </article>
+
+          <!-- FIFO -->
+          <article class="card-sub">
+            <div class="card-sub__header">
+              <i class="pi pi-sort-amount-down card-sub__icon"></i>
+              <div>
+                <h4>FIFO — First In, First Out</h4>
+                <span>Primeiro a Entrar, Primeiro a Sair</span>
+              </div>
+            </div>
+            <p>
+              Descarta o bloco que foi <strong>carregado na cache há mais tempo</strong>, funcionando como uma fila de espera.
+            </p>
+            <div class="card-sub__box">
+              <strong>Princípio Físico:</strong> Mais simples de implementar em hardware (usa um contador circular), porém pode cometer o erro de descartar um bloco muito utilizado apenas por ele ter entrado cedo.
+            </div>
+          </article>
+        </div>
+      </section>
+    }
+
+    <!-- Conteúdo da Aba 4: Hit vs Miss -->
+    @if (abaAtiva() === 'hitmiss') {
+      <section class="guia-secao">
+        <div class="guia-intro">
+          <h3>Entendendo Acertos e os 3 Tipos de Faltas</h3>
+          <p>
+            O desempenho de um sistema computacional depende da taxa de acertos da cache. Entenda a anatomia dos resultados:
+          </p>
+        </div>
+
+        <div class="grade-hitmiss">
+          <!-- HIT -->
+          <div class="card-hm card-hm--hit">
+            <div class="card-hm__badge badge--hit"><i class="pi pi-check-circle"></i> CACHE HIT (Acerto)</div>
+            <p>
+              O bloco solicitado pela CPU já está presente em uma linha da cache, o <strong>Bit de Validade é 1</strong> e o <strong>Tag confere</strong>. O dado é entregue em ~1 a 3 ciclos de clock.
+            </p>
+          </div>
+
+          <!-- MISS COMPULSÓRIO -->
+          <div class="card-hm card-hm--miss">
+            <div class="card-hm__badge badge--cold"><i class="pi pi-snowflake"></i> Miss Compulsório (Cold Miss)</div>
+            <p>
+              Ocorre no <strong>primeiro acesso</strong> do programa àquele bloco de memória. É inevitável, pois a cache é inicializada vazia (todas as linhas inválidas).
+            </p>
+          </div>
+
+          <!-- MISS DE CONFLITO -->
+          <div class="card-hm card-hm--miss">
+            <div class="card-hm__badge badge--conflict"><i class="pi pi-exclamation-triangle"></i> Miss de Conflito</div>
+            <p>
+              Ocorre quando múltiplos blocos da RAM são mapeados para o <strong>mesmo conjunto/linha</strong> e disputam espaço, mesmo que ainda existam linhas vazias em outros conjuntos.
+            </p>
+          </div>
+
+          <!-- MISS DE CAPACIDADE -->
+          <div class="card-hm card-hm--miss">
+            <div class="card-hm__badge badge--capacity"><i class="pi pi-database"></i> Miss de Capacidade</div>
+            <p>
+              Ocorre quando o volume total de dados ativos que o programa utiliza é <strong>maior do que o tamanho físico total da memória cache</strong>.
+            </p>
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="guia-footer">
+      <button pButton label="Entendi, voltar à Simulação" icon="pi pi-check" (click)="aoFechar()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
