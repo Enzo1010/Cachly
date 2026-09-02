@@ -32,6 +32,7 @@ public class QuestaoController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public List<QuestaoResponse> listarAtivas() {
         return questaoService.listarAtivas();
     }
@@ -51,6 +52,7 @@ public class QuestaoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public QuestaoResponse buscarPorId(@PathVariable Long id) {
         return questaoService.buscarPorId(id);
     }

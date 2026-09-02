@@ -6,3 +6,4 @@ test.json
 tree.txt
 *.log
 
+.env

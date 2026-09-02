@@ -14,7 +14,7 @@ spring:
 api:
   security:
     token:
-      secret: ${JWT_SECRET:segredo-padrao-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente-para-hmac-sha}
+      secret: ${JWT_SECRET}
       expiration-hours: ${JWT_EXPIRATION_HOURS:24}
 
 app:
