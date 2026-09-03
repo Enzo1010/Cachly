@@ -43,4 +43,42 @@ describe('LayoutPrincipalComponent', () => {
     expect(encerrar).toHaveBeenCalledOnce();
     expect(navegar).toHaveBeenCalledWith('/login');
   });
+
+  it('deve alternar e fechar o menu do usuario', () => {
+    TestBed.configureTestingModule({
+      imports: [LayoutPrincipalComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: SessaoService,
+          useValue: {
+            encerrar: vi.fn().mockReturnValue(of(void 0)),
+            usuario: signal({
+              id: 1,
+              nome: 'Ana Silva',
+              email: 'ana.silva@exemplo.com',
+              perfil: 'ALUNO',
+              xpTotal: 100,
+              nivel: 2,
+              diasOfensiva: 3,
+              nomeNivel: 'Intermediário',
+            }),
+          },
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(LayoutPrincipalComponent);
+    fixture.detectChanges();
+    const componente = fixture.componentInstance;
+
+    expect(componente['menuUsuarioAberto']()).toBe(false);
+
+    const eventoFake = new MouseEvent('click');
+    componente['alternarMenuUsuario'](eventoFake);
+    expect(componente['menuUsuarioAberto']()).toBe(true);
+
+    componente['fecharMenuUsuario']();
+    expect(componente['menuUsuarioAberto']()).toBe(false);
+  });
 });

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -35,14 +35,13 @@ export class LayoutPrincipalComponent {
   protected readonly menuAberto = signal(false);
   protected readonly sidebarRecolhida = signal(false);
   protected readonly tituloPagina = signal('Visão Geral');
+  protected readonly menuUsuarioAberto = signal(false);
 
   protected readonly navegacaoPrincipal: readonly ItemNavegacao[] = [
     { icone: 'pi pi-home', rotulo: 'Início', rota: '/dashboard' },
     { icone: 'pi pi-server', rotulo: 'Simulador', rota: '/simulador' },
     { icone: 'pi pi-book', rotulo: 'Estudar', rota: '/estudar' },
     { icone: 'pi pi-chart-pie', rotulo: 'Desempenho', rota: '/desempenho' },
-    { icone: 'pi pi-trophy', rotulo: 'Liga Semanal', rota: '/liga-semanal' },
-    { icone: 'pi pi-verified', rotulo: 'Conquistas', rota: '/conquistas' },
   ];
 
   constructor() {
@@ -53,7 +52,18 @@ export class LayoutPrincipalComponent {
         filter((evento): evento is NavigationEnd => evento instanceof NavigationEnd),
         takeUntilDestroyed(this.destruir),
       )
-      .subscribe(() => this.atualizarTituloPagina());
+      .subscribe(() => {
+        this.atualizarTituloPagina();
+        this.menuUsuarioAberto.set(false);
+      });
+  }
+
+  @HostListener('document:click', ['$event'])
+  protected aoClicarFora(event: MouseEvent): void {
+    const alvo = event.target as HTMLElement | null;
+    if (!alvo?.closest('.usuario-menu-wrapper')) {
+      this.menuUsuarioAberto.set(false);
+    }
   }
 
   protected alternarMenu(): void {
@@ -62,6 +72,15 @@ export class LayoutPrincipalComponent {
     } else {
       this.sidebarRecolhida.update((rec) => !rec);
     }
+  }
+
+  protected alternarMenuUsuario(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuUsuarioAberto.update((aberto) => !aberto);
+  }
+
+  protected fecharMenuUsuario(): void {
+    this.menuUsuarioAberto.set(false);
   }
 
   protected fecharMenu(): void {

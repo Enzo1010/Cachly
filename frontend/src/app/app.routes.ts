@@ -42,17 +42,11 @@ export const routes: Routes = [
       },
       {
         path: 'liga-semanal',
-        loadChildren: () =>
-          import('./features/liga-semanal/liga-semanal.routes').then(
-            (rotas) => rotas.ROTAS_LIGA_SEMANAL,
-          ),
+        redirectTo: 'dashboard',
       },
       {
         path: 'conquistas',
-        loadChildren: () =>
-          import('./features/conquistas/conquistas.routes').then(
-            (rotas) => rotas.ROTAS_CONQUISTAS,
-          ),
+        redirectTo: 'dashboard',
       },
       {
         path: 'simulador',
