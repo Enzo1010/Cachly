@@ -47,4 +47,27 @@ describe('SimuladorCacheService', () => {
     expect(req.request.body).toEqual(mockRequest);
     req.flush({});
   });
+
+  it('deve listar desafios com chamada GET', () => {
+    service.listarDesafios().subscribe((desafios) => {
+      expect(desafios.length).toBe(1);
+      expect(desafios[0].id).toBe('cold-miss');
+    });
+
+    const req = httpMock.expectOne('/api/simulador/desafios');
+    expect(req.request.method).toBe('GET');
+    req.flush([{ id: 'cold-miss', titulo: 'Miss Compulsorio' }]);
+  });
+
+  it('deve verificar desafio com chamada POST', () => {
+    service.verificarDesafio('cold-miss', { opcaoSelecionadaId: 'A' }).subscribe((res) => {
+      expect(res.correto).toBe(true);
+      expect(res.xpGanho).toBe(30);
+    });
+
+    const req = httpMock.expectOne('/api/simulador/desafios/cold-miss/verificar');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ opcaoSelecionadaId: 'A' });
+    req.flush({ correto: true, xpGanho: 30 });
+  });
 });

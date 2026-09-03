@@ -15,13 +15,18 @@ export function criarDadosRosca(simulacao: SimulacaoResponse): ChartData<'doughn
 }
 
 export function criarDadosLinha(simulacao: SimulacaoResponse, passoAtualIndex: number): ChartData<'line'> {
-  const labels = [];
-  const hitData = [];
+  const labels: string[] = [];
+  const hitData: number[] = [];
   let hitsAtuais = 0;
 
-  for (let i = 0; i <= passoAtualIndex; i++) {
+  if (!simulacao || !simulacao.passos || simulacao.passos.length === 0) {
+    return { labels: [], datasets: [] };
+  }
+
+  const limite = Math.min(passoAtualIndex, simulacao.passos.length - 1);
+  for (let i = 0; i <= limite; i++) {
     labels.push(`P${i + 1}`);
-    if (simulacao.passos[i].hit) hitsAtuais++;
+    if (simulacao.passos[i]?.hit) hitsAtuais++;
     hitData.push(hitsAtuais);
   }
 

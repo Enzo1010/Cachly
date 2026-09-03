@@ -94,6 +94,9 @@
   min-height: 100dvh;
   margin-left: 18rem;
   transition: margin-left 300ms ease;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .topo {
@@ -398,6 +401,9 @@
 .conteudo-pagina {
   min-height: calc(100dvh - 5.25rem);
   padding: clamp(1rem, 3vw, 2rem);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 button.botao-menu {

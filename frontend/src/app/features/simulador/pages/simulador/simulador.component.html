@@ -1,12 +1,45 @@
-﻿<div class="sim-page">
+<div class="sim-page">
+
+  <!-- ======================== SELETOR DE MODO ======================== -->
+  <div class="sim-mode-bar">
+    <div class="sim-mode-toggle" role="tablist" aria-label="Modo de operação do simulador">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="state.modo() === 'livre'"
+        class="mode-btn"
+        [class.mode-btn--active]="state.modo() === 'livre'"
+        (click)="state.setModo('livre')"
+      >
+        <i class="pi pi-sliders-h" aria-hidden="true"></i>
+        <span>Simulação Livre</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="state.modo() === 'desafio'"
+        class="mode-btn"
+        [class.mode-btn--active]="state.modo() === 'desafio'"
+        (click)="state.setModo('desafio')"
+      >
+        <i class="pi pi-flag-fill" aria-hidden="true"></i>
+        <span>Laboratório de Desafios</span>
+        <span class="mode-badge">Missões</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ======================== LAYOUT 2 COLUNAS ======================== -->
-  <div class="sim-layout" [class.sidebar-collapsed]="state.sidebarCollapsed()">
+  <div class="sim-layout" [class.sidebar-collapsed]="state.sidebarCollapsed()" [class.modo-desafio]="state.modo() === 'desafio'">
 
     <!-- Sidebar de Configuração -->
     <aside class="sim-sidebar" [class.collapsed]="state.sidebarCollapsed()">
       <div class="sidebar-header">
-        <h3><i class="pi pi-microchip" style="margin-right: 0.5rem;"></i>Hardware</h3>
+        <h3>
+          <i class="pi pi-microchip" style="margin-right: 0.5rem;"></i>
+          {{ state.modo() === 'livre' ? 'Hardware' : 'Missão' }}
+        </h3>
         <div class="sidebar-actions">
           <p-button
             icon="pi pi-book"
@@ -25,11 +58,62 @@
       </div>
       
       <div class="sidebar-content">
-        <app-simulador-form [loading]="state.loading()" (simular)="state.onSimular($event)"></app-simulador-form>
-        @if (state.error()) {
-          <div style="margin-top: 1rem;">
-            <p-message severity="error" [text]="state.error()!"></p-message>
-          </div>
+        @if (state.modo() === 'livre') {
+          <app-simulador-form [loading]="state.loading()" (simular)="state.onSimular($event)"></app-simulador-form>
+          @if (state.error()) {
+            <div style="margin-top: 1rem;">
+              <p-message severity="error" [text]="state.error()!"></p-message>
+            </div>
+          }
+        } @else {
+          <!-- Resumo de Hardware da Missão Selecionada -->
+          @if (state.desafioSelecionado(); as desafio) {
+            <div class="sidebar-missao-info">
+              <div class="missao-meta-chip">
+                <span class="dificuldade-pill" [attr.data-dif]="desafio.dificuldade">{{ desafio.dificuldade }}</span>
+                <span class="xp-pill">+{{ desafio.xpRecompensa }} XP</span>
+              </div>
+              <h4 class="sidebar-missao-titulo">{{ desafio.titulo }}</h4>
+              
+              <div class="specs-list">
+                <div class="spec-item">
+                  <span class="spec-label">Cache</span>
+                  <strong class="spec-value">{{ desafio.configuracao.tamanhoCacheBytes }} B</strong>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Bloco</span>
+                  <strong class="spec-value">{{ desafio.configuracao.tamanhoBlocoBytes }} B</strong>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Mapeamento</span>
+                  <strong class="spec-value">{{ desafio.configuracao.mapeamento }}</strong>
+                </div>
+                @if (desafio.configuracao.numeroVias) {
+                  <div class="spec-item">
+                    <span class="spec-label">Vias</span>
+                    <strong class="spec-value">{{ desafio.configuracao.numeroVias }}-Way</strong>
+                  </div>
+                }
+                <div class="spec-item">
+                  <span class="spec-label">Substituição</span>
+                  <strong class="spec-value">{{ desafio.configuracao.substituicao || 'N/A' }}</strong>
+                </div>
+              </div>
+
+              <div class="spec-enderecos">
+                <span class="spec-label">Acessos à Memória</span>
+                <div class="enderecos-chips">
+                  @for (end of desafio.configuracao.enderecos; track $index) {
+                    <span class="end-chip">{{ end }}</span>
+                  }
+                </div>
+              </div>
+
+              <p class="sidebar-missao-aviso">
+                <i class="pi pi-lock"></i> Parâmetros fixados para este desafio. Alterne para <strong>Simulação Livre</strong> para alterar o hardware.
+              </p>
+            </div>
+          }
         }
       </div>
     </aside>
@@ -37,35 +121,167 @@
     <!-- Área Principal -->
     <div class="sim-main">
 
-      <!-- Estado de Loading -->
-      @if (state.loading()) {
-        <div class="sim-loading">
-          <p-progressSpinner styleClass="w-4rem h-4rem"></p-progressSpinner>
-          <span>Calculando simulação...</span>
-        </div>
-      }
+      <!-- ==================== CONTEÚDO DO MODO DESAFIO ==================== -->
+      @if (state.modo() === 'desafio') {
+        
+        <!-- Trilha de Desafios (Seleção Rápida) -->
+        <div class="desafios-catalogo">
+          <div class="catalogo-header">
+            <h4><i class="pi pi-compass"></i> Escolha uma Missão de Laboratório</h4>
+            <span class="catalogo-contador">{{ state.desafios().length }} Desafios Disponíveis</span>
+          </div>
 
-      <!-- Estado Vazio -->
-      @if (!state.loading() && !state.simulacao()) {
-        <div class="sim-empty">
-          <i class="pi pi-server sim-empty__icon"></i>
-          <h2 class="sim-empty__title">Aguardando Configuração</h2>
-          <p class="sim-empty__desc">
-            Configure o hardware ao lado (tamanho de cache, bloco e tipo de mapeamento) e inicie a simulação para visualizar o comportamento dos acessos à memória.
-          </p>
-          <div style="margin-top: 0.5rem;">
-            <p-button
-              icon="pi pi-book"
-              label="Entender Teoria e Fórmulas de Cache"
-              (onClick)="abrirGuia()"
-              styleClass="p-button-outlined p-button-sm">
-            </p-button>
+          <div class="desafios-grid">
+            @for (desafio of state.desafios(); track desafio.id) {
+              <button
+                type="button"
+                class="desafio-card-btn"
+                [class.desafio-card-btn--active]="state.desafioSelecionado()?.id === desafio.id"
+                (click)="state.selecionarDesafio(desafio)"
+              >
+                <div class="desafio-card-header">
+                  <span class="dificuldade-pill" [attr.data-dif]="desafio.dificuldade">{{ desafio.dificuldade }}</span>
+                  <span class="xp-pill">+{{ desafio.xpRecompensa }} XP</span>
+                </div>
+                <h5 class="desafio-card-title">{{ desafio.titulo }}</h5>
+              </button>
+            }
           </div>
         </div>
+
+        <!-- Painel Ativo da Missão -->
+        @if (state.desafioSelecionado(); as desafio) {
+          <div class="missao-painel card">
+            <div class="missao-intro">
+              <div class="missao-badge">
+                <i class="pi pi-bullseye"></i>
+                <span>Missão Ativa</span>
+              </div>
+              <h3>{{ desafio.titulo }}</h3>
+              <p class="missao-contexto">{{ desafio.descricao }}</p>
+            </div>
+
+            <!-- Pergunta e Alternativas -->
+            <div class="missao-questao-box">
+              <h4 class="pergunta-texto">
+                <i class="pi pi-question-circle"></i> {{ desafio.pergunta }}
+              </h4>
+
+              <div class="opcoes-lista">
+                @for (opcao of desafio.opcoes; track opcao.id) {
+                  <button
+                    type="button"
+                    class="opcao-btn"
+                    [class.opcao-btn--selecionada]="state.opcaoSelecionada() === opcao.id"
+                    [class.opcao-btn--correta]="state.resultadoDesafio() && state.resultadoDesafio()?.opcaoCorretaId === opcao.id"
+                    [class.opcao-btn--incorreta]="state.resultadoDesafio() && !state.resultadoDesafio()?.correto && state.opcaoSelecionada() === opcao.id"
+                    (click)="state.selecionarOpcao(opcao.id)"
+                    [disabled]="state.carregandoVerificacao()"
+                  >
+                    <span class="opcao-letra">{{ opcao.id }}</span>
+                    <span class="opcao-texto">{{ opcao.texto }}</span>
+                  </button>
+                }
+              </div>
+
+              <!-- Botão de Verificação -->
+              <div class="missao-acoes">
+                <button
+                  pButton
+                  type="button"
+                  class="btn-verificar"
+                  [disabled]="!state.opcaoSelecionada() || state.carregandoVerificacao()"
+                  (click)="state.verificarDesafio()"
+                >
+                  @if (state.carregandoVerificacao()) {
+                    <i class="pi pi-spin pi-spinner"></i>
+                    <span>Verificando resposta...</span>
+                  } @else {
+                    <i class="pi pi-check"></i>
+                    <span>Executar Simulação e Validar Resposta</span>
+                  }
+                </button>
+              </div>
+
+              <!-- Feedback / Banner de Resultado -->
+              @if (state.resultadoDesafio(); as res) {
+                <div
+                  class="resultado-banner"
+                  [class.resultado-banner--sucesso]="res.correto"
+                  [class.resultado-banner--erro]="!res.correto"
+                >
+                  <div class="resultado-banner__icone">
+                    <i [class]="res.correto ? 'pi pi-check-circle' : 'pi pi-exclamation-triangle'"></i>
+                  </div>
+                  <div class="resultado-banner__info">
+                    <h4>
+                      {{ res.correto ? '🎉 Parabéns! Resposta Correta!' : 'Atenção aos Detalhes da Cache:' }}
+                      @if (res.correto && res.xpGanho > 0) {
+                        <span class="xp-ganho-pill">+{{ res.xpGanho }} XP Concedidos</span>
+                      }
+                    </h4>
+                    <p>{{ res.explicacao }}</p>
+                    <span class="resultado-banner__dica">
+                      <i class="pi pi-arrow-down"></i> Veja abaixo o passo a passo da simulação de hardware comprovando esta análise!
+                    </span>
+                  </div>
+                </div>
+              }
+
+              @if (state.erroDesafio()) {
+                <div style="margin-top: 1rem;">
+                  <p-message severity="error" [text]="state.erroDesafio()!"></p-message>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ==================== ESTADOS DO MODO LIVRE ==================== -->
+      @if (state.modo() === 'livre') {
+        <!-- Estado de Loading -->
+        @if (state.loading()) {
+          <div class="sim-loading">
+            <p-progressSpinner styleClass="w-4rem h-4rem"></p-progressSpinner>
+            <span>Calculando simulação...</span>
+          </div>
+        }
+
+        <!-- Estado Vazio -->
+        @if (!state.loading() && !state.simulacao()) {
+          <div class="sim-empty">
+            <i class="pi pi-server sim-empty__icon"></i>
+            <h2 class="sim-empty__title">Aguardando Configuração</h2>
+            <p class="sim-empty__desc">
+              Configure o hardware ao lado (tamanho de cache, bloco e tipo de mapeamento) e inicie a simulação para visualizar o comportamento dos acessos à memória.
+            </p>
+            <div style="margin-top: 0.5rem;">
+              <p-button
+                icon="pi pi-book"
+                label="Entender Teoria e Fórmulas de Cache"
+                (onClick)="abrirGuia()"
+                styleClass="p-button-outlined p-button-sm">
+              </p-button>
+            </div>
+          </div>
+        }
       }
 
       <!-- ============== SIMULAÇÃO ATIVA ============== -->
       @if (state.simulacao() && state.passoAtual()) {
+
+        @if (state.modo() === 'desafio') {
+          <div class="desafio-sim-header sim-fadein">
+            <div class="desafio-sim-header__title">
+              <i class="pi pi-server"></i>
+              <span>Comprovação da Simulação no Hardware</span>
+            </div>
+            <p class="desafio-sim-header__desc">
+              Navegue pelos acessos abaixo para analisar a evolução dos hits, tags e linhas da cache passo a passo.
+            </p>
+          </div>
+        }
 
         <!-- Barra de Controle -->
         <div class="sim-control-bar sim-fadein">
@@ -140,77 +356,13 @@
           <!-- Decoração de fundo -->
           <div class="sim-resolution__deco">{{ state.passoAtual()?.hit ? 'H' : 'M' }}</div>
 
-          <!-- Grade principal -->
-          <div class="sim-resolution__grid">
-
-            <!-- Endereço -->
+          <!-- Topo do Painel: Requisição CPU + Badge HIT/MISS -->
+          <div class="sim-resolution__header">
             <div class="sim-resolution__address">
-              <div class="label">Requisição da CPU</div>
-              <div class="value">{{ state.passoAtual()?.endereco }}</div>
-              <div class="value-sub">endereço decimal</div>
-            </div>
-
-            <!-- Breakdown Binário Interativo -->
-            <div class="sim-resolution__bits">
-              <div class="bits-header">
-                <div class="bits-label">Decodificação Binária ({{ state.totalBits() }} bits)</div>
-                <div class="bits-hint">
-                  <i class="pi pi-info-circle"></i> Clique nos campos para ver fórmulas
-                </div>
-              </div>
-              <div class="bits-row">
-                <div
-                  class="bit-group bit-group--tag bit-group--clickable"
-                  role="button"
-                  tabindex="0"
-                  (click)="abrirGuiaCampo('tag')"
-                  (keydown.enter)="abrirGuiaCampo('tag')"
-                  pTooltip="Tag: identifica o bloco (Clique para detalhes)"
-                  tooltipPosition="top"
-                >
-                  <div class="bit-value">{{ state.binarioBreakdown()?.tag }}</div>
-                  <div class="bit-bar"></div>
-                  <div class="bit-name">
-                    <span>Tag</span>
-                    <i class="pi pi-search bit-name__icon"></i>
-                  </div>
-                </div>
-
-                @if ((state.simulacao()?.bitsIndice ?? 0) > 0) {
-                  <div
-                    class="bit-group bit-group--idx bit-group--clickable"
-                    role="button"
-                    tabindex="0"
-                    (click)="abrirGuiaCampo('indice')"
-                    (keydown.enter)="abrirGuiaCampo('indice')"
-                    pTooltip="Índice: aponta o conjunto (Clique para detalhes)"
-                    tooltipPosition="top"
-                  >
-                    <div class="bit-value">{{ state.binarioBreakdown()?.indice }}</div>
-                    <div class="bit-bar"></div>
-                    <div class="bit-name">
-                      <span>Índice</span>
-                      <i class="pi pi-search bit-name__icon"></i>
-                    </div>
-                  </div>
-                }
-
-                <div
-                  class="bit-group bit-group--off bit-group--clickable"
-                  role="button"
-                  tabindex="0"
-                  (click)="abrirGuiaCampo('offset')"
-                  (keydown.enter)="abrirGuiaCampo('offset')"
-                  pTooltip="Offset: deslocamento no bloco (Clique para detalhes)"
-                  tooltipPosition="top"
-                >
-                  <div class="bit-value">{{ state.binarioBreakdown()?.offset }}</div>
-                  <div class="bit-bar"></div>
-                  <div class="bit-name">
-                    <span>Offset</span>
-                    <i class="pi pi-search bit-name__icon"></i>
-                  </div>
-                </div>
+              <span class="label">Requisição da CPU</span>
+              <div class="address-display">
+                <span class="value">{{ state.passoAtual()?.endereco }}</span>
+                <span class="value-sub">(decimal) • 0x{{ (state.passoAtual()?.endereco ?? 0).toString(16).toUpperCase().padStart(4, '0') }}</span>
               </div>
             </div>
 
@@ -222,9 +374,82 @@
                  [class.pi-check-circle]="state.passoAtual()?.hit"
                  [class.pi-times-circle]="!state.passoAtual()?.hit">
               </i>
-              <div class="result-text">{{ state.passoAtual()?.hit ? 'HIT' : 'MISS' }}</div>
+              <span class="result-text">{{ state.passoAtual()?.hit ? 'HIT' : 'MISS' }}</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Binário Interativo (Largura Total sem Scroll) -->
+          <div class="sim-resolution__bits">
+            <div class="bits-header">
+              <div class="bits-label">
+                <i class="pi pi-code"></i>
+                <span>Decodificação Binária do Endereço ({{ state.totalBits() }} bits)</span>
+              </div>
+              <div class="bits-hint">
+                <i class="pi pi-info-circle"></i> Clique nos blocos para abrir o guia
+              </div>
             </div>
 
+            <div class="bits-row">
+              <!-- TAG -->
+              <div
+                class="bit-group bit-group--tag bit-group--clickable"
+                role="button"
+                tabindex="0"
+                (click)="abrirGuiaCampo('tag')"
+                (keydown.enter)="abrirGuiaCampo('tag')"
+                pTooltip="Tag: identifica o bloco (Clique para detalhes)"
+                tooltipPosition="top"
+              >
+                <div class="bit-value bit-value--tag">{{ state.binarioBreakdown()?.tag }}</div>
+                <div class="bit-bar"></div>
+                <div class="bit-name">
+                  <span>Tag ({{ state.simulacao()?.bitsTag }}b)</span>
+                  <span class="bit-dec-badge">Dec: {{ state.passoAtual()?.tag }}</span>
+                  <i class="pi pi-search bit-name__icon"></i>
+                </div>
+              </div>
+
+              <!-- ÍNDICE -->
+              @if ((state.simulacao()?.bitsIndice ?? 0) > 0) {
+                <div
+                  class="bit-group bit-group--idx bit-group--clickable"
+                  role="button"
+                  tabindex="0"
+                  (click)="abrirGuiaCampo('indice')"
+                  (keydown.enter)="abrirGuiaCampo('indice')"
+                  pTooltip="Índice: aponta o conjunto (Clique para detalhes)"
+                  tooltipPosition="top"
+                >
+                  <div class="bit-value">{{ state.binarioBreakdown()?.indice }}</div>
+                  <div class="bit-bar"></div>
+                  <div class="bit-name">
+                    <span>Índice ({{ state.simulacao()?.bitsIndice }}b)</span>
+                    <span class="bit-dec-badge">Dec: {{ state.passoAtual()?.indice }}</span>
+                    <i class="pi pi-search bit-name__icon"></i>
+                  </div>
+                </div>
+              }
+
+              <!-- OFFSET -->
+              <div
+                class="bit-group bit-group--off bit-group--clickable"
+                role="button"
+                tabindex="0"
+                (click)="abrirGuiaCampo('offset')"
+                (keydown.enter)="abrirGuiaCampo('offset')"
+                pTooltip="Offset: deslocamento no bloco (Clique para detalhes)"
+                tooltipPosition="top"
+              >
+                <div class="bit-value">{{ state.binarioBreakdown()?.offset }}</div>
+                <div class="bit-bar"></div>
+                <div class="bit-name">
+                  <span>Offset ({{ state.simulacao()?.bitsOffset }}b)</span>
+                  <span class="bit-dec-badge">Dec: {{ state.passoAtual()?.offset }}</span>
+                  <i class="pi pi-search bit-name__icon"></i>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Explicação Didática -->
@@ -242,8 +467,8 @@
           </div>
           <app-simulador-tabela
             [estadoCache]="state.estadoCacheAtual()"
-            [blocoAlterado]="state.passoAtual()!.blocoSubstituido"
-            [isHit]="state.passoAtual()!.hit">
+            [blocoAlterado]="state.passoAtual()?.blocoSubstituido ?? null"
+            [isHit]="state.passoAtual()?.hit ?? false">
           </app-simulador-tabela>
         </div>
 

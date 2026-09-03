@@ -26,6 +26,20 @@ class SimuladorControllerTest {
     @MockitoBean
     private SimuladorCacheService simuladorCacheService;
 
+    @MockitoBean
+    private br.com.cachly.backend.simulador.desafio.DesafioCacheService desafioCacheService;
+
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioLogadoService usuarioLogadoService;
+
+    @Test
+    void deveListarDesafiosERetornarStatusOk() throws Exception {
+        when(desafioCacheService.listarDesafios()).thenReturn(List.of());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/simulador/desafios"))
+                .andExpect(status().isOk());
+    }
+
     @Test
     void deveExecutarSimulacaoERetornarStatusOk() throws Exception {
         SimulacaoResponse responseMock = new SimulacaoResponse(
@@ -54,17 +68,26 @@ class SimuladorControllerTest {
     }
 
     @Test
-    void deveRetornarBadRequestQuandoPayloadInvalido() throws Exception {
-        mockMvc.perform(post("/api/simulador/executar")
+    void deveVerificarDesafioERetornarStatusOk() throws Exception {
+        br.com.cachly.backend.simulador.desafio.ResultadoDesafioResponse resultadoMock =
+                new br.com.cachly.backend.simulador.desafio.ResultadoDesafioResponse(
+                        true, "A", "Parabéns", 30,
+                        new SimulacaoResponse(2, 2, 28, 4, 4, 1, 0, 1, 0.0, 100.0, List.of()),
+                        1, "Estagiário", 30
+                );
+
+        when(desafioCacheService.verificarDesafio(any(), any(), any())).thenReturn(resultadoMock);
+
+        mockMvc.perform(post("/api/simulador/desafios/cold-miss/verificar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "tamanhoCacheBytes": -1,
-                                  "tamanhoBlocoBytes": 4,
-                                  "mapeamento": "DIRETO",
-                                  "enderecos": []
+                                  "opcaoSelecionadaId": "A"
                                 }
                                 """))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correto").value(true))
+                .andExpect(jsonPath("$.opcaoCorretaId").value("A"))
+                .andExpect(jsonPath("$.xpGanho").value(30));
     }
 }

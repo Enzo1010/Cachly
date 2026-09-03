@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/alunos").permitAll();
-                    req.requestMatchers(HttpMethod.POST, "/api/simulador/executar").permitAll();
+                    req.requestMatchers("/api/simulador/**").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/api/health").permitAll();
 
                     // Rotas do Swagger / OpenAPI
