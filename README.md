@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
   <img src="frontend/public/cachly-logo-sem-fundo.png" alt="Cachly" width="280"/>
 
   <br/>
@@ -193,9 +193,10 @@ No diretório `backend/`:
 ```bash
 # Definir as variáveis de ambiente necessárias e iniciar
 export JWT_SECRET="segredo-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente"
+export DB_PASSWORD="sua-senha-do-banco-aqui"
 ./mvnw spring-boot:run
 ```
-*(No Windows PowerShell: `$env:JWT_SECRET="seu-segredo..."; .\mvnw.cmd spring-boot:run`)*
+*(No Windows PowerShell: `$env:JWT_SECRET="seu-segredo..."; $env:DB_PASSWORD="sua-senha..."; .\mvnw.cmd spring-boot:run`)*
 
 #### 3. Frontend
 No diretório `frontend/`:

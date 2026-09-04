@@ -26,6 +26,8 @@ public class DesafioCacheService {
     private final SimuladorCacheService simuladorCacheService;
     private final UsuarioRepository usuarioRepository;
     private final XpService xpService;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+    private final DesafioConcluidoRepository desafioConcluidoRepository;
 
     private static record DesafioInterno(
             String id,
@@ -162,20 +164,34 @@ public class DesafioCacheService {
         int xpGanho = 0;
 
         if (correto && usuario != null) {
-            xpGanho = desafio.xpRecompensa();
-            int xpAtual = usuario.getXpTotal() != null ? usuario.getXpTotal() : 0;
-            int novoXp = xpAtual + xpGanho;
-            usuario.setXpTotal(novoXp);
-            int novoNivel = xpService.calcularNivel(novoXp);
-            usuario.setNivel(novoNivel);
-            usuarioRepository.save(usuario);
+            boolean jaConcluido = desafioConcluidoRepository.existsByUsuarioIdAndDesafioId(usuario.getId(), id);
+            if (!jaConcluido) {
+                try {
+                    DesafioConcluido concluido = new DesafioConcluido();
+                    concluido.setUsuario(usuario);
+                    concluido.setDesafioId(id);
+                    desafioConcluidoRepository.save(concluido);
+                    desafioConcluidoRepository.flush(); // força constraint
+                    
+                    xpGanho = desafio.xpRecompensa();
+                    eventPublisher.publishEvent(new DesafioRespondidoEvent(usuario, id, xpGanho, true, true));
+                } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    // Já concluído por outra thread
+                    xpGanho = 0;
+                }
+            } else {
+                eventPublisher.publishEvent(new DesafioRespondidoEvent(usuario, id, 0, true, false));
+            }
+        } else if (!correto && usuario != null) {
+            eventPublisher.publishEvent(new DesafioRespondidoEvent(usuario, id, 0, false, false));
         }
 
         SimulacaoResponse simulacao = simuladorCacheService.executarSimulacao(desafio.configuracao());
 
-        Integer nivelAtual = (usuario != null && usuario.getNivel() != null) ? usuario.getNivel() : 1;
+        Usuario usuarioAtualizado = usuario != null ? usuarioRepository.findById(usuario.getId()).orElse(usuario) : null;
+        Integer nivelAtual = (usuarioAtualizado != null && usuarioAtualizado.getNivel() != null) ? usuarioAtualizado.getNivel() : 1;
         String nomeNivel = xpService.nomeDoNivel(nivelAtual);
-        Integer xpTotalAtual = (usuario != null && usuario.getXpTotal() != null) ? usuario.getXpTotal() : 0;
+        Integer xpTotalAtual = (usuarioAtualizado != null && usuarioAtualizado.getXpTotal() != null) ? usuarioAtualizado.getXpTotal() : 0;
 
         return new ResultadoDesafioResponse(
                 correto,

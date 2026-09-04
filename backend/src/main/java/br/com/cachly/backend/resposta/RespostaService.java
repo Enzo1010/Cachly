@@ -19,6 +19,7 @@ public class RespostaService {
     private final TentativaQuestaoRepository tentativaQuestaoRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final XpService xpService;
+    private final br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
     @Transactional
     public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuario) {
@@ -69,18 +70,20 @@ public class RespostaService {
                 .findFirst()
                 .orElse(null);
 
+        // O evento modificou o usuário em uma instância persistente gerenciada pelo listener.
+        // Recarregamos a instância para garantir que vamos retornar os dados frescos (XP/Nível atualizados)
+        // e não os dados "stale" do objeto desanexado original.
+        Usuario usuarioAtualizado = usuarioRepository.findById(usuario.getId()).orElse(usuario);
+
         return new RespostaResponse(
                 salva.getId(),
                 correta,
                 alternativaCorretaId,
                 questao.getExplicacao(),
                 xpGanho,
-                // O nível e xp total atuais que serão retornados podem estar defasados pois o evento pode 
-                // rodar antes do flush ou depois, mas como é sincrono e transacional, ele atualiza a mesma 
-                // instância gerenciada pelo Hibernate caso esteja no mesmo escopo. 
-                usuario.getNivel(),
-                xpService.nomeDoNivel(usuario.getNivel()),
-                usuario.getXpTotal()
+                usuarioAtualizado.getNivel(),
+                xpService.nomeDoNivel(usuarioAtualizado.getNivel()),
+                usuarioAtualizado.getXpTotal()
         );
     }
 }

@@ -46,12 +46,7 @@ public class SimuladorController {
             @PathVariable String id,
             @Valid @RequestBody VerificarDesafioRequest request
     ) {
-        Usuario usuario = null;
-        try {
-            usuario = usuarioLogadoService.obterUsuarioAtual();
-        } catch (Exception ignored) {
-            // Permite responder e simular mesmo se o aluno não estiver com sessão válida no momento
-        }
+        Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
         return desafioCacheService.verificarDesafio(id, request, usuario);
     }
 }

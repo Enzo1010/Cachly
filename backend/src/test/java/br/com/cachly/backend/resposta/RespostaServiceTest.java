@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -34,8 +35,11 @@ class RespostaServiceTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
+    @Spy
+    private XpService xpService = new XpService();
+
     @Mock
-    private XpService xpService;
+    private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
 
     @InjectMocks
     private RespostaService respostaService;
@@ -93,6 +97,12 @@ class RespostaServiceTest {
         tentativaSalva.setId(500L);
         when(tentativaQuestaoRepository.save(any(TentativaQuestao.class))).thenReturn(tentativaSalva);
 
+        Usuario usuarioPosEvento = new Usuario();
+        usuarioPosEvento.setId(10L);
+        usuarioPosEvento.setXpTotal(10);
+        usuarioPosEvento.setNivel(1);
+        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuarioPosEvento));
+
         RespostaRequest request = new RespostaRequest(100L);
         RespostaResponse response = respostaService.responder(1L, request, usuario);
 
@@ -103,7 +113,7 @@ class RespostaServiceTest {
         assertEquals("Bit é a menor unidade de informação em computação.", response.explicacao());
         assertEquals(10, response.xpConcedido());
         assertEquals(1, response.nivelAtual());
-        assertEquals(0, response.xpTotal()); // XP Total is not updated here because it's updated in the event
+        assertEquals(10, response.xpTotal());
 
         ArgumentCaptor<TentativaQuestao> captor = ArgumentCaptor.forClass(TentativaQuestao.class);
         verify(tentativaQuestaoRepository).save(captor.capture());
@@ -128,6 +138,8 @@ class RespostaServiceTest {
         TentativaQuestao tentativaSalva = new TentativaQuestao();
         tentativaSalva.setId(501L);
         when(tentativaQuestaoRepository.save(any(TentativaQuestao.class))).thenReturn(tentativaSalva);
+
+        when(usuarioRepository.findById(10L)).thenReturn(Optional.of(usuario));
 
         RespostaRequest request = new RespostaRequest(101L);
         RespostaResponse response = respostaService.responder(1L, request, usuario);

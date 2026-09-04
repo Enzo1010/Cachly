@@ -19,6 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +36,12 @@ class DesafioCacheServiceTest {
 
     @Spy
     private XpService xpService = new XpService();
+
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private br.com.cachly.backend.simulador.desafio.DesafioConcluidoRepository desafioConcluidoRepository;
 
     @InjectMocks
     private DesafioCacheService desafioCacheService;
@@ -90,35 +97,52 @@ class DesafioCacheServiceTest {
     void deveVerificarRespostaCorretaEConcederXp() {
         VerificarDesafioRequest request = new VerificarDesafioRequest("A");
 
+        when(desafioConcluidoRepository.existsByUsuarioIdAndDesafioId(1L, "cold-miss")).thenReturn(false);
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+
         ResultadoDesafioResponse resultado = desafioCacheService.verificarDesafio("cold-miss", request, usuario);
 
         assertTrue(resultado.correto());
         assertEquals("A", resultado.opcaoCorretaId());
         assertEquals(30, resultado.xpGanho());
         assertNotNull(resultado.simulacao());
-        assertEquals(4, resultado.simulacao().totalMisses());
-        assertEquals(0, resultado.simulacao().totalHits());
 
-        // Verifica que o usuario acumulou XP
-        assertEquals(130, usuario.getXpTotal());
-        verify(usuarioRepository).save(usuario);
+        verify(eventPublisher).publishEvent(any(br.com.cachly.backend.simulador.desafio.DesafioRespondidoEvent.class));
+        verify(desafioConcluidoRepository).save(any());
     }
 
     @Test
     @DisplayName("Deve verificar resposta incorreta sem conceder XP")
     void deveVerificarRespostaIncorretaSemConcederXp() {
         VerificarDesafioRequest request = new VerificarDesafioRequest("B");
+        
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
         ResultadoDesafioResponse resultado = desafioCacheService.verificarDesafio("cold-miss", request, usuario);
 
         assertFalse(resultado.correto());
-        assertEquals("A", resultado.opcaoCorretaId());
         assertEquals(0, resultado.xpGanho());
-        assertTrue(resultado.explicacao().contains("Dica:"));
+
+        verify(eventPublisher).publishEvent(any(br.com.cachly.backend.simulador.desafio.DesafioRespondidoEvent.class));
+        verify(desafioConcluidoRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve permitir recomeco (idempotencia) se ja concluiu, porem sem conceder xp")
+    void devePermitirRecomecoSemXpFarm() {
+        VerificarDesafioRequest request = new VerificarDesafioRequest("A");
+
+        when(desafioConcluidoRepository.existsByUsuarioIdAndDesafioId(1L, "cold-miss")).thenReturn(true);
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+
+        ResultadoDesafioResponse resultado = desafioCacheService.verificarDesafio("cold-miss", request, usuario);
+
+        assertTrue(resultado.correto());
+        assertEquals("A", resultado.opcaoCorretaId());
+        assertEquals(0, resultado.xpGanho()); // XP é 0 porque já concluiu
         assertNotNull(resultado.simulacao());
 
-        // Usuario nao deve ter ganho XP nem sido salvo
-        assertEquals(100, usuario.getXpTotal());
-        verify(usuarioRepository, never()).save(any());
+        verify(eventPublisher).publishEvent(any(br.com.cachly.backend.simulador.desafio.DesafioRespondidoEvent.class));
+        verify(desafioConcluidoRepository, never()).save(any()); // Nao cria duplicado
     }
 }

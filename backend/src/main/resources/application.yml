@@ -4,7 +4,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/cachly}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -14,7 +14,7 @@ spring:
 api:
   security:
     token:
-      secret: ${JWT_SECRET:1abd8fa8fbf1b184566e1da823f3558efa554e31fe6dd8c5ee5d9273a9eb88ee}
+      secret: ${JWT_SECRET}
       expiration-hours: ${JWT_EXPIRATION_HOURS:24}
 
 app:

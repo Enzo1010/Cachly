@@ -23,18 +23,27 @@ public class GamificacaoEventListener {
     @EventListener
     @Transactional
     public void onQuestaoRespondida(QuestaoRespondidaEvent event) {
-        Usuario usuario = usuarioRepository.findByIdForUpdate(event.usuario().getId())
-                .orElseThrow();
+        int xpGanho = (event.correta() && event.primeiraVezCorreta()) ? xpService.calcularXpGanho(event.questao()) : 0;
+        concederXpEAtualizarOfensiva(event.usuario().getId(), xpGanho);
+    }
 
-        if (event.correta() && event.primeiraVezCorreta()) {
-            int xpGanho = xpService.calcularXpGanho(event.questao());
+    @EventListener
+    @Transactional
+    public void onDesafioRespondido(br.com.cachly.backend.simulador.desafio.DesafioRespondidoEvent event) {
+        int xpGanho = (event.correta() && event.primeiraVezCorreta()) ? event.xpRecompensa() : 0;
+        concederXpEAtualizarOfensiva(event.usuario().getId(), xpGanho);
+    }
+
+    private void concederXpEAtualizarOfensiva(Long usuarioId, int xpGanho) {
+        Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioId).orElseThrow();
+
+        if (xpGanho > 0) {
             usuario.setXpTotal(usuario.getXpTotal() + xpGanho);
             usuario.setXpSemanal(usuario.getXpSemanal() + xpGanho);
             usuario.setNivel(xpService.calcularNivel(usuario.getXpTotal()));
         }
 
         atualizarOfensiva(usuario);
-        
         usuarioRepository.save(usuario);
     }
 
