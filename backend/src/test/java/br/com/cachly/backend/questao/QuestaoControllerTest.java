@@ -17,6 +17,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(QuestaoController.class)
 @ActiveProfiles("test")
+@Import(br.com.cachly.backend.seguranca.SecurityConfig.class)
 class QuestaoControllerTest {
 
     @Autowired
@@ -34,12 +36,19 @@ class QuestaoControllerTest {
     @MockitoBean
     private QuestaoService questaoService;
 
+    @MockitoBean
+    private br.com.cachly.backend.seguranca.TokenService tokenService;
+
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
+
     @Test
     void deveCadastrarQuestaoERetornarStatusCriado() throws Exception {
         when(questaoService.cadastrar(any(QuestaoRequest.class)))
                 .thenReturn(criarResponse(1L, true));
 
         mockMvc.perform(post("/api/questoes")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(criarJsonValido()))
                 .andExpect(status().isCreated())
@@ -57,7 +66,8 @@ class QuestaoControllerTest {
                 criarResponse(2L, true)
         ));
 
-        mockMvc.perform(get("/api/questoes"))
+        mockMvc.perform(get("/api/questoes")
+                        .with(user("admin").roles("ADMINISTRADOR")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -79,7 +89,8 @@ class QuestaoControllerTest {
 
         when(questaoService.listarParaEstudo(eq(1L), eq(10))).thenReturn(List.of(questao));
 
-        mockMvc.perform(get("/api/questoes/estudo?categoriaId=1&limite=10"))
+        mockMvc.perform(get("/api/questoes/estudo?categoriaId=1&limite=10")
+                        .with(user("aluno").roles("ALUNO")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -93,7 +104,8 @@ class QuestaoControllerTest {
     void deveBuscarQuestaoPorIdERetornarStatusOk() throws Exception {
         when(questaoService.buscarPorId(1L)).thenReturn(criarResponse(1L, true));
 
-        mockMvc.perform(get("/api/questoes/1"))
+        mockMvc.perform(get("/api/questoes/1")
+                        .with(user("admin").roles("ADMINISTRADOR")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.enunciado").value("Enunciado 1"));
@@ -105,6 +117,7 @@ class QuestaoControllerTest {
                 .thenReturn(criarResponse(1L, true));
 
         mockMvc.perform(put("/api/questoes/1")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(criarJsonValido()))
                 .andExpect(status().isOk())
@@ -116,7 +129,8 @@ class QuestaoControllerTest {
     void deveDesativarQuestaoERetornarStatusOk() throws Exception {
         when(questaoService.desativar(1L)).thenReturn(criarResponse(1L, false));
 
-        mockMvc.perform(patch("/api/questoes/1/desativar"))
+        mockMvc.perform(patch("/api/questoes/1/desativar")
+                        .with(user("admin").roles("ADMINISTRADOR")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.ativa").value(false));
@@ -125,6 +139,7 @@ class QuestaoControllerTest {
     @Test
     void deveRetornarRequisicaoInvalidaQuandoCamposForemInvalidos() throws Exception {
         mockMvc.perform(post("/api/questoes")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -151,7 +166,8 @@ class QuestaoControllerTest {
                         "Questão não encontrada com o ID: 99"
                 ));
 
-        mockMvc.perform(get("/api/questoes/99"))
+        mockMvc.perform(get("/api/questoes/99")
+                        .with(user("admin").roles("ADMINISTRADOR")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.mensagem")
@@ -166,12 +182,43 @@ class QuestaoControllerTest {
                 ));
 
         mockMvc.perform(post("/api/questoes")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(criarJsonValido()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.mensagem")
                         .value("A categoria informada está inativa"));
+    }
+
+    @Test
+    void deveRejeitarCadastroSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(post("/api/questoes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(criarJsonValido()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deveRejeitarCadastroComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(post("/api/questoes")
+                        .with(user("aluno").roles("ALUNO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(criarJsonValido()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deveRejeitarListagemAtivasComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(get("/api/questoes")
+                        .with(user("aluno").roles("ALUNO")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deveRejeitarListagemEstudoSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(get("/api/questoes/estudo?categoriaId=1&limite=10"))
+                .andExpect(status().isUnauthorized());
     }
 
     private QuestaoResponse criarResponse(Long id, boolean ativa) {

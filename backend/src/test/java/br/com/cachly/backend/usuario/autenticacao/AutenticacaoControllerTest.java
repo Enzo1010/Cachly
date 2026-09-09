@@ -8,6 +8,7 @@ import br.com.cachly.backend.usuario.UsuarioService;
 import br.com.cachly.backend.usuario.PerfilUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AutenticacaoController.class)
 @ActiveProfiles("test")
+@Import(br.com.cachly.backend.seguranca.SecurityConfig.class)
 class AutenticacaoControllerTest {
 
     @Autowired
@@ -29,6 +32,9 @@ class AutenticacaoControllerTest {
 
     @MockitoBean
     private UsuarioService usuarioService;
+
+    @MockitoBean
+    private br.com.cachly.backend.seguranca.TokenService tokenService;
 
     @MockitoBean
     private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
@@ -54,7 +60,8 @@ class AutenticacaoControllerTest {
         when(usuarioLogadoService.obterSessaoAtual()).thenReturn(new br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse(
                         1L, "Ana Silva", "ana.silva@exemplo.com", br.com.cachly.backend.usuario.PerfilUsuario.ALUNO, 0, 1, 0, "Estagiário"));
 
-        mockMvc.perform(get("/api/auth/me"))
+        mockMvc.perform(get("/api/auth/me")
+                        .with(user("ana.silva@exemplo.com").roles("ALUNO")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Ana Silva"))
@@ -64,6 +71,12 @@ class AutenticacaoControllerTest {
                 .andExpect(jsonPath("$.nivel").value(1));
 
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void deveRejeitarAcessoAoMeSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(get("/api/auth/me"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

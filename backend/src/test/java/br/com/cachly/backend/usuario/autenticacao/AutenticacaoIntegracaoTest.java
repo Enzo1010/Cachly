@@ -145,4 +145,25 @@ class AutenticacaoIntegracaoTest {
                         .cookie(tokenCookie))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void deveIgnorarTentativaDeElevacaoDePrivilegioNoCadastroPublico() throws Exception {
+        String email = "hacker.admin.%s@cachly.local".formatted(UUID.randomUUID());
+
+        mockMvc.perform(post("/api/alunos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nome": "Hacker Querendo Admin",
+                                  "email": "%s",
+                                  "senha": "senha-segura-123",
+                                  "perfil": "ADMINISTRADOR"
+                                }
+                                """.formatted(email)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.perfil").value("ALUNO"));
+
+        Usuario usuarioCriado = usuarioRepository.findByEmailIgnoreCase(email).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(PerfilUsuario.ALUNO, usuarioCriado.getPerfil());
+    }
 }

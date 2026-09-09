@@ -11,11 +11,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.springframework.security.test.context.support.WithMockUser;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CategoriaController.class)
 @ActiveProfiles("test")
+@Import(br.com.cachly.backend.seguranca.SecurityConfig.class)
 class CategoriaControllerTest {
 
     @Autowired
@@ -33,12 +37,19 @@ class CategoriaControllerTest {
     @MockitoBean
     private CategoriaService categoriaService;
 
+    @MockitoBean
+    private br.com.cachly.backend.seguranca.TokenService tokenService;
+
+    @MockitoBean
+    private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
+
     @Test
     void deveCadastrarCategoriaERetornarStatusCriado() throws Exception {
         when(categoriaService.cadastrar(any(CategoriaRequest.class)))
                 .thenReturn(criarResponse(1L, "Álgebra Booleana", true));
 
         mockMvc.perform(post("/api/categorias")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -59,7 +70,8 @@ class CategoriaControllerTest {
                 criarResponse(2L, "Portas Lógicas", true)
         ));
 
-        mockMvc.perform(get("/api/categorias"))
+        mockMvc.perform(get("/api/categorias")
+                        .with(user("aluno").roles("ALUNO")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].nome").value("Álgebra Booleana"))
@@ -71,7 +83,8 @@ class CategoriaControllerTest {
         when(categoriaService.buscarPorId(1L))
                 .thenReturn(criarResponse(1L, "Circuitos Digitais", true));
 
-        mockMvc.perform(get("/api/categorias/1"))
+        mockMvc.perform(get("/api/categorias/1")
+                        .with(user("aluno").roles("ALUNO")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Circuitos Digitais"));
@@ -83,6 +96,7 @@ class CategoriaControllerTest {
                 .thenReturn(criarResponse(1L, "Circuitos Digitais", true));
 
         mockMvc.perform(put("/api/categorias/1")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -100,7 +114,8 @@ class CategoriaControllerTest {
         when(categoriaService.desativar(1L))
                 .thenReturn(criarResponse(1L, "Pipeline", false));
 
-        mockMvc.perform(patch("/api/categorias/1/desativar"))
+        mockMvc.perform(patch("/api/categorias/1/desativar")
+                        .with(user("admin").roles("ADMINISTRADOR")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.ativa").value(false));
@@ -109,6 +124,7 @@ class CategoriaControllerTest {
     @Test
     void deveRetornarStatusInvalidoQuandoNomeEstiverVazio() throws Exception {
         mockMvc.perform(post("/api/categorias")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -128,7 +144,8 @@ class CategoriaControllerTest {
                         "Categoria não encontrada com o ID: 99"
                 ));
 
-        mockMvc.perform(get("/api/categorias/99"))
+        mockMvc.perform(get("/api/categorias/99")
+                        .with(user("aluno").roles("ALUNO")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.mensagem")
@@ -143,6 +160,7 @@ class CategoriaControllerTest {
                 ));
 
         mockMvc.perform(post("/api/categorias")
+                        .with(user("admin").roles("ADMINISTRADOR"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -154,6 +172,60 @@ class CategoriaControllerTest {
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.mensagem")
                         .value("Já existe uma categoria com esse nome"));
+    }
+
+    @Test
+    void deveRejeitarListagemSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(get("/api/categorias"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deveRejeitarCadastroSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(post("/api/categorias")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nome": "Álgebra Booleana",
+                                  "descricao": "Operações booleanas"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deveRejeitarCadastroComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(post("/api/categorias")
+                        .with(user("aluno").roles("ALUNO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nome": "Álgebra Booleana",
+                                  "descricao": "Operações booleanas"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deveRejeitarAtualizacaoComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(put("/api/categorias/1")
+                        .with(user("aluno").roles("ALUNO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "nome": "Circuitos Digitais",
+                                  "descricao": "Conteúdo atualizado"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deveRejeitarDesativacaoComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(patch("/api/categorias/1/desativar")
+                        .with(user("aluno").roles("ALUNO")))
+                .andExpect(status().isForbidden());
     }
 
     private CategoriaResponse criarResponse(Long id, String nome, boolean ativa) {

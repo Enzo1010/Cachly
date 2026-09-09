@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AlunoController.class)
 @ActiveProfiles("test")
+@Import(br.com.cachly.backend.seguranca.SecurityConfig.class)
 class AlunoControllerTest {
 
     @Autowired
@@ -33,6 +34,9 @@ class AlunoControllerTest {
 
     @MockitoBean
     private AlunoDesempenhoService alunoDesempenhoService;
+
+    @MockitoBean
+    private br.com.cachly.backend.seguranca.TokenService tokenService;
 
     @MockitoBean
     private br.com.cachly.backend.usuario.UsuarioLogadoService usuarioLogadoService;
@@ -124,6 +128,18 @@ class AlunoControllerTest {
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.mensagem")
                         .value("Já existe um usuário com esse e-mail"));
+    }
+
+    @Test
+    void deveRejeitarAcessoAoHistoricoSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/alunos/me/historico"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deveRejeitarAcessoAoDesempenhoSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/alunos/me/desempenho"))
+                .andExpect(status().isUnauthorized());
     }
 
     private AlunoResponse criarResponse() {

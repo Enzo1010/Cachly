@@ -24,7 +24,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@Profile("!test")
 @RequiredArgsConstructor
 public class SecurityConfig {
 

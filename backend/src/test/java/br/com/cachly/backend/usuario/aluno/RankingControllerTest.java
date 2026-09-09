@@ -14,18 +14,21 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.cachly.backend.seguranca.TokenService;
+import br.com.cachly.backend.usuario.UsuarioRepository;
 import br.com.cachly.backend.usuario.UsuarioService;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RankingController.class)
 @ActiveProfiles("test")
+@Import(br.com.cachly.backend.seguranca.SecurityConfig.class)
 class RankingControllerTest {
 
     @Autowired
@@ -36,6 +39,9 @@ class RankingControllerTest {
     
     @MockitoBean
     private TokenService tokenService;
+
+    @MockitoBean
+    private UsuarioRepository usuarioRepository;
 
     @MockitoBean
     private UsuarioService usuarioService;
@@ -53,6 +59,7 @@ class RankingControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/ranking")
+                .with(user("aluno").roles("ALUNO"))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
@@ -63,5 +70,11 @@ class RankingControllerTest {
                 .andExpect(jsonPath("$.content[0].xpTotal").value(500))
                 .andExpect(jsonPath("$.content[1].posicao").value(2))
                 .andExpect(jsonPath("$.content[1].nome").value("Alice"));
+    }
+
+    @Test
+    void deveRejeitarListagemRankingSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(get("/api/ranking"))
+                .andExpect(status().isUnauthorized());
     }
 }

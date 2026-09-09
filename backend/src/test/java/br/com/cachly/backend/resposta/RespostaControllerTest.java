@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -19,12 +20,14 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RespostaController.class)
 @ActiveProfiles("test")
+@Import(br.com.cachly.backend.seguranca.SecurityConfig.class)
 class RespostaControllerTest {
 
     @Autowired
@@ -32,6 +35,9 @@ class RespostaControllerTest {
 
     @MockitoBean
     private RespostaService respostaService;
+
+    @MockitoBean
+    private br.com.cachly.backend.seguranca.TokenService tokenService;
 
     @MockitoBean
     private br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
@@ -59,6 +65,7 @@ class RespostaControllerTest {
                 .thenReturn(new RespostaResponse(100L, true, 10L, "Explicação da questão", 10, 1, "Estagiário", 10));
 
         mockMvc.perform(post("/api/questoes/1/respostas")
+                        .with(user("aluno@teste.com").roles("ALUNO"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -80,6 +87,7 @@ class RespostaControllerTest {
                 .thenThrow(new RecursoNaoEncontradoException("Questão não encontrada"));
 
         mockMvc.perform(post("/api/questoes/99/respostas")
+                        .with(user("aluno@teste.com").roles("ALUNO"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -94,11 +102,24 @@ class RespostaControllerTest {
     @Test
     void deveRecusarRequisicaoSemAlternativaId() throws Exception {
         mockMvc.perform(post("/api/questoes/1/respostas")
+                        .with(user("aluno@teste.com").roles("ALUNO"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.campos.alternativaId").exists());
+    }
+
+    @Test
+    void deveRejeitarRespostaSemAutenticacaoComStatus401() throws Exception {
+        mockMvc.perform(post("/api/questoes/1/respostas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "alternativaId": 10
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
     }
 }
 

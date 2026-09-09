@@ -30,7 +30,6 @@ import java.util.List;
  * </ul>
  */
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
