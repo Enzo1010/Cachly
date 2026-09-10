@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output, Input, inject, ViewEncapsulation, DestroyRef } from '@angular/core';
+import { Component, EventEmitter, Output, Input, inject, DestroyRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 import { SimulacaoRequest, TipoMapeamento, PoliticaSubstituicao } from '../../models/simulador.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -13,11 +14,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ReactiveFormsModule,
     ButtonModule,
     SelectButtonModule,
-    InputTextModule
+    InputTextModule,
+    TooltipModule
   ],
   templateUrl: './simulador-form.component.html',
-  styleUrls: ['./simulador-form.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./simulador-form.component.scss']
 })
 export class SimuladorFormComponent {
   @Input() loading = false;
@@ -37,29 +38,29 @@ export class SimuladorFormComponent {
   });
   
   readonly tamanhoOptions = [
-    { label: '8 B', value: 8 },
-    { label: '16 B', value: 16 },
-    { label: '32 B', value: 32 },
-    { label: '64 B', value: 64 }
+    { label: '8\u00A0B', value: 8 },
+    { label: '16\u00A0B', value: 16 },
+    { label: '32\u00A0B', value: 32 },
+    { label: '64\u00A0B', value: 64 }
   ];
 
   readonly blocoOptions = [
-    { label: '2 B', value: 2 },
-    { label: '4 B', value: 4 },
-    { label: '8 B', value: 8 },
-    { label: '16 B', value: 16 }
+    { label: '2\u00A0B', value: 2 },
+    { label: '4\u00A0B', value: 4 },
+    { label: '8\u00A0B', value: 8 },
+    { label: '16\u00A0B', value: 16 }
   ];
 
   readonly mapeamentoOptions = [
     { label: 'Direto', value: 'DIRETO' },
-    { label: 'Total. Assoc.', value: 'TOTALMENTE_ASSOCIATIVO' },
+    { label: 'Total.\u00A0Assoc.', value: 'TOTALMENTE_ASSOCIATIVO' },
     { label: 'Conjuntos', value: 'CONJUNTO_ASSOCIATIVO' }
   ];
 
   readonly viasOptions = [
-    { label: '2 Vias', value: 2 },
-    { label: '4 Vias', value: 4 },
-    { label: '8 Vias', value: 8 }
+    { label: '2\u00A0Vias', value: 2 },
+    { label: '4\u00A0Vias', value: 4 },
+    { label: '8\u00A0Vias', value: 8 }
   ];
   
   readonly politicaOptions = [
@@ -67,8 +68,60 @@ export class SimuladorFormComponent {
     { label: 'FIFO', value: 'FIFO' }
   ];
   
+  readonly presets = [
+    {
+      nome: 'Loop Temporal',
+      descricao: 'Repetição dos mesmos blocos para observar acertos (hits) por localidade temporal',
+      icone: 'pi pi-replay',
+      enderecos: '0, 4, 8, 12, 0, 4, 8, 12'
+    },
+    {
+      nome: 'Varredura Linear',
+      descricao: 'Acesso sequencial que aproveita a localidade espacial dentro das linhas',
+      icone: 'pi pi-arrow-right',
+      enderecos: '0, 1, 2, 3, 4, 5, 6, 7, 8, 9'
+    },
+    {
+      nome: 'Conflito (Thrashing)',
+      descricao: 'Endereços distantes que colidem no mesmo índice no Mapeamento Direto',
+      icone: 'pi pi-bolt',
+      enderecos: '0, 16, 32, 0, 16, 32'
+    },
+    {
+      nome: 'Substituição',
+      descricao: 'Sequência que força descarte para comparar políticas LRU vs FIFO',
+      icone: 'pi pi-sync',
+      enderecos: '0, 4, 8, 12, 16, 0, 4, 20'
+    }
+  ];
+
   constructor() {
     this.setupFormListeners();
+  }
+
+  carregarPreset(enderecos: string): void {
+    this.form.controls.enderecosStr.setValue(enderecos);
+    this.notificacoes.add({
+      severity: 'info',
+      summary: 'Preset Aplicado',
+      detail: `Sequência carregada no campo de endereços.`,
+      life: 2500
+    });
+  }
+
+  gerarEnderecosAleatorios(quantidade: number = 10, maximo: number = 64): void {
+    const enderecos: number[] = [];
+    for (let i = 0; i < quantidade; i++) {
+      enderecos.push(Math.floor(Math.random() * maximo));
+    }
+    const sequencia = enderecos.join(', ');
+    this.form.controls.enderecosStr.setValue(sequencia);
+    this.notificacoes.add({
+      severity: 'success',
+      summary: 'Endereços Aleatórios Gerados',
+      detail: `${quantidade} endereços (0 a ${maximo - 1}) gerados com sucesso.`,
+      life: 2500
+    });
   }
   
   private setupFormListeners(): void {

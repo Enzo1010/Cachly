@@ -9,7 +9,9 @@
       aria-labelledby="lbl-tamanho-cache"
       [options]="tamanhoOptions"
       optionLabel="label"
-      optionValue="value">
+      optionValue="value"
+      [fluid]="true"
+      styleClass="w-full">
     </p-selectButton>
   </div>
 
@@ -22,7 +24,9 @@
       aria-labelledby="lbl-tamanho-bloco"
       [options]="blocoOptions"
       optionLabel="label"
-      optionValue="value">
+      optionValue="value"
+      [fluid]="true"
+      styleClass="w-full">
     </p-selectButton>
   </div>
 
@@ -35,7 +39,9 @@
       aria-labelledby="lbl-mapeamento"
       [options]="mapeamentoOptions"
       optionLabel="label"
-      optionValue="value">
+      optionValue="value"
+      [fluid]="true"
+      styleClass="w-full">
     </p-selectButton>
   </div>
 
@@ -49,7 +55,9 @@
         aria-labelledby="lbl-numero-vias"
         [options]="viasOptions"
         optionLabel="label"
-        optionValue="value">
+        optionValue="value"
+        [fluid]="true"
+        styleClass="w-full">
       </p-selectButton>
     </div>
   }
@@ -64,28 +72,63 @@
         aria-labelledby="lbl-substituicao"
         [options]="politicaOptions"
         optionLabel="label"
-        optionValue="value">
+        optionValue="value"
+        [fluid]="true"
+        styleClass="w-full">
       </p-selectButton>
     </div>
   }
 
   <div class="field">
-    <label class="field-label" for="enderecosStr">
-      <i class="pi pi-list-check"></i> Endereços de Acesso
-    </label>
+    <div class="field-header">
+      <label class="field-label" for="enderecosStr">
+        <i class="pi pi-list-check"></i> Endereços de Acesso
+      </label>
+      <button
+        type="button"
+        class="btn-random"
+        pTooltip="Gerar 10 endereços decimais aleatórios"
+        tooltipPosition="top"
+        (click)="gerarEnderecosAleatorios(10, 64)"
+      >
+        <i class="pi pi-sparkles"></i>
+        <span>Aleatórios</span>
+      </button>
+    </div>
+
+    <!-- Presets Didáticos em Grid 2x2 -->
+    <div class="presets-section">
+      <span class="presets-bar-title">Padrões Prontos</span>
+      <div class="presets-grid">
+        @for (preset of presets; track preset.nome) {
+          <button
+            type="button"
+            class="preset-btn"
+            [class.preset-btn--active]="form.controls.enderecosStr.value === preset.enderecos"
+            [pTooltip]="preset.descricao"
+            tooltipPosition="top"
+            (click)="carregarPreset(preset.enderecos)"
+          >
+            <i [class]="preset.icone"></i>
+            <span class="preset-name">{{ preset.nome }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
     <input
       pInputText
       id="enderecosStr"
       formControlName="enderecosStr"
       placeholder="Ex: 0, 4, 8, 12, 0, 4" />
-    <span class="field-hint">Separados por vírgula — requisições decimais da CPU.</span>
+    <span class="field-hint">Valores decimais separados por vírgula.</span>
   </div>
 
   <p-button
     type="submit"
     label="Iniciar Simulação"
     icon="pi pi-play"
-    styleClass="w-full p-button-lg"
+    styleClass="w-full btn-simular"
     [disabled]="form.invalid || loading"
     [loading]="loading">
   </p-button>

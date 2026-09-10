@@ -9,7 +9,7 @@
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/download/)
   [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
   [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-  ![Tests](https://img.shields.io/badge/Tests-152_passing-brightgreen?style=flat-square)
+  ![Tests](https://img.shields.io/badge/Tests-162_passing-brightgreen?style=flat-square)
 
   <br/>
 
@@ -258,8 +258,8 @@ A suíte de testes cobre os fluxos críticos de negócio com testes unitários e
 |---|---|:---:|:---:|
 | **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 128 | 🟢 Passing |
 | **Backend — Segurança JWT, RBAC, Revogação e Integração** | MockMvc + Spring Boot Test | Incluído | 🟢 Passing |
-| **Frontend — Componentes, Estados e Serviços** | Vitest + Angular TestBed | 24 | 🟢 Passing |
-| **Total de Casos Automatizados** | — | **152** | **0 Failures** |
+| **Frontend — Componentes, Estados, Formulários e Serviços** | Vitest + Angular TestBed | 34 | 🟢 Passing |
+| **Total de Casos Automatizados** | — | **162** | **0 Failures** |
 
 Para executar as suítes completas:
 

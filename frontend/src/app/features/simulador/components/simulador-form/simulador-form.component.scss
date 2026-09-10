@@ -8,50 +8,287 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.15rem;
   }
 
   .field {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.45rem;
+  }
+
+  .field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
   }
 
   .field-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #64748b;
+    letter-spacing: 0.07em;
+    color: #475569;
     display: flex;
     align-items: center;
+    gap: 0.45rem;
+
+    i {
+      font-size: 0.78rem;
+      color: #006494;
+    }
+  }
+
+  // Botão Gerar Aleatórios no header do campo
+  .btn-random {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.22rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #006494;
+    background: #e8f4f8;
+    border: 1px solid #c2e2ee;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    i {
+      font-size: 0.68rem;
+      color: #1b98e0;
+    }
+
+    &:hover {
+      background: #d4ecf5;
+      border-color: #92d0e7;
+      color: #03293d;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 100, 148, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // Seção de Presets Didáticos
+  .presets-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .presets-bar-title {
+    display: flex;
+    align-items: center;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+  }
+
+  .presets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.4rem;
   }
 
-  // Faz os SelectButtons ocuparem toda a largura
-  .p-selectbutton {
+  .preset-btn {
     display: flex;
-    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    padding: 0.38rem 0.5rem;
+    border-radius: 7px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    min-width: 0;
+
+    i {
+      font-size: 0.68rem;
+      color: #006494;
+      flex-shrink: 0;
+    }
+
+    .preset-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.7rem;
+    }
+
+    &:hover {
+      background: #f0f9ff;
+      border-color: #38bdf8;
+      color: #0284c7;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(14, 165, 233, 0.08);
+
+      i {
+        color: #0284c7;
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &--active {
+      background: #e0f2fe;
+      border-color: #0284c7;
+      color: #0369a1;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(2, 132, 199, 0.15);
+
+      i {
+        color: #0284c7;
+      }
+    }
   }
 
-  .p-selectbutton .p-button {
-    flex: 1;
-    justify-content: center;
-    font-size: 0.73rem;
-    font-weight: 700;
-    padding: 0.45rem 0.1rem;
-    white-space: nowrap;
+  .field-hint {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    line-height: 1.35;
+    margin-top: 0.1rem;
+  }
+}
+
+// Estilos específicos para componentes PrimeNG dentro deste formulário
+:host ::ng-deep {
+  // Segmented control para os SelectButtons
+  .p-selectbutton {
+    display: flex !important;
+    width: 100% !important;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 9px;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+
+    p-togglebutton,
+    .p-togglebutton {
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 6px !important;
+      border: none !important;
+      background: transparent !important;
+      color: #64748b !important;
+      transition: all 0.15s ease !important;
+      cursor: pointer !important;
+      box-shadow: none !important;
+      white-space: nowrap !important;
+
+      .p-togglebutton-content {
+        padding: 0.35rem 0.15rem !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        min-width: 0 !important;
+        white-space: nowrap !important;
+      }
+
+      .p-togglebutton-label {
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        text-align: center !important;
+        line-height: 1.2 !important;
+        display: inline !important;
+      }
+
+      &:hover:not(.p-togglebutton-checked):not(:disabled) {
+        background: rgba(255, 255, 255, 0.6) !important;
+        color: #1e293b !important;
+      }
+
+      &.p-togglebutton-checked,
+      &[data-p-checked="true"],
+      &[aria-pressed="true"] {
+        background: #ffffff !important;
+        color: #006494 !important;
+        font-weight: 700 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+      }
+
+      &:disabled {
+        opacity: 0.45 !important;
+        cursor: not-allowed !important;
+      }
+    }
   }
 
   // Input de endereços
   .p-inputtext {
-    width: 100%;
-    font-size: 0.9rem;
+    width: 100% !important;
+    font-size: 0.85rem !important;
+    padding: 0.55rem 0.75rem !important;
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    font-family: 'Fira Code', Consolas, Monaco, monospace, var(--fonte-principal) !important;
+    letter-spacing: 0.02em !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+
+    &:focus {
+      border-color: #006494 !important;
+      box-shadow: 0 0 0 3px rgba(0, 100, 148, 0.12) !important;
+      outline: none !important;
+    }
+
+    &::placeholder {
+      color: #94a3b8 !important;
+      font-family: var(--fonte-principal) !important;
+      font-size: 0.8rem !important;
+    }
   }
 
-  .field-hint {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    line-height: 1.4;
+  // Botão Iniciar Simulação
+  .btn-simular {
+    background: linear-gradient(135deg, #006494 0%, #03293d 100%) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em !important;
+    padding: 0.7rem 1rem !important;
+    box-shadow: 0 4px 12px rgba(0, 100, 148, 0.25) !important;
+    transition: all 0.2s ease !important;
+    justify-content: center !important;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 6px 16px rgba(0, 100, 148, 0.35) !important;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0) !important;
+    }
+
+    &:disabled {
+      opacity: 0.55 !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+    }
   }
 }

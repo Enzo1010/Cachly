@@ -41,16 +41,20 @@
           {{ state.modo() === 'livre' ? 'Hardware' : 'Missão' }}
         </h3>
         <div class="sidebar-actions">
-          <p-button
-            icon="pi pi-book"
-            label="Guia"
-            pTooltip="Abrir Guia Conceitual"
-            tooltipPosition="bottom"
-            (onClick)="abrirGuia()"
-            styleClass="p-button-outlined p-button-sm p-button-info">
-          </p-button>
+          @if (!state.sidebarCollapsed()) {
+            <p-button
+              icon="pi pi-book"
+              label="Guia"
+              pTooltip="Abrir Guia Conceitual"
+              tooltipPosition="bottom"
+              (onClick)="abrirGuia()"
+              styleClass="btn-guia p-button-outlined p-button-sm p-button-info">
+            </p-button>
+          }
           <p-button
             icon="pi pi-bars"
+            [pTooltip]="state.sidebarCollapsed() ? 'Expandir Menu' : 'Recolher Menu'"
+            [tooltipPosition]="state.sidebarCollapsed() ? 'right' : 'bottom'"
             (onClick)="state.toggleSidebar()"
             styleClass="p-button-rounded p-button-text p-button-plain p-button-sm">
           </p-button>
