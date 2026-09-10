@@ -55,8 +55,11 @@ class DesafioCacheServiceTest {
         usuario.setNome("Aluno Teste");
         usuario.setEmail("aluno@teste.com");
         usuario.setPerfil(PerfilUsuario.ALUNO);
+        usuario.setAtivo(true);
         usuario.setXpTotal(100);
         usuario.setNivel(2);
+
+        lenient().when(usuarioRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(usuario));
     }
 
     @Test

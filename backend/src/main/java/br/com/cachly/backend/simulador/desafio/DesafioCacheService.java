@@ -160,35 +160,38 @@ public class DesafioCacheService {
     public ResultadoDesafioResponse verificarDesafio(String id, VerificarDesafioRequest request, Usuario usuario) {
         DesafioInterno desafio = buscarDesafioOuFalhar(id);
 
+        Usuario usuarioBloqueado = null;
+        if (usuario != null) {
+            usuarioBloqueado = usuarioRepository.findByIdForUpdate(usuario.getId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+            if (!Boolean.TRUE.equals(usuarioBloqueado.getAtivo())) {
+                throw new br.com.cachly.backend.comum.erro.RegraNegocioException("Usuário inativo não pode responder desafios");
+            }
+        }
+
         boolean correto = desafio.opcaoCorretaId().equalsIgnoreCase(request.opcaoSelecionadaId().trim());
         int xpGanho = 0;
 
-        if (correto && usuario != null) {
-            boolean jaConcluido = desafioConcluidoRepository.existsByUsuarioIdAndDesafioId(usuario.getId(), id);
+        if (correto && usuarioBloqueado != null) {
+            boolean jaConcluido = desafioConcluidoRepository.existsByUsuarioIdAndDesafioId(usuarioBloqueado.getId(), id);
             if (!jaConcluido) {
-                try {
-                    DesafioConcluido concluido = new DesafioConcluido();
-                    concluido.setUsuario(usuario);
-                    concluido.setDesafioId(id);
-                    desafioConcluidoRepository.save(concluido);
-                    desafioConcluidoRepository.flush(); // força constraint
-                    
-                    xpGanho = desafio.xpRecompensa();
-                    eventPublisher.publishEvent(new DesafioRespondidoEvent(usuario, id, xpGanho, true, true));
-                } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                    // Já concluído por outra thread
-                    xpGanho = 0;
-                }
+                DesafioConcluido concluido = new DesafioConcluido();
+                concluido.setUsuario(usuarioBloqueado);
+                concluido.setDesafioId(id);
+                desafioConcluidoRepository.save(concluido);
+
+                xpGanho = desafio.xpRecompensa();
+                eventPublisher.publishEvent(new DesafioRespondidoEvent(usuarioBloqueado, id, xpGanho, true, true));
             } else {
-                eventPublisher.publishEvent(new DesafioRespondidoEvent(usuario, id, 0, true, false));
+                eventPublisher.publishEvent(new DesafioRespondidoEvent(usuarioBloqueado, id, 0, true, false));
             }
-        } else if (!correto && usuario != null) {
-            eventPublisher.publishEvent(new DesafioRespondidoEvent(usuario, id, 0, false, false));
+        } else if (!correto && usuarioBloqueado != null) {
+            eventPublisher.publishEvent(new DesafioRespondidoEvent(usuarioBloqueado, id, 0, false, false));
         }
 
         SimulacaoResponse simulacao = simuladorCacheService.executarSimulacao(desafio.configuracao());
 
-        Usuario usuarioAtualizado = usuario != null ? usuarioRepository.findById(usuario.getId()).orElse(usuario) : null;
+        Usuario usuarioAtualizado = usuarioBloqueado != null ? usuarioRepository.findById(usuarioBloqueado.getId()).orElse(usuarioBloqueado) : null;
         Integer nivelAtual = (usuarioAtualizado != null && usuarioAtualizado.getNivel() != null) ? usuarioAtualizado.getNivel() : 1;
         String nomeNivel = xpService.nomeDoNivel(nivelAtual);
         Integer xpTotalAtual = (usuarioAtualizado != null && usuarioAtualizado.getXpTotal() != null) ? usuarioAtualizado.getXpTotal() : 0;

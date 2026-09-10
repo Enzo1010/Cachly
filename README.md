@@ -9,7 +9,7 @@
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/download/)
   [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
   [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-  ![Tests](https://img.shields.io/badge/Tests-123_passing-brightgreen?style=flat-square)
+  ![Tests](https://img.shields.io/badge/Tests-152_passing-brightgreen?style=flat-square)
 
   <br/>
 
@@ -41,13 +41,13 @@ O estudo investiga o uso de plataformas educacionais aplicadas ao ensino de Sist
 
 1. **Facilitação do aprendizado ativo** — resolução de questões técnicas organizadas por categoria e dificuldade, com correção em tempo real e proteção estrita de gabarito no backend.
 2. **Rastreamento de desempenho e remediação ativa** — coleta de acertos, erros e mapeamento de fraquezas por conceito (gráfico de radar), sugerindo intervenções pedagógicas direcionadas ao laboratório.
-3. **Simulação didática de hardware** — módulo de simulação de memória cache onde o estudante visualiza a decomposição binária, o comportamento passo a passo das linhas/conjuntos e compreende acertos (*hits*), faltas (*misses*) e políticas de substituição.
+3. **Simulação didática de hardware** — módulo de simulação de memória cache onde o estudante visualiza a decomposição binária, o comportamento passo a passo das linhas/conjuntos e compreende acertos (*hits*), faltas (*misses*), políticas de substituição e desafios práticos.
 
 ---
 
 ## Visão Geral
 
-O **Cachly** é uma aplicação web full-stack projetada para tornar o aprendizado de hardware e sistemas digitais substancialmente mais efetivo. A plataforma combina um banco de questões técnicas estruturado por tópico e dificuldade com módulos de simulação interativos, entregando *feedback* imediato e progressão mensurável ao estudante.
+O **Cachly** é uma aplicação web full-stack projetada para tornar o aprendizado de hardware e sistemas digitais substancialmente mais efetivo. A plataforma combina um banco de questões técnicas estruturado por tópico e dificuldade com módulos de simulação interativos e desafios com gamificação integrada, entregando *feedback* imediato e progressão mensurável ao estudante.
 
 O núcleo da proposta é a convergência entre **rigor técnico** e **design de engajamento**: o mesmo conteúdo que seria apresentado de forma árida em um livro-texto é assimilado por meio de tentativa, erro, explicação contextualizada e progressão gamificada.
 
@@ -56,11 +56,12 @@ O núcleo da proposta é a convergência entre **rigor técnico** e **design de 
 | Módulo | Descrição |
 |---|---|
 | **Simulador de Cache** | Laboratório interativo stateless para simulação de mapeamento Direto, Associativo por Conjunto ($N$-vias) e Totalmente Associativo com políticas LRU e FIFO. |
+| **Laboratório de Desafios** | Cenários práticos guiados (Cold Miss, Thrashing, Associatividade, Políticas) com verificação em tempo real, proteção transacional e concessão de XP único. |
 | **Guia Conceitual & Breakdown Binário** | Modal didático integrado com 4 abas teóricas (Aritmética, Mapeamentos, Substituição e Hit/Miss) e blocos interativos clicáveis de Tag, Índice e Offset. |
 | **Banco de Questões & Estudo** | Questões técnicas categorizadas com proteção contra vazamento de respostas (`/api/questoes/estudo`), cálculo de pontuação por dificuldade e feedback imediato. |
-| **Engine de Gamificação** | Sistema de XP com cálculo de níveis, ofensivas diárias (*streaks*) sob consistência transacional com Lock Pessimista e Liga Semanal com agendador (`RankingScheduler`). |
+| **Engine de Gamificação** | Sistema de XP com cálculo de níveis, ofensivas diárias (*streaks*) sob consistência transacional com Lock Pessimista antecipado e Liga Semanal com agendador (`RankingScheduler`). |
 | **Análise de Desempenho** | Dashboard com gráfico de radar de domínio conceitual, identificação da categoria de menor rendimento e intervenção pedagógica que guia o aluno para o simulador. |
-| **Segurança e Sessões** | Autenticação JWT via cookies seguros `HttpOnly` + `SameSite=Strict`, proteção nativa contra CSRF e revogação imediata de sessões via controle de versão de token (`versaoToken`). |
+| **Segurança e Sessões** | Autenticação JWT via cookies seguros `HttpOnly` + `SameSite=Strict`, proteção nativa contra CSRF, controle de perfil por roles (`ALUNO` e `ADMINISTRADOR`) e revogação imediata de sessões via controle de versão de token (`versaoToken`). |
 
 ---
 
@@ -97,7 +98,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 │  │  └─────────────┘  └──────┬──────┘  └─────────────────────┘  │  │
 │  │                          │                                  │  │
 │  │  ┌───────────────────────▼──────────────────────────────┐   │  │
-│  │  │  Spring Data JPA  ·  Flyway Migrations (V1 → V7)     │   │  │
+│  │  │  Spring Data JPA  ·  Flyway Migrations (V1 → V14)    │   │  │
 │  └──┴──────────────────────────────────────────────────────┴───┘  │
 │                            │                                      │
 │  ┌─────────────────────────▼───────────────────┐                  │
@@ -111,7 +112,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 - **Autenticação via Cookies Seguros (`HttpOnly` + `SameSite=Strict`)**: Documentada na [ADR-001](docs/decisions/ADR-001-autenticacao-samesite-cookies.md). O JWT reside em cookie com flag `HttpOnly`, tornando-o inacessível via JavaScript (imunidade a XSS) e `SameSite=Strict`, impedindo envio em contextos cruzados (proteção robusta contra CSRF).
 - **Revogação Instantânea Stateless (`versaoToken`)**: Documentada na [ADR-002](docs/decisions/ADR-002-revogacao-jwt-versao-token.md). Resolve a limitação de expiração passiva do JWT: ao alterar a senha ou revogar sessões, a coluna `versao_token` na entidade `Usuario` é incrementada. Tokens anteriores com claim `iat` desatualizada são rejeitados imediatamente no `SecurityFilter`.
 - **Processamento do Simulador via Snapshots**: A engine do simulador de cache processa cada passo da sequência de acessos à memória no backend usando operadores bitwise nativos (`>>>`, `&`, `<<`) e devolve ao frontend um array imutável de deltas e explicações didáticas.
-- **Controle de Concorrência por Lock Pessimista**: A atualização do XP e ofensiva do usuário usa `SELECT ... FOR UPDATE` (via `@Lock(LockModeType.PESSIMISTIC_WRITE)` do JPA), garantindo serialização transacional e eliminando *race conditions* em requisições concorrentes.
+- **Controle de Concorrência por Lock Pessimista Antecipado**: A verificação de duplicidade e atualização do XP/ofensiva do usuário utiliza `SELECT ... FOR UPDATE` (via `@Lock(LockModeType.PESSIMISTIC_WRITE)` do JPA) antecipado no início das transações de resposta e desafios, eliminando *race conditions* e prevenindo erros de concorrência ou duplicação de pontuação.
 - **Integridade de Dados por Exclusão Lógica**: Questões e alternativas nunca são removidas fisicamente. A flag `ativa = false` preserva o histórico de tentativas e métricas retroativas.
 
 ---
@@ -123,12 +124,13 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 |---|---|---|
 | Java | 21 | Linguagem principal (LTS) |
 | Spring Boot | 4.1 | Framework base da aplicação |
-| Spring Security | 6.x | Autenticação JWT, filtros e RBAC |
+| Spring Security | 6.x | Autenticação JWT via cookie HttpOnly, filtros e RBAC |
 | Spring Data JPA | 3.x | Camada de persistência relacional |
 | PostgreSQL | 15 / 16 | Banco de dados relacional |
-| Flyway | 10.x | Versionamento e migração de schema (V1 a V7) |
+| Flyway | 10.x | Versionamento e migração de schema (V1 a V14) |
 | SpringDoc OpenAPI | 2.x | Documentação interativa (Swagger UI) |
-| JUnit 5 + Mockito | — | Cobertura de testes automatizados (99 casos) |
+| JUnit 5 + Mockito | — | Cobertura de testes automatizados (128 casos) |
+| Lombok | — | Redução de boilerplate |
 | Lombok | — | Redução de boilerplate |
 
 ### Frontend
@@ -254,10 +256,10 @@ A suíte de testes cobre os fluxos críticos de negócio com testes unitários e
 
 | Escopo | Tecnologia | Casos de Teste | Status |
 |---|---|:---:|:---:|
-| **Backend — Regras de Negócio, Gamificação e XP** | JUnit 5 + Mockito | 99 | 🟢 Passing |
-| **Backend — Segurança JWT, Revogação e Integração** | MockMvc + Spring Profile `test` | Incluído | 🟢 Passing |
+| **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 128 | 🟢 Passing |
+| **Backend — Segurança JWT, RBAC, Revogação e Integração** | MockMvc + Spring Boot Test | Incluído | 🟢 Passing |
 | **Frontend — Componentes, Estados e Serviços** | Vitest + Angular TestBed | 24 | 🟢 Passing |
-| **Total de Casos Automatizados** | — | **123** | **0 Failures** |
+| **Total de Casos Automatizados** | — | **152** | **0 Failures** |
 
 Para executar as suítes completas:
 
