@@ -23,7 +23,10 @@ public class RespostaService {
 
     @Transactional
     public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuario) {
-        if (!Boolean.TRUE.equals(usuario.getAtivo())) {
+        Usuario usuarioBloqueado = usuarioRepository.findByIdForUpdate(usuario.getId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+
+        if (!Boolean.TRUE.equals(usuarioBloqueado.getAtivo())) {
             throw new br.com.cachly.backend.comum.erro.RegraNegocioException("Usuário inativo não pode responder questões");
         }
 
@@ -45,7 +48,7 @@ public class RespostaService {
 
         if (correta) {
             boolean jaAcertouAntes = tentativaQuestaoRepository.existsByUsuarioIdAndQuestaoIdAndCorretaTrue(
-                    usuario.getId(), questao.getId()
+                    usuarioBloqueado.getId(), questao.getId()
             );
             if (!jaAcertouAntes) {
                 primeiraVezCorreta = true;
@@ -54,7 +57,7 @@ public class RespostaService {
         }
 
         TentativaQuestao tentativa = new TentativaQuestao();
-        tentativa.setUsuario(usuario);
+        tentativa.setUsuario(usuarioBloqueado);
         tentativa.setQuestao(questao);
         tentativa.setAlternativa(alternativa);
         tentativa.setCorreta(correta);
@@ -62,7 +65,7 @@ public class RespostaService {
 
         TentativaQuestao salva = tentativaQuestaoRepository.save(tentativa);
 
-        eventPublisher.publishEvent(new QuestaoRespondidaEvent(usuario, questao, correta, primeiraVezCorreta));
+        eventPublisher.publishEvent(new QuestaoRespondidaEvent(usuarioBloqueado, questao, correta, primeiraVezCorreta));
 
         Long alternativaCorretaId = questao.getAlternativas().stream()
                 .filter(a -> Boolean.TRUE.equals(a.getCorreta()))
@@ -73,7 +76,7 @@ public class RespostaService {
         // O evento modificou o usuário em uma instância persistente gerenciada pelo listener.
         // Recarregamos a instância para garantir que vamos retornar os dados frescos (XP/Nível atualizados)
         // e não os dados "stale" do objeto desanexado original.
-        Usuario usuarioAtualizado = usuarioRepository.findById(usuario.getId()).orElse(usuario);
+        Usuario usuarioAtualizado = usuarioRepository.findById(usuarioBloqueado.getId()).orElse(usuarioBloqueado);
 
         return new RespostaResponse(
                 salva.getId(),

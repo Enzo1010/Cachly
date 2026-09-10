@@ -84,6 +84,8 @@ class RespostaServiceTest {
 
         questao.getAlternativas().add(alternativaCorreta);
         questao.getAlternativas().add(alternativaIncorreta);
+
+        lenient().when(usuarioRepository.findByIdForUpdate(usuario.getId())).thenReturn(Optional.of(usuario));
     }
 
     @Test
