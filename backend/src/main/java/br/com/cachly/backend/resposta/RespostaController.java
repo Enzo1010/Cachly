@@ -4,6 +4,7 @@ import br.com.cachly.backend.usuario.Usuario;
 import br.com.cachly.backend.usuario.UsuarioLogadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ public class RespostaController {
     private final UsuarioLogadoService usuarioLogadoService;
 
     @PostMapping("/{questaoId}/respostas")
+    @PreAuthorize("hasRole('ALUNO')")
     public RespostaResponse responder(
             @PathVariable Long questaoId,
             @Valid @RequestBody RespostaRequest request

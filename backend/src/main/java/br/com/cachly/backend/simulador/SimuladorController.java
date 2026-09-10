@@ -8,6 +8,7 @@ import br.com.cachly.backend.usuario.Usuario;
 import br.com.cachly.backend.usuario.UsuarioLogadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ public class SimuladorController {
     }
 
     @PostMapping("/desafios/{id}/verificar")
+    @PreAuthorize("hasRole('ALUNO')")
     public ResultadoDesafioResponse verificarDesafio(
             @PathVariable String id,
             @Valid @RequestBody VerificarDesafioRequest request

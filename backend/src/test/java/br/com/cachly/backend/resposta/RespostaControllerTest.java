@@ -121,6 +121,19 @@ class RespostaControllerTest {
                                 """))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void deveRejeitarRespostaComPerfilAdministradorComStatus403() throws Exception {
+        mockMvc.perform(post("/api/questoes/1/respostas")
+                        .with(user("admin@teste.com").roles("ADMINISTRADOR"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "alternativaId": 10
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
 }
 
 

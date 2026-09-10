@@ -118,4 +118,17 @@ class SimuladorControllerTest {
                                 """))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void deveRejeitarVerificacaoDesafioComPerfilAdministradorComStatus403() throws Exception {
+        mockMvc.perform(post("/api/simulador/desafios/cold-miss/verificar")
+                        .with(user("admin").roles("ADMINISTRADOR"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "opcaoSelecionadaId": "A"
+                                }
+                                """))
+                .andExpect(status().isForbidden());
+    }
 }
