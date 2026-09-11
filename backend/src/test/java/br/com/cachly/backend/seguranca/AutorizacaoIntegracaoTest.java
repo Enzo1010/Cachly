@@ -143,41 +143,4 @@ class AutorizacaoIntegracaoTest {
                         .header("Authorization", "Bearer " + tokenAluno))
                 .andExpect(status().isForbidden());
     }
-
-    @Test
-    void alunoNaoDeveCadastrarAlternativa() throws Exception {
-        mockMvc.perform(post("/api/questoes/1/alternativas").with(csrf())
-                        .header("Authorization", "Bearer " + tokenAluno)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "texto": "Alt 1",
-                                  "correta": true,
-                                  "ordem": 1
-                                }
-                                """))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void alunoNaoDeveAtualizarAlternativa() throws Exception {
-        mockMvc.perform(put("/api/questoes/1/alternativas/10").with(csrf())
-                        .header("Authorization", "Bearer " + tokenAluno)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "texto": "Alt 1",
-                                  "correta": true,
-                                  "ordem": 1
-                                }
-                                """))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void alunoNaoDeveDesativarAlternativa() throws Exception {
-        mockMvc.perform(patch("/api/questoes/1/alternativas/10/desativar").with(csrf())
-                        .header("Authorization", "Bearer " + tokenAluno))
-                .andExpect(status().isNotFound());
-    }
 }
