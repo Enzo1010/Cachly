@@ -131,4 +131,41 @@ class SimuladorControllerTest {
                                 """))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void deveRejeitarSimulacaoComTamanhoCacheAcimaDoLimiteComStatus400() throws Exception {
+        // Tamanho de cache 2 MB (2097152 bytes) excede o limite máximo de 1 MB (1048576)
+        mockMvc.perform(post("/api/simulador/executar")
+                        .with(user("aluno").roles("ALUNO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "tamanhoCacheBytes": 2097152,
+                                  "tamanhoBlocoBytes": 4,
+                                  "mapeamento": "DIRETO",
+                                  "enderecos": [0, 4]
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.campos.tamanhoCacheBytes").exists());
+    }
+
+    @Test
+    void deveRejeitarSimulacaoComEnderecoNegativoComStatus400() throws Exception {
+        mockMvc.perform(post("/api/simulador/executar")
+                        .with(user("aluno").roles("ALUNO"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "tamanhoCacheBytes": 64,
+                                  "tamanhoBlocoBytes": 16,
+                                  "mapeamento": "DIRETO",
+                                  "enderecos": [0, -16]
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.campos['enderecos[1]']").exists());
+    }
 }

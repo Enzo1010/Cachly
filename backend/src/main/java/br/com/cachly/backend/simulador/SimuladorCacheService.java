@@ -18,6 +18,8 @@ import java.util.List;
 @Service
 public class SimuladorCacheService {
 
+    public static final int MAX_TOTAL_LINHAS = 4096;
+
     /**
      * Executa a simulação completa para a sequência de endereços informada.
      *
@@ -196,6 +198,12 @@ public class SimuladorCacheService {
         }
 
         int totalLinhas = request.tamanhoCacheBytes() / request.tamanhoBlocoBytes();
+        if (totalLinhas > MAX_TOTAL_LINHAS) {
+            throw new RegraNegocioException(String.format(
+                    "Número total de linhas da cache (%d) excede o limite máximo permitido de %d",
+                    totalLinhas, MAX_TOTAL_LINHAS
+            ));
+        }
 
         if (request.mapeamento() == TipoMapeamento.CONJUNTO_ASSOCIATIVO) {
             if (request.numeroVias() == null || request.numeroVias() < 1 || !isPotenciaDeDois(request.numeroVias())) {

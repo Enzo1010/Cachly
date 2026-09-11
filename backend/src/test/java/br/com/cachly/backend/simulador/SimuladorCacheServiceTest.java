@@ -169,4 +169,24 @@ class SimuladorCacheServiceTest {
         assertEquals(1, response.passos().get(1).tag());
         assertEquals(0, response.passos().get(1).offset());
     }
+
+    @Test
+    @DisplayName("Deve lançar exceção se o número total de linhas exceder o limite máximo (anti-DoS)")
+    void deveLancarExcecaoQuandoTotalLinhasExcederLimiteMaximo() {
+        // 8192 bytes de cache com bloco de 1 byte = 8192 linhas (> 4096)
+        SimulacaoRequest request = new SimulacaoRequest(
+                8192,
+                1,
+                null,
+                TipoMapeamento.DIRETO,
+                null,
+                List.of(0)
+        );
+
+        RegraNegocioException exception = assertThrows(
+                RegraNegocioException.class,
+                () -> service.executarSimulacao(request)
+        );
+        assertTrue(exception.getMessage().contains("excede o limite máximo permitido de 4096"));
+    }
 }
