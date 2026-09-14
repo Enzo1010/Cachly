@@ -13,7 +13,7 @@
 
     <nav class="navegacao">
       <ul>
-        @for (item of navegacaoPrincipal; track item.rotulo) {
+        @for (item of navegacaoPrincipal(); track item.rotulo) {
           <li>
             <a
               [routerLink]="item.rota"
@@ -50,17 +50,25 @@
       </div>
 
       <div class="topo__direita">
-        <!-- Indicadores rápidos de Gamificação -->
-        <div class="indicadores-topo">
-          <div class="chip-status chip-status--streak" [title]="'Ofensiva: ' + (sessao.usuario()?.diasOfensiva ?? 0) + ' dias consecutivos'">
-            <i class="pi pi-bolt" aria-hidden="true"></i>
-            <span>{{ sessao.usuario()?.diasOfensiva ?? 0 }}d</span>
+        @if (sessao.usuario()?.perfil === 'ALUNO') {
+          <!-- Indicadores rápidos de Gamificação para Aluno -->
+          <div class="indicadores-topo">
+            <div class="chip-status chip-status--streak" [title]="'Ofensiva: ' + (sessao.usuario()?.diasOfensiva ?? 0) + ' dias consecutivos'">
+              <i class="pi pi-bolt" aria-hidden="true"></i>
+              <span>{{ sessao.usuario()?.diasOfensiva ?? 0 }}d</span>
+            </div>
+            <div class="chip-status chip-status--xp" [title]="'Experiência: ' + (sessao.usuario()?.xpTotal ?? 0) + ' XP acumulados'">
+              <i class="pi pi-star-fill" aria-hidden="true"></i>
+              <span>{{ sessao.usuario()?.xpTotal ?? 0 }} XP</span>
+            </div>
           </div>
-          <div class="chip-status chip-status--xp" [title]="'Experiência: ' + (sessao.usuario()?.xpTotal ?? 0) + ' XP acumulados'">
-            <i class="pi pi-star-fill" aria-hidden="true"></i>
-            <span>{{ sessao.usuario()?.xpTotal ?? 0 }} XP</span>
+        } @else {
+          <!-- Identificador visual do papel de Administrador -->
+          <div class="badge-topo-admin" title="Painel com permissão de Administrador">
+            <i class="pi pi-shield" aria-hidden="true"></i>
+            <span>ADMINISTRADOR</span>
           </div>
-        </div>
+        }
 
         <!-- Menu de Usuário Dropdown -->
         <div class="usuario-menu-wrapper">
@@ -77,7 +85,9 @@
             </span>
             <div class="botao-usuario__info">
               <strong class="botao-usuario__nome">{{ sessao.usuario()?.nome }}</strong>
-              <span class="botao-usuario__nivel">Nível {{ sessao.usuario()?.nivel }}</span>
+              <span class="botao-usuario__nivel">
+                {{ sessao.usuario()?.perfil === 'ADMINISTRADOR' ? 'Administrador' : 'Nível ' + sessao.usuario()?.nivel }}
+              </span>
             </div>
             <i class="pi pi-chevron-down botao-usuario__seta" [class.rotacionada]="menuUsuarioAberto()" aria-hidden="true"></i>
           </button>
@@ -91,7 +101,11 @@
                 <div class="dropdown-usuario__dados">
                   <strong>{{ sessao.usuario()?.nome }}</strong>
                   <span>{{ sessao.usuario()?.email }}</span>
-                  <span class="badge-nivel">Nível {{ sessao.usuario()?.nivel }} • {{ sessao.usuario()?.nomeNivel ?? 'Iniciante' }}</span>
+                  @if (sessao.usuario()?.perfil === 'ADMINISTRADOR') {
+                    <span class="badge-nivel badge-nivel--admin">Acesso Administrativo</span>
+                  } @else {
+                    <span class="badge-nivel">Nível {{ sessao.usuario()?.nivel }} • {{ sessao.usuario()?.nomeNivel ?? 'Iniciante' }}</span>
+                  }
                 </div>
               </div>
 

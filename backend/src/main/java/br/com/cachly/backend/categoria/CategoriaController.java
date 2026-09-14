@@ -35,6 +35,12 @@ public class CategoriaController {
         return categoriaService.listarAtivas();
     }
 
+    @GetMapping("/admin/todas")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public List<CategoriaResponse> listarTodas() {
+        return categoriaService.listarTodas();
+    }
+
     @GetMapping("/{id}")
     public CategoriaResponse buscarPorId(@PathVariable Long id) {
         return categoriaService.buscarPorId(id);
@@ -53,5 +59,11 @@ public class CategoriaController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public CategoriaResponse desativar(@PathVariable Long id) {
         return categoriaService.desativar(id);
+    }
+
+    @PatchMapping("/{id}/ativar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public CategoriaResponse ativar(@PathVariable Long id) {
+        return categoriaService.ativar(id);
     }
 }

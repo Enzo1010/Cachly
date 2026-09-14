@@ -169,6 +169,25 @@
   }
 }
 
+.badge-topo-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+
+  i {
+    color: #0284c7;
+    font-size: 0.85rem;
+  }
+}
+
 .usuario-menu-wrapper {
   position: relative;
 }
@@ -304,6 +323,11 @@
       padding: 0.15rem 0.5rem;
       border-radius: 9999px;
       width: fit-content;
+
+      &--admin {
+        color: #0f172a;
+        background: #e2e8f0;
+      }
     }
   }
 

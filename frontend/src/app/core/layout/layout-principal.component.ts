@@ -1,4 +1,4 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, HostListener, signal, computed } from '@angular/core';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -37,12 +37,23 @@ export class LayoutPrincipalComponent {
   protected readonly tituloPagina = signal('Visão Geral');
   protected readonly menuUsuarioAberto = signal(false);
 
-  protected readonly navegacaoPrincipal: readonly ItemNavegacao[] = [
-    { icone: 'pi pi-home', rotulo: 'Início', rota: '/dashboard' },
-    { icone: 'pi pi-server', rotulo: 'Simulador', rota: '/simulador' },
-    { icone: 'pi pi-book', rotulo: 'Estudar', rota: '/estudar' },
-    { icone: 'pi pi-chart-pie', rotulo: 'Desempenho', rota: '/desempenho' },
-  ];
+  protected readonly navegacaoPrincipal = computed<readonly ItemNavegacao[]>(() => {
+    const perfil = this.sessao.usuario()?.perfil;
+    if (perfil === 'ADMINISTRADOR') {
+      return [
+        { icone: 'pi pi-th-large', rotulo: 'Visão Geral', rota: '/admin' },
+        { icone: 'pi pi-question-circle', rotulo: 'Questões', rota: '/admin/questoes' },
+        { icone: 'pi pi-tags', rotulo: 'Categorias', rota: '/admin/categorias' },
+        { icone: 'pi pi-server', rotulo: 'Simulador', rota: '/simulador' },
+      ];
+    }
+    return [
+      { icone: 'pi pi-home', rotulo: 'Início', rota: '/dashboard' },
+      { icone: 'pi pi-server', rotulo: 'Simulador', rota: '/simulador' },
+      { icone: 'pi pi-book', rotulo: 'Estudar', rota: '/estudar' },
+      { icone: 'pi pi-chart-pie', rotulo: 'Desempenho', rota: '/desempenho' },
+    ];
+  });
 
   constructor() {
     this.atualizarTituloPagina();

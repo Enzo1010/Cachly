@@ -91,6 +91,26 @@ describe('LoginComponent', () => {
     expect(navegar).toHaveBeenCalledWith('/dashboard');
   });
 
+  it('deve autenticar e navegar para /admin quando o perfil for ADMINISTRADOR', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    const router = TestBed.inject(Router);
+    const http = TestBed.inject(HttpTestingController);
+    const navegar = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    fixture.detectChanges();
+
+    preencherFormulario(fixture.nativeElement as HTMLElement);
+    const formulario = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    formulario.dispatchEvent(new Event('submit'));
+
+    const requisicao = http.expectOne('/api/auth/login');
+    requisicao.flush({
+      ...criarUsuario(),
+      perfil: 'ADMINISTRADOR',
+    });
+
+    expect(navegar).toHaveBeenCalledWith('/admin');
+  });
+
   it('deve exibir o erro devolvido pelo backend', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     const http = TestBed.inject(HttpTestingController);

@@ -34,6 +34,13 @@ public class CategoriaService {
                 .toList();
     }
 
+    public List<CategoriaResponse> listarTodas() {
+        return categoriaRepository.findAllByOrderByNomeAsc()
+                .stream()
+                .map(this::converterParaResponse)
+                .toList();
+    }
+
     public CategoriaResponse buscarPorId(Long id) {
         return converterParaResponse(buscarEntidadePorId(id));
     }
@@ -57,6 +64,14 @@ public class CategoriaService {
     public CategoriaResponse desativar(Long id) {
         Categoria categoria = buscarEntidadePorId(id);
         categoria.setAtiva(false);
+
+        return converterParaResponse(categoriaRepository.save(categoria));
+    }
+
+    @Transactional
+    public CategoriaResponse ativar(Long id) {
+        Categoria categoria = buscarEntidadePorId(id);
+        categoria.setAtiva(true);
 
         return converterParaResponse(categoriaRepository.save(categoria));
     }

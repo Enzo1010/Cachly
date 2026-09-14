@@ -71,4 +71,10 @@ public class QuestaoController {
     public QuestaoResponse desativar(@PathVariable Long id) {
         return questaoService.desativar(id);
     }
+
+    @PatchMapping("/{id}/ativar")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public QuestaoResponse ativar(@PathVariable Long id) {
+        return questaoService.ativar(id);
+    }
 }

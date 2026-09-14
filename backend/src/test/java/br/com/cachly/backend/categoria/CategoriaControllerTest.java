@@ -228,6 +228,46 @@ class CategoriaControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void deveAtivarCategoriaComSucesso() throws Exception {
+        when(categoriaService.ativar(1L)).thenReturn(criarResponse(1L, "Circuitos", true));
+
+        mockMvc.perform(patch("/api/categorias/1/ativar")
+                        .with(user("admin").roles("ADMINISTRADOR")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.ativa").value(true));
+    }
+
+    @Test
+    void deveRejeitarAtivacaoComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(patch("/api/categorias/1/ativar")
+                        .with(user("aluno").roles("ALUNO")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deveListarTodasCategoriasParaAdministrador() throws Exception {
+        when(categoriaService.listarTodas()).thenReturn(List.of(
+                criarResponse(1L, "Cat 1", true),
+                criarResponse(2L, "Cat 2", false)
+        ));
+
+        mockMvc.perform(get("/api/categorias/admin/todas")
+                        .with(user("admin").roles("ADMINISTRADOR")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].ativa").value(true))
+                .andExpect(jsonPath("$[1].ativa").value(false));
+    }
+
+    @Test
+    void deveRejeitarListagemTodasComPerfilAlunoComStatus403() throws Exception {
+        mockMvc.perform(get("/api/categorias/admin/todas")
+                        .with(user("aluno").roles("ALUNO")))
+                .andExpect(status().isForbidden());
+    }
+
     private CategoriaResponse criarResponse(Long id, String nome, boolean ativa) {
         OffsetDateTime agora = OffsetDateTime.now();
         return new CategoriaResponse(

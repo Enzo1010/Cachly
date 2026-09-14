@@ -1,8 +1,11 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 
+import { adminGuard } from './core/autenticacao/admin.guard';
+import { alunoGuard } from './core/autenticacao/aluno.guard';
 import { autenticacaoGuard } from './core/autenticacao/autenticacao.guard';
-
 import { guestGuard } from './core/autenticacao/guest.guard';
+import { SessaoService } from './core/autenticacao/sessao.service';
 
 export const routes: Routes = [
   {
@@ -25,16 +28,19 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
+        canActivate: [alunoGuard],
         loadChildren: () =>
           import('./features/dashboard/dashboard.routes').then((rotas) => rotas.ROTAS_DASHBOARD),
       },
       {
         path: 'estudar',
+        canActivate: [alunoGuard],
         loadChildren: () =>
           import('./features/estudar/estudar.routes').then((rotas) => rotas.ROTAS_ESTUDAR),
       },
       {
         path: 'desempenho',
+        canActivate: [alunoGuard],
         loadChildren: () =>
           import('./features/desempenho/desempenho.routes').then(
             (rotas) => rotas.ROTAS_DESEMPENHO,
@@ -49,6 +55,12 @@ export const routes: Routes = [
         redirectTo: 'dashboard',
       },
       {
+        path: 'admin',
+        canActivate: [adminGuard],
+        loadChildren: () =>
+          import('./features/admin/admin.routes').then((rotas) => rotas.ROTAS_ADMIN),
+      },
+      {
         path: 'simulador',
         loadChildren: () =>
           import('./features/simulador/simulador.routes').then((rotas) => rotas.ROTAS_SIMULADOR),
@@ -61,12 +73,18 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'dashboard',
+        redirectTo: () => {
+          const sessao = inject(SessaoService);
+          return sessao.usuario()?.perfil === 'ADMINISTRADOR' ? 'admin' : 'dashboard';
+        },
       },
     ],
   },
   {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: () => {
+      const sessao = inject(SessaoService);
+      return sessao.usuario()?.perfil === 'ADMINISTRADOR' ? 'admin' : 'dashboard';
+    },
   },
 ];

@@ -1,0 +1,145 @@
+<div class="categorias-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gerenciamento de Categorias</h1>
+      <p class="page-subtitle">Organize os tópicos conceituais e módulos de estudo do Cachly</p>
+    </div>
+    <button class="btn-acao-admin btn-acao-admin--primario" type="button" (click)="abrirModalNovaCategoria()">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      <span>Nova Categoria</span>
+    </button>
+  </div>
+
+  <!-- Barra de Filtros -->
+  <div class="filtros-card">
+    <div class="campo-busca">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        placeholder="Buscar por nome ou descrição da categoria..."
+        [value]="filtroBusca()"
+        (input)="filtroBusca.set($any($event.target).value)"
+      />
+    </div>
+  </div>
+
+  <!-- Tabela de Categorias -->
+  <div class="tabela-card">
+    @if (carregando()) {
+      <div class="estado-feedback">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>Carregando categorias...</span>
+      </div>
+    } @else if (categoriasFiltradas().length === 0) {
+      <div class="estado-feedback">
+        <i class="pi pi-inbox"></i>
+        <span>Nenhuma categoria encontrada.</span>
+      </div>
+    } @else {
+      <div class="tabela-responsiva">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width: 4rem;">ID</th>
+              <th>Nome da Categoria</th>
+              <th>Descrição</th>
+              <th>Status</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of categoriasFiltradas(); track c.id) {
+              <tr [class.linha-inativa]="!c.ativa">
+                <td class="col-id">#{{ c.id }}</td>
+                <td class="col-nome">
+                  <strong>{{ c.nome }}</strong>
+                </td>
+                <td class="col-descricao">
+                  {{ c.descricao || 'Sem descrição cadastrada.' }}
+                </td>
+                <td>
+                  @if (c.ativa) {
+                    <span class="badge-status badge-status--ativa"><i class="pi pi-check"></i> Ativa</span>
+                  } @else {
+                    <span class="badge-status badge-status--inativa"><i class="pi pi-ban"></i> Inativa</span>
+                  }
+                </td>
+                <td class="col-acoes">
+                  <button
+                    type="button"
+                    class="btn-acao btn-acao--editar"
+                    title="Editar categoria"
+                    (click)="abrirModalEditar(c)"
+                  >
+                    <i class="pi pi-pencil"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-acao"
+                    [class.btn-acao--desativar]="c.ativa"
+                    [class.btn-acao--ativar]="!c.ativa"
+                    [title]="c.ativa ? 'Desativar categoria' : 'Ativar categoria'"
+                    (click)="alternarStatus(c)"
+                  >
+                    <i [class]="c.ativa ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de Cadastro / Edição -->
+@if (modalAberto()) {
+  <div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ categoriaEmEdicao() ? 'Editar Categoria' : 'Nova Categoria' }}</h2>
+        <button type="button" class="btn-fechar" (click)="fecharModal()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="formulario" (ngSubmit)="salvar()" class="modal-body">
+        <div class="form-grupo">
+          <label for="campo-nome">Nome da Categoria *</label>
+          <input
+            id="campo-nome"
+            type="text"
+            formControlName="nome"
+            placeholder="Ex: Políticas de Substituição, Mapeamento Direto..."
+          />
+        </div>
+
+        <div class="form-grupo">
+          <label for="campo-descricao">Descrição do Tópico</label>
+          <textarea
+            id="campo-descricao"
+            rows="3"
+            formControlName="descricao"
+            placeholder="Breve resumo sobre o conteúdo pedagógico abordado neste tópico..."
+          ></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
+          <button
+            type="submit"
+            class="btn-acao-admin btn-acao-admin--primario"
+            [disabled]="salvando()"
+          >
+            @if (salvando()) {
+              <i class="pi pi-spin pi-spinner mr-2"></i> Salvando...
+            } @else {
+              <i class="pi pi-check mr-2"></i> {{ categoriaEmEdicao() ? 'Atualizar Categoria' : 'Cadastrar Categoria' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

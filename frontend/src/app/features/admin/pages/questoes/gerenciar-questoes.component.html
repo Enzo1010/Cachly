@@ -1,0 +1,257 @@
+<div class="questoes-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gerenciamento de Questões</h1>
+      <p class="page-subtitle">Crie, edite, ative ou desative questões do banco pedagógico</p>
+    </div>
+    <button class="btn-acao-admin btn-acao-admin--primario" type="button" (click)="abrirModalNovaQuestao()">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      <span>Nova Questão</span>
+    </button>
+  </div>
+
+  <!-- Barra de Filtros -->
+  <div class="filtros-card">
+    <div class="campo-busca">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        placeholder="Buscar por enunciado ou categoria..."
+        [value]="filtroBusca()"
+        (input)="filtroBusca.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filtros-selecao">
+      <div class="filtro-grupo">
+        <label for="filtro-cat">Categoria:</label>
+        <select
+          id="filtro-cat"
+          [value]="filtroCategoria() ?? ''"
+          (change)="filtroCategoria.set($any($event.target).value ? +$any($event.target).value : null)"
+        >
+          <option value="">Todas as Categorias</option>
+          @for (c of categorias(); track c.id) {
+            <option [value]="c.id">{{ c.nome }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="filtro-dif">Dificuldade:</label>
+        <select
+          id="filtro-dif"
+          [value]="filtroDificuldade()"
+          (change)="filtroDificuldade.set($any($event.target).value)"
+        >
+          <option value="TODAS">Todas</option>
+          <option value="FACIL">Fácil</option>
+          <option value="MEDIO">Médio</option>
+          <option value="DIFICIL">Difícil</option>
+        </select>
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="filtro-st">Status:</label>
+        <select
+          id="filtro-st"
+          [value]="filtroStatus()"
+          (change)="filtroStatus.set($any($event.target).value)"
+        >
+          <option value="TODAS">Todos</option>
+          <option value="ATIVAS">Ativas</option>
+          <option value="INATIVAS">Inativas</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Questões -->
+  <div class="tabela-card">
+    @if (carregando()) {
+      <div class="estado-feedback">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>Carregando questões...</span>
+      </div>
+    } @else if (questoesFiltradas().length === 0) {
+      <div class="estado-feedback">
+        <i class="pi pi-search"></i>
+        <span>Nenhuma questão encontrada com os filtros atuais.</span>
+      </div>
+    } @else {
+      <div class="tabela-responsiva">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width: 4rem;">ID</th>
+              <th>Enunciado</th>
+              <th>Categoria</th>
+              <th>Dificuldade</th>
+              <th>XP</th>
+              <th>Status</th>
+              <th style="text-align: right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (q of questoesFiltradas(); track q.id) {
+              <tr [class.linha-inativa]="!q.ativa">
+                <td class="col-id">#{{ q.id }}</td>
+                <td class="col-enunciado" [title]="q.enunciado">
+                  <div class="enunciado-wrapper">
+                    <span>{{ q.enunciado }}</span>
+                    <small class="explicacao-resumo" [title]="q.explicacao">
+                      <i class="pi pi-info-circle mr-1"></i>{{ q.explicacao }}
+                    </small>
+                  </div>
+                </td>
+                <td><span class="badge-tag">{{ q.categoriaNome }}</span></td>
+                <td>
+                  <span class="badge-dificuldade badge-dificuldade--{{ q.dificuldade.toLowerCase() }}">
+                    {{ q.dificuldade }}
+                  </span>
+                </td>
+                <td class="col-xp">+{{ q.xpBase }} XP</td>
+                <td>
+                  @if (q.ativa) {
+                    <span class="badge-status badge-status--ativa"><i class="pi pi-check"></i> Ativa</span>
+                  } @else {
+                    <span class="badge-status badge-status--inativa"><i class="pi pi-ban"></i> Inativa</span>
+                  }
+                </td>
+                <td class="col-acoes">
+                  <button
+                    type="button"
+                    class="btn-acao btn-acao--editar"
+                    title="Editar questão"
+                    (click)="abrirModalEditar(q)"
+                  >
+                    <i class="pi pi-pencil"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-acao"
+                    [class.btn-acao--desativar]="q.ativa"
+                    [class.btn-acao--ativar]="!q.ativa"
+                    [title]="q.ativa ? 'Desativar questão' : 'Ativar questão'"
+                    (click)="alternarStatus(q)"
+                  >
+                    <i [class]="q.ativa ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal / Dialog de Cadastro / Edição -->
+@if (modalAberto()) {
+  <div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ questaoEmEdicao() ? 'Editar Questão #' + questaoEmEdicao()?.id : 'Nova Questão Pedagógica' }}</h2>
+        <button type="button" class="btn-fechar" (click)="fecharModal()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="formulario" (ngSubmit)="salvar()" class="modal-body">
+        <div class="form-row">
+          <div class="form-grupo form-grupo--flex2">
+            <label for="campo-categoria">Categoria / Tópico *</label>
+            <select id="campo-categoria" formControlName="categoriaId">
+              <option [ngValue]="null" disabled>Selecione um tópico...</option>
+              @for (c of categorias(); track c.id) {
+                <option [ngValue]="c.id">{{ c.nome }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-grupo form-grupo--flex1">
+            <label for="campo-dificuldade">Dificuldade *</label>
+            <select id="campo-dificuldade" formControlName="dificuldade">
+              <option value="FACIL">Fácil</option>
+              <option value="MEDIO">Médio</option>
+              <option value="DIFICIL">Difícil</option>
+            </select>
+          </div>
+
+          <div class="form-grupo form-grupo--flex1">
+            <label for="campo-xp">XP Base *</label>
+            <input id="campo-xp" type="number" formControlName="xpBase" min="1" />
+          </div>
+        </div>
+
+        <div class="form-grupo">
+          <label for="campo-enunciado">Enunciado da Questão *</label>
+          <textarea
+            id="campo-enunciado"
+            rows="3"
+            formControlName="enunciado"
+            placeholder="Digite a pergunta ou problema sobre memória cache..."
+          ></textarea>
+        </div>
+
+        <div class="form-grupo">
+          <label for="campo-explicacao">Explicação Didática / Gabarito Comentado *</label>
+          <textarea
+            id="campo-explicacao"
+            rows="2"
+            formControlName="explicacao"
+            placeholder="Explique detalhadamente por que a alternativa correta é a verdadeira e por que as outras são falsas..."
+          ></textarea>
+        </div>
+
+        <!-- Seção de Alternativas -->
+        <div class="secao-alternativas">
+          <div class="alternativas-header">
+            <h3>Alternativas (selecione a correta)</h3>
+            <span class="dica-correta"><i class="pi pi-check-circle"></i> Exatamente uma deve ser marcada</span>
+          </div>
+
+          <div formArrayName="alternativas" class="alternativas-lista">
+            @for (altCtrl of alternativasFormArray.controls; track $index) {
+              <div [formGroupName]="$index" class="alternativa-item" [class.alternativa-item--correta]="altCtrl.get('correta')?.value">
+                <label class="radio-label" [title]="'Marcar como alternativa correta'">
+                  <input
+                    type="radio"
+                    name="altCorretaRadio"
+                    [checked]="altCtrl.get('correta')?.value"
+                    (change)="marcarCorreta($index)"
+                  />
+                  <span class="letra-indicador">{{ ['A', 'B', 'C', 'D', 'E'][$index] }}</span>
+                </label>
+
+                <div class="alternativa-input">
+                  <input
+                    type="text"
+                    formControlName="texto"
+                    [placeholder]="'Texto da alternativa ' + ['A', 'B', 'C', 'D', 'E'][$index] + '...'"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
+          <button
+            type="submit"
+            class="btn-acao-admin btn-acao-admin--primario"
+            [disabled]="salvando()"
+          >
+            @if (salvando()) {
+              <i class="pi pi-spin pi-spinner mr-2"></i> Salvando...
+            } @else {
+              <i class="pi pi-check mr-2"></i> {{ questaoEmEdicao() ? 'Atualizar Questão' : 'Cadastrar Questão' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

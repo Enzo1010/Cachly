@@ -137,6 +137,24 @@ class QuestaoControllerTest {
     }
 
     @Test
+    void deveAtivarQuestaoComSucesso() throws Exception {
+        when(questaoService.ativar(1L)).thenReturn(criarResponse(1L, true));
+
+        mockMvc.perform(patch("/api/questoes/1/ativar")
+                        .with(user("admin").roles("ADMINISTRADOR")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.ativa").value(true));
+    }
+
+    @Test
+    void alunoNaoDeveAtivarQuestao() throws Exception {
+        mockMvc.perform(patch("/api/questoes/1/ativar")
+                        .with(user("aluno").roles("ALUNO")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void deveRetornarRequisicaoInvalidaQuandoCamposForemInvalidos() throws Exception {
         mockMvc.perform(post("/api/questoes")
                         .with(user("admin").roles("ADMINISTRADOR"))

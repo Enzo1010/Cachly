@@ -68,7 +68,10 @@ export class LoginComponent {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: () => void this.router.navigateByUrl('/dashboard'),
+        next: (usuario) => {
+          const destino = usuario.perfil === 'ADMINISTRADOR' ? '/admin' : '/dashboard';
+          void this.router.navigateByUrl(destino);
+        },
         error: (erro: unknown) => this.exibirErroLogin(erro),
       });
   }

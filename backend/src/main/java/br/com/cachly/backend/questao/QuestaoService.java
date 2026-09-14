@@ -91,6 +91,14 @@ public class QuestaoService {
         return converterParaResponse(questaoRepository.save(questao));
     }
 
+    @Transactional
+    public QuestaoResponse ativar(Long id) {
+        Questao questao = buscarEntidadePorId(id);
+        questao.setAtiva(true);
+
+        return converterParaResponse(questaoRepository.save(questao));
+    }
+
     private Questao buscarEntidadePorId(Long id) {
         return questaoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException(

@@ -1,0 +1,152 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <div>
+      <h1 class="admin-titulo">Painel do Administrador</h1>
+      <p class="admin-subtitulo">Visão geral do conteúdo pedagógico, questões e tópicos do Cachly</p>
+    </div>
+    <div class="admin-acoes-topo">
+      <a routerLink="/admin/questoes" class="btn-acao-admin btn-acao-admin--primario">
+        <i class="pi pi-plus" aria-hidden="true"></i>
+        <span>Gerenciar Questões</span>
+      </a>
+      <a routerLink="/admin/categorias" class="btn-acao-admin btn-acao-admin--secundario">
+        <i class="pi pi-tags" aria-hidden="true"></i>
+        <span>Gerenciar Categorias</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Cards de Métricas -->
+  <div class="metricas-grid">
+    <div class="metrica-card">
+      <div class="metrica-icone metrica-icone--azul">
+        <i class="pi pi-question-circle"></i>
+      </div>
+      <div class="metrica-info">
+        <span class="metrica-rotulo">Total de Questões</span>
+        <strong class="metrica-valor">{{ metricas().totalQuestoes }}</strong>
+        <div class="metrica-detalhes">
+          <span class="badge-status badge-status--ativa">{{ metricas().questoesAtivas }} ativas</span>
+          @if (metricas().questoesInativas > 0) {
+            <span class="badge-status badge-status--inativa">{{ metricas().questoesInativas }} inativas</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="metrica-card">
+      <div class="metrica-icone metrica-icone--roxo">
+        <i class="pi pi-tags"></i>
+      </div>
+      <div class="metrica-info">
+        <span class="metrica-rotulo">Tópicos / Categorias</span>
+        <strong class="metrica-valor">{{ metricas().totalCategorias }}</strong>
+        <div class="metrica-detalhes">
+          <span class="badge-status badge-status--ativa">{{ metricas().categoriasAtivas }} ativas</span>
+          @if (metricas().categoriasInativas > 0) {
+            <span class="badge-status badge-status--inativa">{{ metricas().categoriasInativas }} inativas</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="metrica-card">
+      <div class="metrica-icone metrica-icone--verde">
+        <i class="pi pi-chart-bar"></i>
+      </div>
+      <div class="metrica-info">
+        <span class="metrica-rotulo">Distribuição por Nível</span>
+        <div class="distribuicao-dificuldade">
+          <span class="diff-chip diff-chip--facil" title="Fáceis">
+            <i class="pi pi-circle-fill"></i> {{ metricas().questoesFaceis }} Fáceis
+          </span>
+          <span class="diff-chip diff-chip--medio" title="Médias">
+            <i class="pi pi-circle-fill"></i> {{ metricas().questoesMedias }} Médias
+          </span>
+          <span class="diff-chip diff-chip--dificil" title="Difíceis">
+            <i class="pi pi-circle-fill"></i> {{ metricas().questoesDificeis }} Difíceis
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrica-card">
+      <div class="metrica-icone metrica-icone--laranja">
+        <i class="pi pi-server"></i>
+      </div>
+      <div class="metrica-info">
+        <span class="metrica-rotulo">Simulador de Memória Cache</span>
+        <strong class="metrica-valor">Ambiente Prático</strong>
+        <div class="metrica-detalhes">
+          <a routerLink="/simulador" class="link-simulador">
+            Abrir simulador <i class="pi pi-arrow-right ml-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Questões Recentes -->
+  <div class="secao-recentes">
+    <div class="secao-recentes__cabecalho">
+      <h2>Últimas Questões Adicionadas</h2>
+      <a routerLink="/admin/questoes" class="link-ver-todas">
+        Ver todas as questões <i class="pi pi-arrow-right"></i>
+      </a>
+    </div>
+
+    @if (carregando()) {
+      <div class="estado-carregando">
+        <i class="pi pi-spin pi-spinner"></i>
+        <span>Carregando dados pedagógicos...</span>
+      </div>
+    } @else if (questoesRecentes().length === 0) {
+      <div class="estado-vazio">
+        <i class="pi pi-inbox"></i>
+        <a routerLink="/admin/questoes" class="btn-acao-admin btn-acao-admin--primario btn-acao-admin--sm">
+          <i class="pi pi-plus" aria-hidden="true"></i>
+          <span>Cadastrar Primeira Questão</span>
+        </a>
+      </div>
+    } @else {
+      <div class="tabela-container">
+        <table class="tabela-admin">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Enunciado</th>
+              <th>Categoria</th>
+              <th>Dificuldade</th>
+              <th>XP</th>
+              <th>Status</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (q of questoesRecentes(); track q.id) {
+              <tr>
+                <td class="col-id">#{{ q.id }}</td>
+                <td class="col-enunciado" [title]="q.enunciado">{{ q.enunciado }}</td>
+                <td><span class="badge-categoria">{{ q.categoriaNome }}</span></td>
+                <td>
+                  <span class="badge-dificuldade badge-dificuldade--{{ q.dificuldade.toLowerCase() }}">
+                    {{ q.dificuldade }}
+                  </span>
+                </td>
+                <td class="col-xp">+{{ q.xpBase }} XP</td>
+                <td>
+                  @if (q.ativa) {
+                    <span class="badge-status badge-status--ativa"><i class="pi pi-check-circle"></i> Ativa</span>
+                  } @else {
+                    <span class="badge-status badge-status--inativa"><i class="pi pi-times-circle"></i> Inativa</span>
+                  }
+                </td>
+                <td class="col-data">{{ q.criadoEm ? (q.criadoEm | date:'dd/MM/yyyy') : '-' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
