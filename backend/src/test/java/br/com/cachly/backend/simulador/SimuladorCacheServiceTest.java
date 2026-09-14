@@ -189,4 +189,36 @@ class SimuladorCacheServiceTest {
         );
         assertTrue(exception.getMessage().contains("excede o limite máximo permitido de 4096"));
     }
+
+    @Test
+    @DisplayName("Deve explicar Miss de Conflito no Mapeamento Direto sem mencionar FIFO ou LRU e sem citar Conjunto")
+    void deveExplicarMissDeConflitoNoMapeamentoDiretoSemMencionarPoliticaSubstituicao() {
+        // Cache de 8 bytes, bloco de 4 bytes = 2 linhas (linhas 0 e 1)
+        // Endereço 0 (bloco 0 -> linha 0, offset 0, tag 0)
+        // Endereço 8 (bloco 2 -> linha 0, offset 0, tag 1) -> colide na linha 0
+        SimulacaoRequest request = new SimulacaoRequest(
+                8,
+                4,
+                null,
+                TipoMapeamento.DIRETO,
+                null,
+                List.of(0, 8)
+        );
+
+        SimulacaoResponse response = service.executarSimulacao(request);
+
+        PassoSimulacaoResponse passo1 = response.passos().get(0);
+        assertTrue(passo1.explicacao().contains("Verificando a Linha 0 para a Tag 0"));
+        assertFalse(passo1.explicacao().contains("Conjunto"));
+
+        PassoSimulacaoResponse passoConflito = response.passos().get(1);
+        assertFalse(passoConflito.hit());
+        assertEquals(0, passoConflito.blocoSubstituido());
+        assertTrue(passoConflito.explicacao().contains("Verificando a Linha 0 para a Tag 1"));
+        assertTrue(passoConflito.explicacao().contains("MISS DE CONFLITO!"));
+        assertTrue(passoConflito.explicacao().contains("No Mapeamento Direto não há algoritmo de substituição"));
+        assertFalse(passoConflito.explicacao().contains("FIFO"), "Explicação não deve mencionar FIFO em mapeamento direto");
+        assertFalse(passoConflito.explicacao().contains("LRU"), "Explicação não deve mencionar LRU em mapeamento direto");
+        assertFalse(passoConflito.explicacao().contains("Conjunto"), "Explicação de mapeamento direto não deve citar Conjunto");
+    }
 }
