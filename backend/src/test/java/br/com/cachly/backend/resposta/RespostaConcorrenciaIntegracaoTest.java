@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.springframework.test.context.ActiveProfiles;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +27,7 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class RespostaConcorrenciaIntegracaoTest {
 
     @Autowired
@@ -46,6 +49,7 @@ class RespostaConcorrenciaIntegracaoTest {
     private TentativaQuestaoRepository tentativaQuestaoRepository;
 
     private Usuario aluno;
+    private Categoria categoria;
     private Questao questao;
     private Alternativa alternativaCorreta;
 
@@ -63,7 +67,7 @@ class RespostaConcorrenciaIntegracaoTest {
         aluno.setDiasOfensiva(0);
         aluno = usuarioRepository.saveAndFlush(aluno);
 
-        Categoria categoria = new Categoria();
+        categoria = new Categoria();
         categoria.setNome("Categoria Concorrência " + UUID.randomUUID());
         categoria.setDescricao("Descrição");
         categoria.setAtiva(true);
@@ -100,10 +104,16 @@ class RespostaConcorrenciaIntegracaoTest {
     @AfterEach
     void tearDown() {
         tentativaQuestaoRepository.deleteAll();
-        alternativaRepository.deleteAll();
-        questaoRepository.deleteAll();
-        categoriaRepository.deleteAll();
-        usuarioRepository.deleteAll();
+        if (questao != null && questao.getId() != null) {
+            alternativaRepository.deleteAll(questao.getAlternativas());
+            questaoRepository.deleteById(questao.getId());
+        }
+        if (categoria != null && categoria.getId() != null) {
+            categoriaRepository.deleteById(categoria.getId());
+        }
+        if (aluno != null && aluno.getId() != null) {
+            usuarioRepository.deleteById(aluno.getId());
+        }
     }
 
     @Test
