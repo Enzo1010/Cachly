@@ -2,7 +2,7 @@ export interface RankingAluno {
   readonly posicao: number;
   readonly nome: string;
   readonly nivel: number;
-  readonly xpTotal: number;
+  readonly xpSemanal: number;
   readonly diasOfensiva: number;
 }
 

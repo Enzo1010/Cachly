@@ -67,7 +67,7 @@ class RankingControllerTest {
                 .andExpect(jsonPath("$.content[0].posicao").value(1))
                 .andExpect(jsonPath("$.content[0].nome").value("Enzo"))
                 .andExpect(jsonPath("$.content[0].nivel").value(10))
-                .andExpect(jsonPath("$.content[0].xpTotal").value(500))
+                .andExpect(jsonPath("$.content[0].xpSemanal").value(500))
                 .andExpect(jsonPath("$.content[1].posicao").value(2))
                 .andExpect(jsonPath("$.content[1].nome").value("Alice"));
     }

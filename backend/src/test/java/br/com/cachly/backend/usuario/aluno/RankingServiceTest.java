@@ -66,7 +66,7 @@ class RankingServiceTest {
         RankingResponse top1 = result.getContent().get(0);
         assertEquals(1, top1.posicao());
         assertEquals("Aluno Top 1", top1.nome());
-        assertEquals(500, top1.xpTotal());
+        assertEquals(500, top1.xpSemanal());
         assertEquals(10, top1.nivel());
         
         RankingResponse top2 = result.getContent().get(1);

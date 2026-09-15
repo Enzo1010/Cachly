@@ -73,11 +73,15 @@ As regras completas de desenvolvimento do frontend estão documentadas no arquiv
 
 ## Estado atual
 
-O frontend possui uma tela de login responsiva integrada ao endpoint `POST /api/auth/login`. A
-sessão do usuário protege o dashboard no navegador e pode durar apenas durante a aba ou persistir
-quando a opção "Lembrar login" estiver marcada. Durante o desenvolvimento, `npm start` encaminha
-as requisições `/api` para o backend em `http://localhost:8080`.
+O frontend está totalmente funcional e integrado ao backend. O ecossistema inclui:
 
-O backend já expõe os endpoints para **cadastro de alunos**, **gerenciamento de sessões de estudo (quiz)** e **respostas**, que serão integrados ao frontend nas próximas etapas.
+- **Autenticação JWT stateless**: Login, persistência de sessão e proteção de rotas com guards.
+- **Painel de Perfil**: Modal para alterar senha e exibir estatísticas consolidadas de XP e ranking.
+- **Estudo e Gamificação**: Listagem de questões, submissão de respostas, acúmulo de XP, níveis e ofensiva de estudos.
+- **Liga Semanal (Ranking)**: Tabela de classificação em tempo real mostrando os usuários mais dedicados da semana.
+- **Simulador de Memória Cache**: Engine interativa com step-by-step, além de um sistema de Desafios práticos que pontuam experiência.
+- **Administração**: CRUD de categorias e questões protegidos por RBAC.
 
-O projeto poderá ser utilizado futuramente como base para um aplicativo Android com Capacitor.
+O desenvolvimento atual utiliza o Nginx ou o `proxy.conf.json` (`npm start`) para espelhar as requisições `/api` para o backend rodando em `http://localhost:8080`.
+
+O projeto poderá ser utilizado futuramente como base para um aplicativo Android/iOS com Capacitor, mantendo a mesma base de código Angular.

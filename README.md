@@ -129,8 +129,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 | PostgreSQL | 15 / 16 | Banco de dados relacional |
 | Flyway | 10.x | Versionamento e migração de schema (V1 a V14) |
 | SpringDoc OpenAPI | 2.x | Documentação interativa (Swagger UI) |
-| JUnit 5 + Mockito | — | Cobertura de testes automatizados (128 casos) |
-| Lombok | — | Redução de boilerplate |
+| JUnit 5 + Mockito | — | Cobertura de testes automatizados (138 casos) |
 | Lombok | — | Redução de boilerplate |
 
 ### Frontend
@@ -140,9 +139,9 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 | TypeScript | 5.x | Linguagem base tipada |
 | PrimeNG | 21.x | Biblioteca de componentes de interface rica |
 | Chart.js | 4.x | Visualização gráfica (Hit/Miss e tendências) |
-| Angular Signals | — | Gerenciamento reativo de estado de alta performance |
+| Angular Signals | 21 | Gerenciamento reativo de estado de alta performance |
 | SCSS | — | Estilização modular com design system proprietário |
-| Vitest | 4.x | Suíte de testes unitários ultrarrápida (24 casos) |
+| Vitest | 4.x | Suíte de testes unitários ultrarrápida (56 casos) |
 
 ### Infraestrutura & DevOps
 | Ferramenta | Uso |
@@ -256,10 +255,10 @@ A suíte de testes cobre os fluxos críticos de negócio com testes unitários e
 
 | Escopo | Tecnologia | Casos de Teste | Status |
 |---|---|:---:|:---:|
-| **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 128 | 🟢 Passing |
+| **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 138 | 🟢 Passing |
 | **Backend — Segurança JWT, RBAC, Revogação e Integração** | MockMvc + Spring Boot Test | Incluído | 🟢 Passing |
-| **Frontend — Componentes, Estados, Formulários e Serviços** | Vitest + Angular TestBed | 34 | 🟢 Passing |
-| **Total de Casos Automatizados** | — | **162** | **0 Failures** |
+| **Frontend — Componentes, Estados, Formulários e Serviços** | Vitest + Angular TestBed | 56 | 🟢 Passing |
+| **Total de Casos Automatizados** | — | **194** | **0 Failures** |
 
 Para executar as suítes completas:
 
