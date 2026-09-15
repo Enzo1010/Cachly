@@ -15,14 +15,17 @@ export const autenticacaoInterceptor: HttpInterceptorFn = (req, next) => {
   return next(requisicaoClonada).pipe(
     catchError((erro) => {
       if (erro instanceof HttpErrorResponse && erro.status === 401) {
-        // Só redireciona para login em chamadas de sessão (GET /api/auth/me)
-        // ou quando o SecurityFilter rejeita o token (resposta sem corpo JSON do app).
-        // Não redireciona em erros 401 de endpoints de negócio para não mascarar bugs.
-        const isRotaDeLogin = req.url.includes('/login') || req.url.includes('/refresh-token');
-        const isChecagemDeSessao = req.url.includes('/api/auth/me');
-        const isRespostaDoSpring = !erro.error?.timestamp; // ErroResponse do app tem timestamp
+        const ROTAS_ONDE_401_NAO_DESLOGA = [
+          '/api/auth/login',
+          '/api/auth/alterar-senha'
+        ];
 
-        if (!isRotaDeLogin && (isChecagemDeSessao || isRespostaDoSpring)) {
+        // Diferencia pela origem da requisição:
+        // Se a rota NÃO estiver na lista de exceções, o 401 indica
+        // sessão expirada ou token inválido -> deve deslogar.
+        const deveDeslogar = !ROTAS_ONDE_401_NAO_DESLOGA.some(rota => req.url.includes(rota));
+
+        if (deveDeslogar) {
           sessao.limparSessaoLocal();
           void router.navigate(['/login']);
         }

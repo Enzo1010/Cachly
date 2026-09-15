@@ -67,11 +67,12 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private String getClientIP(HttpServletRequest request) {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
+        String realIp = request.getHeader("X-Real-IP");
+        if (realIp != null && !realIp.isEmpty() && !"unknown".equalsIgnoreCase(realIp)) {
+            return realIp;
         }
-        return xfHeader.split(",")[0];
+        
+        return request.getRemoteAddr();
     }
 
     private Bucket createNewLoginBucket(String key) {
@@ -80,7 +81,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private Bucket createNewSimuladorBucket(String key) {
-        Bandwidth limit = Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofSeconds(10)).build();
+        Bandwidth limit = Bandwidth.builder().capacity(20).refillIntervally(20, Duration.ofMinutes(1)).build();
         return Bucket.builder().addLimit(limit).build();
     }
 

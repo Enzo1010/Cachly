@@ -1,4 +1,4 @@
-﻿import { Injectable, signal, computed, inject, DestroyRef } from '@angular/core';
+import { Injectable, signal, computed, inject, DestroyRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SessaoService } from '../../../core/autenticacao/sessao.service';
@@ -122,7 +122,7 @@ export class EstudarStateService {
         }));
         
         // Atualiza sessão global
-        this.sessao.atualizarAposResposta(res.xpTotal, res.nivelAtual, res.nomeNivelAtual);
+        this.sessao.atualizarAposResposta(res.xpTotal, res.nivelAtual, res.nomeNivel);
       },
       error: (err: HttpErrorResponse) => {
         this.respondendo.set(false);

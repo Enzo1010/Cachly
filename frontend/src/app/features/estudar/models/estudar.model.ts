@@ -36,6 +36,6 @@ export interface RespostaResponse {
   readonly explicacao: string;
   readonly xpConcedido: number;
   readonly nivelAtual: number;
-  readonly nomeNivelAtual: string;
+  readonly nomeNivel: string;
   readonly xpTotal: number;
 }

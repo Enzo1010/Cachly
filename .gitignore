@@ -1,6 +1,7 @@
 RESUMO_CONTINUACAO.md
 logo.jpg
 sync-github.ps1
+sync-issues.py
 .idea/
 test.json
 tree.txt

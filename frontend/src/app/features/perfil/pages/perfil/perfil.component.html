@@ -21,8 +21,8 @@
     </div>
 
     <button pButton class="botao-editar" type="button" (click)="abrirEdicao()">
-      <i pButtonIcon class="pi pi-pencil" aria-hidden="true"></i>
-      <span pButtonLabel>Editar perfil</span>
+      <i pButtonIcon class="pi pi-lock" aria-hidden="true"></i>
+      <span pButtonLabel>Alterar senha</span>
     </button>
 
   </article>
@@ -61,7 +61,7 @@
 </section>
 
 <p-dialog
-  header="Editar perfil"
+  header="Alterar senha"
   [visible]="edicaoAberta()"
   [modal]="true"
   [draggable]="false"
@@ -69,68 +69,107 @@
   [style]="{ width: 'min(32rem, calc(100vw - 2rem))' }"
   (visibleChange)="edicaoAberta.set($event)"
 >
-  <form class="formulario-edicao" [formGroup]="formularioEdicao" novalidate>
-    <p>Atualize seus dados pessoais. A alteração da conta depende da disponibilidade da API.</p>
+  <form class="formulario-edicao" [formGroup]="formularioEdicao" (ngSubmit)="salvarAlteracaoSenha()" novalidate>
+    <p class="instrucoes-edicao">
+      Para sua segurança, informe sua senha atual para cadastrar uma nova senha. A alteração de senha encerra todas as sessões ativas da conta.
+    </p>
 
-    <div class="campo">
+    <div class="campo campo-somente-leitura">
       <label for="nome-perfil">Nome</label>
       <input
         pInputText
         id="nome-perfil"
         type="text"
         formControlName="nome"
-        autocomplete="name"
-        [invalid]="formularioEdicao.controls.nome.invalid && formularioEdicao.controls.nome.touched"
+        readonly
       />
     </div>
 
-    <div class="campo">
+    <div class="campo campo-somente-leitura">
       <label for="email-perfil">E-mail</label>
       <input
         pInputText
         id="email-perfil"
         type="email"
         formControlName="email"
-        autocomplete="email"
-        [invalid]="
-          formularioEdicao.controls.email.invalid && formularioEdicao.controls.email.touched
-        "
+        readonly
       />
     </div>
 
     <div class="campo">
-      <label for="senha-perfil">Nova senha</label>
+      <label for="senha-atual">Senha atual</label>
       <input
         pInputText
-        id="senha-perfil"
+        id="senha-atual"
         type="password"
-        formControlName="senha"
-        autocomplete="new-password"
-        placeholder="Deixe em branco para manter a senha atual"
-        [invalid]="
-          formularioEdicao.controls.senha.invalid && formularioEdicao.controls.senha.touched
-        "
+        formControlName="senhaAtual"
+        autocomplete="current-password"
+        placeholder="Informe sua senha atual"
+        [invalid]="formularioEdicao.controls.senhaAtual.invalid && formularioEdicao.controls.senhaAtual.touched"
       />
-      <small>A senha deve ter entre 8 e 72 caracteres.</small>
+      @if (formularioEdicao.controls.senhaAtual.invalid && formularioEdicao.controls.senhaAtual.touched) {
+        <small class="mensagem-erro">A senha atual é obrigatória.</small>
+      }
     </div>
 
+    <div class="campo">
+      <label for="nova-senha">Nova senha</label>
+      <input
+        pInputText
+        id="nova-senha"
+        type="password"
+        formControlName="novaSenha"
+        autocomplete="new-password"
+        placeholder="Mínimo de 8 caracteres"
+        [invalid]="formularioEdicao.controls.novaSenha.invalid && formularioEdicao.controls.novaSenha.touched"
+      />
+      @if (formularioEdicao.controls.novaSenha.errors?.['required'] && formularioEdicao.controls.novaSenha.touched) {
+        <small class="mensagem-erro">A nova senha é obrigatória.</small>
+      } @else if (formularioEdicao.controls.novaSenha.errors?.['minlength'] && formularioEdicao.controls.novaSenha.touched) {
+        <small class="mensagem-erro">A nova senha deve ter no mínimo 8 caracteres.</small>
+      } @else {
+        <small>A senha deve ter entre 8 e 72 caracteres.</small>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="confirmacao-nova-senha">Confirmar nova senha</label>
+      <input
+        pInputText
+        id="confirmacao-nova-senha"
+        type="password"
+        formControlName="confirmacaoNovaSenha"
+        autocomplete="new-password"
+        placeholder="Repita a nova senha"
+        [invalid]="
+          (formularioEdicao.controls.confirmacaoNovaSenha.invalid || formularioEdicao.errors?.['senhasDiferentes']) &&
+          formularioEdicao.controls.confirmacaoNovaSenha.touched
+        "
+      />
+      @if (formularioEdicao.controls.confirmacaoNovaSenha.errors?.['required'] && formularioEdicao.controls.confirmacaoNovaSenha.touched) {
+        <small class="mensagem-erro">A confirmação da nova senha é obrigatória.</small>
+      } @else if (formularioEdicao.errors?.['senhasDiferentes'] && formularioEdicao.controls.confirmacaoNovaSenha.touched) {
+        <small class="mensagem-erro">As senhas não coincidem.</small>
+      }
+    </div>
+
+    @if (mensagemErro()) {
+      <p-message severity="error" [text]="mensagemErro()!" styleClass="block w-full mt-2" />
+    }
+
     <div class="acoes-edicao">
-      <button pButton class="botao-cancelar" type="button" (click)="fecharEdicao()">
+      <button pButton class="botao-cancelar" type="button" (click)="fecharEdicao()" [disabled]="salvando()">
         <span pButtonLabel>Cancelar</span>
       </button>
       <button
         pButton
         class="botao-salvar"
-        type="button"
-        disabled
+        type="submit"
+        [disabled]="formularioEdicao.invalid || salvando()"
+        [loading]="salvando()"
       >
         <span pButtonLabel>Salvar alterações</span>
       </button>
     </div>
-
-    <p class="aviso-desenvolvimento" role="status">
-      <i class="pi pi-info-circle" aria-hidden="true"></i>
-      A edição de perfil está em desenvolvimento e será habilitada em breve.
-    </p>
   </form>
 </p-dialog>

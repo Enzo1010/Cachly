@@ -143,4 +143,25 @@ class AutorizacaoIntegracaoTest {
                         .header("Authorization", "Bearer " + tokenAluno))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void deveRetornar401SeUsuarioEstiverDesativado() throws Exception {
+        // 1. Antes da desativação, o token funciona (retorna 200 OK no endpoint /api/auth/me)
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/auth/me")
+                        .header("Authorization", "Bearer " + tokenAluno))
+                .andExpect(status().isOk());
+
+        // 2. Desativar o usuário no banco de dados (simulando uma ação de admin)
+        String emailDoAluno = tokenService.extrairClaims(tokenAluno).getSubject();
+        Usuario alunoDesativado = usuarioRepository.findByEmailIgnoreCase(emailDoAluno).orElseThrow();
+        alunoDesativado.setAtivo(false);
+        usuarioRepository.saveAndFlush(alunoDesativado);
+
+        // 3. Tentar acessar com o MESMO token após a desativação.
+        // A query no SecurityFilter deve notar que o usuário não está mais ativo,
+        // falhar a autenticação silenciosamente e o Spring Security retornará 401.
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/auth/me")
+                        .header("Authorization", "Bearer " + tokenAluno))
+                .andExpect(status().isUnauthorized());
+    }
 }

@@ -221,6 +221,7 @@ class QuestaoServiceTest {
         altExistente.setId(10L);
         altExistente.setTexto("Texto Antigo");
         altExistente.setCorreta(true);
+        altExistente.setQuestao(questao);
         questao.getAlternativas().add(altExistente);
 
         br.com.cachly.backend.alternativa.AlternativaRequest altReq = 

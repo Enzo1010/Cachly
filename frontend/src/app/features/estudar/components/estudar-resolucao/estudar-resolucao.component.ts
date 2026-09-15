@@ -79,7 +79,7 @@ import { MessageModule } from 'primeng/message';
             @if (res.nivelAtual) {
               <div class="feedback-nivel">
                 <i class="pi pi-crown"></i>
-                Nível {{ res.nivelAtual }} — {{ res.nomeNivelAtual }}
+                Nível {{ res.nivelAtual }} — {{ res.nomeNivel }}
               </div>
             }
           </div>

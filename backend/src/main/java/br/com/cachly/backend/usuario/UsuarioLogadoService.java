@@ -49,6 +49,10 @@ public class UsuarioLogadoService {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
+        if (!Boolean.TRUE.equals(usuario.getAtivo())) {
+            throw new br.com.cachly.backend.comum.erro.CredenciaisInvalidasException("Usuário inativo");
+        }
+
         // Se o token foi emitido (iat) ANTES da última atualização da credencial, recusa-o.
         // Convertendo de milissegundos para facilitar, permitimos uma folga de 1000ms.
         if (iat < (usuario.getVersaoToken() - 1000)) {

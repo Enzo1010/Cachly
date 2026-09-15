@@ -78,6 +78,7 @@ class RespostaControllerTest {
                 .andExpect(jsonPath("$.explicacao").value("Explicação da questão"))
                 .andExpect(jsonPath("$.xpConcedido").value(10))
                 .andExpect(jsonPath("$.nivelAtual").value(1))
+                .andExpect(jsonPath("$.nomeNivel").value("Estagiário"))
                 .andExpect(jsonPath("$.xpTotal").value(10));
     }
 

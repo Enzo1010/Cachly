@@ -137,6 +137,7 @@ class RespostaIntegracaoTest {
                 .andExpect(jsonPath("$.explicacao").value("A porta AND resulta em 1 apenas quando todas as entradas forem 1."))
                 .andExpect(jsonPath("$.xpConcedido").value(10))
                 .andExpect(jsonPath("$.nivelAtual").value(1))
+                .andExpect(jsonPath("$.nomeNivel").value("Estagiário"))
                 .andExpect(jsonPath("$.xpTotal").value(10));
 
         // 7. Verificar banco de dados

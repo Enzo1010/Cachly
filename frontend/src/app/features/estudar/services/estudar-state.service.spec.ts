@@ -1,6 +1,7 @@
-﻿import { TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { EstudarStateService } from './estudar-state.service';
 import { EstudarApiService } from './estudar-api.service';
 import { SessaoService } from '../../../core/autenticacao/sessao.service';
@@ -9,6 +10,7 @@ import { DificuldadeQuestao } from '../models/estudar.model';
 describe('EstudarStateService', () => {
   let service: EstudarStateService;
   let httpMock: HttpTestingController;
+  let sessaoService: SessaoService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,6 +24,7 @@ describe('EstudarStateService', () => {
     });
     service = TestBed.inject(EstudarStateService);
     httpMock = TestBed.inject(HttpTestingController);
+    sessaoService = TestBed.inject(SessaoService);
   });
 
   afterEach(() => {
@@ -62,5 +65,49 @@ describe('EstudarStateService', () => {
     // em vez de usar a mensagem global ofuscada
     expect(service.error()).toBe('Erro de Validação: O ID da alternativa não existe | Usuário sem permissão para essa categoria');
     expect(service.respondendo()).toBe(false);
+  });
+
+  it('deve processar resposta com sucesso e atualizar a sessão com nomeNivel correto (não undefined)', () => {
+    const spyAtualizar = vi.spyOn(sessaoService, 'atualizarAposResposta');
+
+    service.questoes.set([{
+      id: 42,
+      enunciado: 'Questão Teste',
+      dificuldade: 'FACIL' as DificuldadeQuestao,
+      xpBase: 10,
+      alternativas: []
+    }]);
+    service.iniciarEstudo();
+
+    service.responder(1);
+
+    const req = httpMock.expectOne('/api/questoes/42/respostas');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ alternativaId: 1 });
+
+    const respostaMock = {
+      tentativaId: 101,
+      correta: true,
+      alternativaCorretaId: 1,
+      explicacao: 'A resposta está correta.',
+      xpConcedido: 10,
+      nivelAtual: 2,
+      nomeNivel: 'Dev Junior',
+      xpTotal: 110
+    };
+
+    req.flush(respostaMock);
+
+    expect(service.resultadoResposta()).toEqual(respostaMock);
+    expect(service.resultadoResposta()?.nomeNivel).toBe('Dev Junior');
+    expect(spyAtualizar).toHaveBeenCalledTimes(1);
+    expect(spyAtualizar).toHaveBeenCalledWith(110, 2, 'Dev Junior');
+    expect(spyAtualizar).not.toHaveBeenCalledWith(expect.anything(), expect.anything(), undefined);
+    expect(service.respondendo()).toBe(false);
+    expect(service.sessaoResumo()).toEqual({
+      questoesRespondidas: 1,
+      acertos: 1,
+      xpTotalGanho: 10
+    });
   });
 });

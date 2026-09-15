@@ -55,8 +55,8 @@ public class SecurityFilter extends OncePerRequestFilter {
                 if (email != null && perfil != null && id != null) {
                     Long iat = claims.getIssuedAt() != null ? claims.getIssuedAt().getTime() : 0L;
                     
-                    // Validação de Revogação de Token
-                    Long versaoTokenAtiva = usuarioRepository.findVersaoTokenById(id).orElse(null);
+                    // Validação de Revogação de Token e Usuário Ativo
+                    Long versaoTokenAtiva = usuarioRepository.findVersaoTokenByIdAndAtivoTrue(id).orElse(null);
                     
                     if (versaoTokenAtiva != null && iat >= (versaoTokenAtiva - 1000)) {
                         var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + perfil));

@@ -25,8 +25,10 @@ public interface QuestaoRepository extends JpaRepository<Questao, Long> {
     Optional<Questao> findByIdAndAtivaTrue(Long id);
 
     @EntityGraph(attributePaths = {"categoria", "alternativas"})
-    List<Questao> findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(Long categoriaId, Pageable pageable);
+    @Query("SELECT q FROM Questao q WHERE q.categoria.id = :categoriaId AND q.ativa = true AND q.categoria.ativa = true ORDER BY q.id ASC")
+    List<Questao> findAllByCategoriaIdAndAtivaTrueOrderByIdAsc(@org.springframework.data.repository.query.Param("categoriaId") Long categoriaId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"categoria", "alternativas"})
+    @Query("SELECT q FROM Questao q WHERE q.ativa = true AND q.categoria.ativa = true ORDER BY q.id ASC")
     List<Questao> findAllByAtivaTrueOrderByIdAsc(Pageable pageable);
 }

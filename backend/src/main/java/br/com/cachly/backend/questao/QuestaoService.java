@@ -135,21 +135,37 @@ public class QuestaoService {
             throw new br.com.cachly.backend.comum.erro.RegraNegocioException("A questão deve ter exatamente uma alternativa correta");
         }
 
-        List<br.com.cachly.backend.alternativa.Alternativa> atuais = new java.util.ArrayList<>(questao.getAlternativas());
-        questao.getAlternativas().clear();
-        
+        List<Long> idsRecebidos = request.alternativas().stream()
+                .map(br.com.cachly.backend.alternativa.AlternativaRequest::id)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+
+        // 1. Desativar alternativas que não vieram no request (soft delete)
+        questao.getAlternativas().stream()
+                .filter(a -> !idsRecebidos.contains(a.getId()))
+                .forEach(a -> a.setAtiva(false));
+
+        // 2. Atualizar existentes e adicionar novas
         request.alternativas().forEach(altReq -> {
-            br.com.cachly.backend.alternativa.Alternativa alt = atuais.stream()
-                .filter(a -> a.getId() != null && a.getId().equals(altReq.id()))
-                .findFirst()
-                .orElse(new br.com.cachly.backend.alternativa.Alternativa());
-                
-            alt.setTexto(altReq.texto().trim());
-            alt.setCorreta(altReq.correta());
-            alt.setOrdem(altReq.ordem());
-            alt.setQuestao(questao);
-            
-            questao.getAlternativas().add(alt);
+            if (altReq.id() != null) {
+                questao.getAlternativas().stream()
+                        .filter(a -> altReq.id().equals(a.getId()))
+                        .findFirst()
+                        .ifPresent(alt -> {
+                            alt.setTexto(altReq.texto().trim());
+                            alt.setCorreta(altReq.correta());
+                            alt.setOrdem(altReq.ordem());
+                            alt.setAtiva(true);
+                        });
+            } else {
+                br.com.cachly.backend.alternativa.Alternativa novaAlt = new br.com.cachly.backend.alternativa.Alternativa();
+                novaAlt.setTexto(altReq.texto().trim());
+                novaAlt.setCorreta(altReq.correta());
+                novaAlt.setOrdem(altReq.ordem());
+                novaAlt.setAtiva(true);
+                novaAlt.setQuestao(questao);
+                questao.getAlternativas().add(novaAlt);
+            }
         });
     }
 

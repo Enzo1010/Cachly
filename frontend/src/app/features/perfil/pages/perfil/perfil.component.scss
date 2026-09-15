@@ -238,6 +238,25 @@
   opacity: 0.55;
 }
 
+.campo-somente-leitura input {
+  background: #f8fafc;
+  color: var(--texto-secundario);
+  cursor: default;
+}
+
+.mensagem-erro {
+  color: #dc2626 !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.instrucoes-edicao {
+  margin: 0 0 0.5rem;
+  color: var(--texto-secundario);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 640px) {
   .pagina-perfil {
     gap: 1rem;
