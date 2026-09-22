@@ -68,7 +68,7 @@ O núcleo da proposta é a convergência entre **rigor técnico** e **design de 
 
 O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA Angular são desenvolvidas de forma independente, comunicando-se via JSON com suporte a orquestração integrada via Docker Compose e proxy reverso Nginx.
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────────┐
 │  Cliente (Navegador)                                              │
 │                                                                   │
@@ -105,6 +105,10 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 │  └─────────────────────────────────────────────┘                  │
 └───────────────────────────────────────────────────────────────────┘
 ```
+
+### Documentação de Arquitetura e Engenharia
+
+- **[Diagrama de Classes (Modelo de Domínio)](docs/diagrama_de_classes/DIAGRAMA_CLASSES.md)**: Mapeamento de todas as entidades JPA, relacionamentos e controle de auditoria de ponta a ponta.
 
 ### Decisões de Design e Arquitetura (ADRs)
 
