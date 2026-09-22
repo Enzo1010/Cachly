@@ -19,42 +19,11 @@ O PrimeNG é a biblioteca visual padrão. Sua adoção deve ser gradual, utiliza
 componentes necessários para cada funcionalidade. O tema global parte do preset Aura e aplica a
 paleta visual do Cachly.
 
-## Pré-requisitos
+## Executando o Projeto
 
-- Node.js compatível com Angular 21;
-- npm.
+As instruções de instalação das dependências do Node, inicialização local do servidor de desenvolvimento Angular, execução de testes (Vitest) e build de produção encontram-se no guia consolidado do projeto:
 
-## Instalação
-
-Dentro da pasta `frontend`, instale as dependências:
-
-```bash
-npm install
-```
-
-## Executando localmente
-
-```bash
-npm start
-```
-
-A aplicação ficará disponível em `http://localhost:4200/`.
-
-## Testes
-
-Para executar os testes uma única vez:
-
-```bash
-npm test -- --watch=false
-```
-
-## Build de produção
-
-```bash
-npm run build
-```
-
-Os arquivos gerados serão armazenados em `dist/cachly-frontend/`.
+**[Guia de Execução (RUNNING.md)](../docs/RUNNING.md)**
 
 ## Organização do código
 

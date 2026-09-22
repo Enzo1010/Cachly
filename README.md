@@ -8,8 +8,7 @@
   [![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular&logoColor=white)](https://angular.dev/)
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/download/)
   [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-  [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-  ![Tests](https://img.shields.io/badge/Tests-162_passing-brightgreen?style=flat-square)
+  ![Tests](https://img.shields.io/badge/Tests-194_passing-brightgreen?style=flat-square)
 
   <br/>
 
@@ -154,58 +153,9 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 
 ## Como Executar o Projeto
 
-### Opção 1: Via Docker Compose (Recomendada)
+Para visualizar as instruções detalhadas de como configurar variáveis de ambiente, executar o projeto via Docker Compose (recomendado) ou rodar o backend e frontend localmente, consulte a documentação dedicada:
 
-Com o Docker e Docker Desktop instalados, você pode subir o banco de dados, o backend e o frontend com um único comando:
-
-1. **Configurar variáveis de ambiente**:
-   Crie o arquivo `.env` na raiz a partir do modelo de exemplo:
-   ```bash
-   cp .env.example .env
-   ```
-   *Edite o arquivo `.env` gerado definindo uma senha para o banco de dados e um segredo forte para o JWT (mínimo de 32 caracteres).*
-
-2. **Iniciar os containers**:
-   ```bash
-   docker compose up --build
-   ```
-   *(Adicione a flag `-d` para rodar em segundo plano desanexado do terminal).*
-
-3. **Acessar os serviços**:
-   - **Frontend (Aplicação Web):** [http://localhost](http://localhost)
-   - **Backend (API REST / Swagger):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-   - **Banco de Dados (PostgreSQL):** `localhost:5432` (bd: `cachly`, usuário: `postgres`)
-
-4. **Derrubar os containers**:
-   ```bash
-   docker compose down
-   ```
-   *Para apagar também os volumes locais do banco de dados:* `docker compose down -v`.
-
----
-
-### Opção 2: Execução Local Tradicional (Sem Docker)
-
-#### 1. Banco de Dados
-Certifique-se de que o PostgreSQL esteja em execução na porta `5432` com a base `cachly` criada.
-
-#### 2. Backend
-No diretório `backend/`:
-```bash
-# Definir as variáveis de ambiente necessárias e iniciar
-export JWT_SECRET="segredo-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente"
-export DB_PASSWORD="sua-senha-do-banco-aqui"
-./mvnw spring-boot:run
-```
-*(No Windows PowerShell: `$env:JWT_SECRET="seu-segredo..."; $env:DB_PASSWORD="sua-senha..."; .\mvnw.cmd spring-boot:run`)*
-
-#### 3. Frontend
-No diretório `frontend/`:
-```bash
-npm install
-npm start
-```
-Acesse em: [http://localhost:4200](http://localhost:4200) (as chamadas `/api` são redirecionadas via `proxy.conf.json`).
+**[Guia de Execução (RUNNING.md)](docs/RUNNING.md)**
 
 ---
 
@@ -255,9 +205,9 @@ A suíte de testes cobre os fluxos críticos de negócio com testes unitários e
 
 | Escopo | Tecnologia | Casos de Teste | Status |
 |---|---|:---:|:---:|
-| **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 138 | 🟢 Passing |
-| **Backend — Segurança JWT, RBAC, Revogação e Integração** | MockMvc + Spring Boot Test | Incluído | 🟢 Passing |
-| **Frontend — Componentes, Estados, Formulários e Serviços** | Vitest + Angular TestBed | 56 | 🟢 Passing |
+| **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 138 | Passing |
+| **Backend — Segurança JWT, RBAC, Revogação e Integração** | MockMvc + Spring Boot Test | Incluído | Passing |
+| **Frontend — Componentes, Estados, Formulários e Serviços** | Vitest + Angular TestBed | 56 | Passing |
 | **Total de Casos Automatizados** | — | **194** | **0 Failures** |
 
 Para executar as suítes completas:
@@ -272,6 +222,19 @@ cd frontend && npm test -- --watch=false
 
 ---
 
-## Licença
+## Propriedade e Autoria
 
-Distribuído sob a licença MIT. Consulte o arquivo `LICENSE` para detalhes.
+Este projeto é de propriedade exclusiva de seus autores, desenvolvido como 
+Projeto Integrador IV do curso de Ciência da Computação — Universidade Regional 
+Integrada do Alto Uruguai e das Missões (URI), Câmpus Erechim.
+
+**Autores:**
+- Enzo Bazzi de Oliveira
+- Ezequiel Henrique Gazolla Muller
+- Luis Fernando Refatti Boff
+- Vitor Luis Andreolla
+
+**Orientador:** Hercio Menegotto Ferraro Neto
+
+Todos os direitos reservados. A reprodução, distribuição ou uso deste código sem 
+autorização expressa dos autores não é permitida.

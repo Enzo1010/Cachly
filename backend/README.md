@@ -22,110 +22,11 @@ O pacote base da aplicação é:
 br.com.cachly.backend
 ```
 
-## Pré-requisitos
+## Executando o Projeto
 
-Para executar o backend localmente, instale:
+As instruções de configuração do banco de dados, variáveis de ambiente, inicialização local e execução dos testes de integração encontram-se no guia consolidado do projeto:
 
-- Java 21 (JDK);
-- PostgreSQL;
-- Git;
-- IntelliJ IDEA, VS Code ou outra IDE compatível com Maven e Java 21.
-
-## Configuração do PostgreSQL
-
-Crie um banco vazio chamado `cachly`:
-
-```sql
-CREATE DATABASE cachly;
-```
-
-As tabelas não precisam ser criadas manualmente. O Flyway executa as migrations
-automaticamente quando o backend é iniciado.
-
-### Variáveis de ambiente
-
-| Variável              | Obrigatória | Valor padrão                              | Descrição |
-|-----------------------|:-----------:|-------------------------------------------|-----------|
-| `DB_URL`              | Não         | `jdbc:postgresql://localhost:5432/cachly` | URL JDBC de conexão ao PostgreSQL |
-| `DB_USERNAME`         | Não         | `postgres`                                | Usuário do banco de dados |
-| `DB_PASSWORD`         | **Sim**     | —                                         | Senha do banco de dados |
-| `JWT_SECRET`          | **Sim**     | —                                         | Chave secreta HMAC para assinatura e validação do token JWT |
-| `JWT_EXPIRATION_HOURS`| Não         | `24`                                      | Tempo de expiração padrão do token em horas |
-
-> [!IMPORTANT]
-> Credenciais e segredos (`DB_PASSWORD`, `JWT_SECRET`) nunca devem ser adicionados diretamente ao repositório Git.
-
-Exemplo no PowerShell:
-
-```powershell
-$env:DB_PASSWORD="sua_senha"
-$env:JWT_SECRET="segredo-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente-32-chars"
-```
-
-Exemplo no Git Bash ou macOS/Linux:
-
-```bash
-export DB_PASSWORD="sua_senha"
-export JWT_SECRET="segredo-de-desenvolvimento-local-do-cachly-com-tamanho-suficiente-32-chars"
-```
-
-No IntelliJ IDEA, configure as variáveis em:
-
-```text
-Run > Edit Configurations > Environment variables
-```
-
-## Executando o backend
-
-Entre na pasta `backend` antes de executar os comandos.
-
-### PowerShell ou Prompt de Comando
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-### Git Bash, Linux ou macOS
-
-```bash
-./mvnw spring-boot:run
-```
-
-Por padrão, a API ficará disponível em:
-
-```text
-http://localhost:8080
-```
-
-## Documentação interativa (Swagger UI)
-
-Com a aplicação em execução, acesse:
-
-```text
-http://localhost:8080/swagger-ui.html
-```
-
-A documentação lista todos os endpoints disponíveis com seus parâmetros, corpos
-de requisição e respostas esperadas.
-
-## Executando os testes
-
-A suíte de testes inclui testes unitários (Mockito) e testes de integração com banco de dados real PostgreSQL e cenários de concorrência com threads simultâneas.
-
-No PowerShell ou Prompt de Comando:
-
-```powershell
-.\mvnw.cmd test
-```
-
-No Git Bash, Linux ou macOS:
-
-```bash
-./mvnw test
-```
-
-> [!NOTE]
-> O banco de dados PostgreSQL deve estar em execução durante os testes de integração.
+**[Guia de Execução (RUNNING.md)](../docs/RUNNING.md)**
 
 ## Flyway Migrations
 
