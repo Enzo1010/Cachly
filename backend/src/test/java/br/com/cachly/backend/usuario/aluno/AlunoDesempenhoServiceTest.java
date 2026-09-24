@@ -2,7 +2,7 @@ package br.com.cachly.backend.usuario.aluno;
 
 import br.com.cachly.backend.alternativa.Alternativa;
 import br.com.cachly.backend.usuario.Usuario;
-import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
+import br.com.cachly.backend.comum.erro.CredenciaisInvalidasException;
 import br.com.cachly.backend.questao.Questao;
 import br.com.cachly.backend.resposta.DesempenhoCategoriaProjection;
 import br.com.cachly.backend.resposta.TentativaQuestao;
@@ -128,7 +128,7 @@ class AlunoDesempenhoServiceTest {
 
     @Test
     void deveLancarExcecaoSeUsuarioInvalido() {
-        assertThrows(ConflitoDeDadosException.class, () -> alunoDesempenhoService.obterEstatisticas(null));
-        assertThrows(ConflitoDeDadosException.class, () -> alunoDesempenhoService.obterHistorico(new Usuario(), PageRequest.of(0, 10)));
+        assertThrows(CredenciaisInvalidasException.class, () -> alunoDesempenhoService.obterEstatisticas(null));
+        assertThrows(CredenciaisInvalidasException.class, () -> alunoDesempenhoService.obterHistorico(new Usuario(), PageRequest.of(0, 10)));
     }
 }

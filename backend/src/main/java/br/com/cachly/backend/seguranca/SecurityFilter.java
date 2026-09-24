@@ -17,6 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+import br.com.cachly.backend.usuario.UsuarioRepository;
+
 /**
  * Filtro de segurança quase-stateless: constrói o contexto de autenticação
  * a partir das claims do JWT, mas faz uma validação ultra-rápida (projection)
@@ -34,7 +36,7 @@ import java.util.List;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

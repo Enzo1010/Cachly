@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import br.com.cachly.backend.seguranca.UsuarioPrincipal;
+
 /**
  * Implementação de AuditorAware que extrai o ID do usuário autenticado
  * a partir do SecurityContext populado pelo SecurityFilter (JWT).
@@ -28,7 +30,7 @@ public class AuditorAwareImpl implements AuditorAware<Long> {
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof br.com.cachly.backend.seguranca.UsuarioPrincipal usuarioPrincipal) {
+        if (principal instanceof UsuarioPrincipal usuarioPrincipal) {
             return Optional.of(usuarioPrincipal.id());
         }
 

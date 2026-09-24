@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import br.com.cachly.backend.alternativa.Alternativa;
+
 @Entity
 @Table(name = "questoes")
 @Getter
@@ -50,5 +52,5 @@ public class Questao extends EntidadeAuditavel {
 
     @jakarta.persistence.OneToMany(mappedBy = "questao", cascade = jakarta.persistence.CascadeType.ALL)
     @org.hibernate.annotations.BatchSize(size = 50)
-    private java.util.List<br.com.cachly.backend.alternativa.Alternativa> alternativas = new java.util.ArrayList<>();
+    private java.util.List<Alternativa> alternativas = new java.util.ArrayList<>();
 }

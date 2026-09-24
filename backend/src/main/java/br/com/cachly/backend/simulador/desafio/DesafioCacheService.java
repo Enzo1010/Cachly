@@ -19,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.com.cachly.backend.comum.erro.RegraNegocioException;
+
 @Service
 @RequiredArgsConstructor
 public class DesafioCacheService {
@@ -165,7 +167,7 @@ public class DesafioCacheService {
             usuarioBloqueado = usuarioRepository.findByIdForUpdate(usuario.getId())
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
             if (!Boolean.TRUE.equals(usuarioBloqueado.getAtivo())) {
-                throw new br.com.cachly.backend.comum.erro.RegraNegocioException("Usuário inativo não pode responder desafios");
+                throw new RegraNegocioException("Usuário inativo não pode responder desafios");
             }
         }
 

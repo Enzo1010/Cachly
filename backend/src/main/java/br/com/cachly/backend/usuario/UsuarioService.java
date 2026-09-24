@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 
+import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
+import br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -44,7 +47,7 @@ public class UsuarioService {
         return converterParaResponse(usuarioRepository.save(usuario));
     }
 
-    public record AuthResult(br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse response, String token) {}
+    public record AuthResult(UsuarioSessaoResponse response, String token) {}
 
     public AuthResult autenticar(AutenticacaoRequest request) {
         Usuario usuario = usuarioRepository
@@ -60,7 +63,7 @@ public class UsuarioService {
 
         String token = tokenService.gerarToken(usuario);
 
-        return new AuthResult(new br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse(
+        return new AuthResult(new UsuarioSessaoResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
@@ -95,7 +98,7 @@ public class UsuarioService {
     @Transactional
     public void alterarSenha(Long usuarioId, AlterarSenhaRequest request) {
         Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioId)
-                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         if (!codificadorSenha.matches(request.senhaAtual(), usuario.getSenhaHash())) {
             throw new CredenciaisInvalidasException("Senha atual incorreta");
@@ -110,7 +113,7 @@ public class UsuarioService {
     @Transactional
     public void revogarTokens(Long usuarioId) {
         Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioId)
-                .orElseThrow(() -> new br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException("Usuário não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
         
         usuario.setVersaoToken(System.currentTimeMillis());
         usuarioRepository.save(usuario);

@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.cachly.backend.usuario.AlterarSenhaRequest;
+import br.com.cachly.backend.usuario.UsuarioService.AuthResult;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class AutenticacaoController {
             @Valid @RequestBody AutenticacaoRequest request,
             HttpServletResponse response
     ) {
-        br.com.cachly.backend.usuario.UsuarioService.AuthResult authResult = usuarioService.autenticar(request);
+        AuthResult authResult = usuarioService.autenticar(request);
         
         long maxAge = Boolean.TRUE.equals(request.lembrarLogin()) ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
 
@@ -63,7 +66,7 @@ public class AutenticacaoController {
     }
 
     @PostMapping("/alterar-senha")
-    public void alterarSenha(@Valid @RequestBody br.com.cachly.backend.usuario.AlterarSenhaRequest request) {
+    public void alterarSenha(@Valid @RequestBody AlterarSenhaRequest request) {
         Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
         usuarioService.alterarSenha(usuario.getId(), request);
     }

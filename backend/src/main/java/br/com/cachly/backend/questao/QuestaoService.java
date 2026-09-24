@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import br.com.cachly.backend.alternativa.AlternativaRequest;
+import br.com.cachly.backend.alternativa.AlternativaResponse;
+import br.com.cachly.backend.comum.erro.RegraNegocioException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -55,7 +59,7 @@ public class QuestaoService {
         return questoes.stream().map(questao -> {
             List<AlternativaEstudoResponse> alternativasResponse = questao.getAlternativas().stream()
                     .filter(a -> Boolean.TRUE.equals(a.getAtiva()))
-                    .sorted(java.util.Comparator.comparing(br.com.cachly.backend.alternativa.Alternativa::getOrdem))
+                    .sorted(java.util.Comparator.comparing(Alternativa::getOrdem))
                     .map(alt -> new AlternativaEstudoResponse(alt.getId(), alt.getTexto(), alt.getOrdem()))
                     .toList();
             
@@ -113,7 +117,7 @@ public class QuestaoService {
                 ));
 
         if (!Boolean.TRUE.equals(categoria.getAtiva())) {
-            throw new br.com.cachly.backend.comum.erro.RegraNegocioException("A categoria informada está inativa");
+            throw new RegraNegocioException("A categoria informada está inativa");
         }
 
         return categoria;
@@ -130,13 +134,13 @@ public class QuestaoService {
         questao.setDificuldade(request.dificuldade());
         questao.setXpBase(request.xpBase());
 
-        long corretas = request.alternativas().stream().filter(br.com.cachly.backend.alternativa.AlternativaRequest::correta).count();
+        long corretas = request.alternativas().stream().filter(AlternativaRequest::correta).count();
         if (corretas != 1) {
-            throw new br.com.cachly.backend.comum.erro.RegraNegocioException("A questão deve ter exatamente uma alternativa correta");
+            throw new RegraNegocioException("A questão deve ter exatamente uma alternativa correta");
         }
 
         List<Long> idsRecebidos = request.alternativas().stream()
-                .map(br.com.cachly.backend.alternativa.AlternativaRequest::id)
+                .map(AlternativaRequest::id)
                 .filter(java.util.Objects::nonNull)
                 .toList();
 
@@ -158,7 +162,7 @@ public class QuestaoService {
                             alt.setAtiva(true);
                         });
             } else {
-                br.com.cachly.backend.alternativa.Alternativa novaAlt = new br.com.cachly.backend.alternativa.Alternativa();
+                Alternativa novaAlt = new Alternativa();
                 novaAlt.setTexto(altReq.texto().trim());
                 novaAlt.setCorreta(altReq.correta());
                 novaAlt.setOrdem(altReq.ordem());
@@ -170,9 +174,9 @@ public class QuestaoService {
     }
 
     private QuestaoResponse converterParaResponse(Questao questao) {
-        List<br.com.cachly.backend.alternativa.AlternativaResponse> alternativasResp = questao.getAlternativas().stream()
+        List<AlternativaResponse> alternativasResp = questao.getAlternativas().stream()
                 .filter(a -> Boolean.TRUE.equals(a.getAtiva()))
-                .map(a -> new br.com.cachly.backend.alternativa.AlternativaResponse(
+                .map(a -> new AlternativaResponse(
                         a.getId(),
                         a.getQuestao().getId(),
                         a.getTexto(),

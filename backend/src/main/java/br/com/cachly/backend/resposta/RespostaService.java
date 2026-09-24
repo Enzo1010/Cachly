@@ -11,6 +11,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.cachly.backend.comum.erro.RegraNegocioException;
+import br.com.cachly.backend.usuario.UsuarioRepository;
+
 @Service
 @RequiredArgsConstructor
 public class RespostaService {
@@ -19,7 +22,7 @@ public class RespostaService {
     private final TentativaQuestaoRepository tentativaQuestaoRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final XpService xpService;
-    private final br.com.cachly.backend.usuario.UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Transactional
     public RespostaResponse responder(Long questaoId, RespostaRequest request, Usuario usuario) {
@@ -27,7 +30,7 @@ public class RespostaService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
 
         if (!Boolean.TRUE.equals(usuarioBloqueado.getAtivo())) {
-            throw new br.com.cachly.backend.comum.erro.RegraNegocioException("Usuário inativo não pode responder questões");
+            throw new RegraNegocioException("Usuário inativo não pode responder questões");
         }
 
         Questao questao = questaoRepository.findByIdAndAtivaTrue(questaoId)

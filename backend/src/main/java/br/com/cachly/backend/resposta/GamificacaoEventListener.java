@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+import br.com.cachly.backend.simulador.desafio.DesafioRespondidoEvent;
+
 @Component
 @RequiredArgsConstructor
 public class GamificacaoEventListener {
@@ -29,7 +31,7 @@ public class GamificacaoEventListener {
 
     @EventListener
     @Transactional
-    public void onDesafioRespondido(br.com.cachly.backend.simulador.desafio.DesafioRespondidoEvent event) {
+    public void onDesafioRespondido(DesafioRespondidoEvent event) {
         int xpGanho = (event.correta() && event.primeiraVezCorreta()) ? event.xpRecompensa() : 0;
         concederXpEAtualizarOfensiva(event.usuario().getId(), xpGanho);
     }

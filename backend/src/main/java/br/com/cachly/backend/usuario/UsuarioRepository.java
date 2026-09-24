@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import br.com.cachly.backend.usuario.aluno.RankingProjection;
+
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -34,7 +36,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
         WHERE u.perfil = :perfil
         ORDER BY u.xpSemanal DESC, u.id ASC
     """)
-    Page<br.com.cachly.backend.usuario.aluno.RankingProjection> findRankingSemanal(
+    Page<RankingProjection> findRankingSemanal(
         @Param("perfil") PerfilUsuario perfil, 
         Pageable pageable
     );
