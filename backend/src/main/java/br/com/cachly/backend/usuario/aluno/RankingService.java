@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RankingService {
 
     private final UsuarioRepository usuarioRepository;
+    private final RankingSemanalHistoricoRepository historicoRepository;
 
     @Transactional(readOnly = true)
     public Page<RankingResponse> listarRanking(Pageable pageable) {
@@ -32,7 +33,7 @@ public class RankingService {
         ));
     }
 
-    private final RankingSemanalHistoricoRepository historicoRepository;
+
 
     @Transactional(readOnly = true)
     public java.util.List<java.time.LocalDate> listarDatasHistorico() {
