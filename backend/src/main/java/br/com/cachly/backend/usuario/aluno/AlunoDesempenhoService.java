@@ -1,6 +1,6 @@
 package br.com.cachly.backend.usuario.aluno;
 
-import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
+import br.com.cachly.backend.comum.erro.CredenciaisInvalidasException;
 import br.com.cachly.backend.resposta.DesempenhoCategoriaProjection;
 import br.com.cachly.backend.usuario.Usuario;
 import br.com.cachly.backend.resposta.TentativaQuestaoRepository;
@@ -65,7 +65,7 @@ public class AlunoDesempenhoService {
 
     private void validarUsuario(Usuario usuario) {
         if (usuario == null || usuario.getId() == null) {
-            throw new ConflitoDeDadosException("Usuário não autenticado");
+            throw new CredenciaisInvalidasException("Usuário não autenticado");
         }
     }
 
