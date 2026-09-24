@@ -23,8 +23,15 @@ public class TokenService {
     @Value("${api.security.token.expiration-hours:24}")
     private Integer expirationHours;
 
+    private SecretKey key;
+
+    @jakarta.annotation.PostConstruct
+    protected void init() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
     private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        return this.key;
     }
 
     public String gerarToken(Usuario usuario) {
