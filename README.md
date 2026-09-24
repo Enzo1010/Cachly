@@ -62,6 +62,8 @@ O núcleo da proposta é a convergência entre **rigor técnico** e **design de 
 | **Análise de Desempenho** | Dashboard com gráfico de radar de domínio conceitual, identificação da categoria de menor rendimento e intervenção pedagógica que guia o aluno para o simulador. |
 | **Segurança e Sessões** | Autenticação JWT via cookies seguros `HttpOnly` + `SameSite=Strict`, proteção nativa contra CSRF, controle de perfil por roles (`ALUNO` e `ADMINISTRADOR`) e revogação imediata de sessões via controle de versão de token (`versaoToken`). |
 
+> **Nota sobre o Escopo Atual:** As funcionalidades de **Liga Semanal** e **Conquistas** estão completamente desenvolvidas e 100% funcionais na camada de backend (incluindo o agendador e lógicas de gamificação). Contudo, devido ao controle do tamanho do projeto para a entrega, as telas correspondentes foram intencionalmente desativadas na interface visual desta versão.
+
 ---
 
 ## Arquitetura
