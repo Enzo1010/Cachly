@@ -1,0 +1,93 @@
+<main class="pagina-esqueci-senha">
+  <section class="painel-marca" aria-labelledby="titulo-marca">
+    <div class="painel-marca__conteudo">
+      <div class="recorte-logo recorte-logo--desktop" role="img" aria-label="Cachly"></div>
+      <h1 id="titulo-marca">Aprenda. Pratique. Evolua.</h1>
+      <p>
+        Transforme Sistemas Digitais e Arquitetura de Computadores em uma jornada de conquistas.
+      </p>
+
+      <ul class="beneficios" aria-label="Recursos da plataforma">
+        <li><span aria-hidden="true">01</span> Questões com explicações</li>
+        <li><span aria-hidden="true">02</span> Progresso por categoria</li>
+        <li><span aria-hidden="true">03</span> XP, níveis e competições</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="painel-acesso" aria-labelledby="titulo-esqueci">
+    <div class="cartao-login">
+      <div class="recorte-logo recorte-logo--mobile" role="img" aria-label="Cachly"></div>
+
+      @if (!enviado()) {
+        <header class="cabecalho-login">
+          <a class="link-voltar" routerLink="/login">
+            <i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar ao login
+          </a>
+          <h2 id="titulo-esqueci">Esqueci minha senha</h2>
+          <p>Informe seu e-mail cadastrado e enviaremos um link para redefinir sua senha.</p>
+        </header>
+
+        <form [formGroup]="formulario" (ngSubmit)="solicitar()" novalidate>
+          <div class="campo">
+            <label for="email-reset">E-mail</label>
+            <input
+              pInputText
+              id="email-reset"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              placeholder="seuemail@exemplo.com"
+              [readOnly]="enviando()"
+              [attr.aria-invalid]="
+                formulario.controls.email.invalid && formulario.controls.email.touched
+              "
+              [invalid]="
+                formulario.controls.email.invalid && formulario.controls.email.touched
+              "
+              aria-describedby="erro-email-reset"
+            />
+            <div class="mensagem-campo" id="erro-email-reset" aria-live="polite">
+              @if (
+                formulario.controls.email.touched &&
+                formulario.controls.email.hasError('required')
+              ) {
+                Informe seu e-mail.
+              } @else if (
+                formulario.controls.email.touched &&
+                formulario.controls.email.hasError('email')
+              ) {
+                Informe um e-mail válido.
+              }
+            </div>
+          </div>
+
+          <button pButton class="botao-entrar" type="submit" [disabled]="enviando()">
+            <span pButtonLabel>{{ enviando() ? 'Enviando...' : 'Enviar link de redefinição' }}</span>
+            <i
+              pButtonIcon
+              [class]="enviando() ? 'pi pi-spin pi-spinner' : 'pi pi-envelope'"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </form>
+      } @else {
+        <div class="confirmacao-envio">
+          <div class="icone-confirmacao">
+            <i class="pi pi-envelope" aria-hidden="true"></i>
+          </div>
+          <h2 id="titulo-esqueci">Verifique seu e-mail</h2>
+          <p>
+            Se o e-mail informado estiver cadastrado, você receberá um link para redefinir sua
+            senha nos próximos minutos.
+          </p>
+          <p class="dica">Não esqueça de verificar a caixa de spam.</p>
+          <a pButton class="botao-entrar" routerLink="/login">
+            <span pButtonLabel>Voltar ao login</span>
+            <i pButtonIcon class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+      }
+    </div>
+  </section>
+</main>

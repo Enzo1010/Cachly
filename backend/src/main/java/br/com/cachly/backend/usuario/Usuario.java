@@ -62,6 +62,12 @@ public class Usuario {
     @Column(name = "versao_token", nullable = false)
     private Long versaoToken = System.currentTimeMillis();
 
+    @Column(name = "token_reset")
+    private String tokenReset;
+
+    @Column(name = "token_reset_expira_em")
+    private OffsetDateTime tokenResetExpiraEm;
+
     @Column(name = "criado_em", nullable = false)
     private OffsetDateTime criadoEm;
 

@@ -19,6 +19,18 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_CADASTRO),
   },
   {
+    path: 'esqueci-senha',
+    canActivate: [guestGuard],
+    loadChildren: () =>
+      import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_ESQUECI_SENHA),
+  },
+  {
+    path: 'resetar-senha',
+    canActivate: [guestGuard],
+    loadChildren: () =>
+      import('./features/auth/auth.routes').then((rotas) => rotas.ROTAS_RESETAR_SENHA),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./core/layout/layout-principal.component').then(

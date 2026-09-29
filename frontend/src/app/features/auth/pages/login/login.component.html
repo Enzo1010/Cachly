@@ -115,7 +115,7 @@
             <p-checkbox inputId="lembrar-login" formControlName="lembrarLogin" [binary]="true" />
             <span>Lembrar login</span>
           </label>
-          <button class="link-esqueci-senha" type="button">Esqueci minha senha</button>
+          <a class="link-esqueci-senha" routerLink="/esqueci-senha">Esqueci minha senha</a>
         </div>
 
         @if (erroLogin()) {

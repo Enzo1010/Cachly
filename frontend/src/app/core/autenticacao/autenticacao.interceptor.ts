@@ -17,7 +17,9 @@ export const autenticacaoInterceptor: HttpInterceptorFn = (req, next) => {
       if (erro instanceof HttpErrorResponse && erro.status === 401) {
         const ROTAS_ONDE_401_NAO_DESLOGA = [
           '/api/auth/login',
-          '/api/auth/alterar-senha'
+          '/api/auth/alterar-senha',
+          '/api/auth/me',
+          '/api/auth/resetar-senha'
         ];
 
         // Diferencia pela origem da requisição:

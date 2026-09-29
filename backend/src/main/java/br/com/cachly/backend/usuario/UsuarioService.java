@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
-
+import br.com.cachly.backend.config.EmailService;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
 import br.com.cachly.backend.usuario.autenticacao.UsuarioSessaoResponse;
 
@@ -26,6 +28,10 @@ public class UsuarioService {
     private final PasswordEncoder codificadorSenha;
     private final TokenService tokenService;
     private final XpService xpService;
+    private final EmailService emailService;
+
+    @org.springframework.beans.factory.annotation.Value("${app.frontend-url:http://localhost:4200}")
+    private String frontendUrl;
 
     @Transactional
     public AlunoResponse cadastrarAluno(AlunoCadastroRequest request) {
@@ -115,6 +121,48 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByIdForUpdate(usuarioId)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
         
+        usuario.setVersaoToken(System.currentTimeMillis());
+        usuarioRepository.save(usuario);
+    }
+
+    private String gerarHashSha256(String texto) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(texto.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return java.util.HexFormat.of().formatHex(hash);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erro ao gerar hash do token", e);
+        }
+    }
+
+    @Transactional
+    public void solicitarResetSenha(String email) {
+        usuarioRepository.findByEmailIgnoreCase(email.trim().toLowerCase(Locale.ROOT))
+                .filter(Usuario::getAtivo)
+                .ifPresent(usuario -> {
+                    String token = UUID.randomUUID().toString();
+                    // Segurança: Salva apenas o HASH do token no banco, nunca o token em texto plano
+                    usuario.setTokenReset(gerarHashSha256(token));
+                    usuario.setTokenResetExpiraEm(OffsetDateTime.now().plusMinutes(30));
+                    usuarioRepository.save(usuario);
+
+                    String linkReset = frontendUrl + "/resetar-senha?token=" + token;
+                    emailService.enviarEmailResetSenha(usuario.getEmail(), usuario.getNome(), linkReset);
+                });
+        // Não lança exceção se o e-mail não existir (previne enumeração de e-mails)
+    }
+
+    @Transactional
+    public void resetarSenha(ResetarSenhaRequest request) {
+        Usuario usuario = usuarioRepository.findByTokenReset(gerarHashSha256(request.token()))
+                .filter(Usuario::getAtivo)
+                .filter(u -> u.getTokenResetExpiraEm() != null && u.getTokenResetExpiraEm().isAfter(OffsetDateTime.now()))
+                .orElseThrow(() -> new CredenciaisInvalidasException(
+                        "Link inválido ou expirado. Solicite um novo link de redefinição."));
+
+        usuario.setSenhaHash(codificadorSenha.encode(request.novaSenha()));
+        usuario.setTokenReset(null);
+        usuario.setTokenResetExpiraEm(null);
         usuario.setVersaoToken(System.currentTimeMillis());
         usuarioRepository.save(usuario);
     }

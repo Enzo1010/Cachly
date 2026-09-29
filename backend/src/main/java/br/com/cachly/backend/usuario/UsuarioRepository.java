@@ -44,4 +44,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Usuario u SET u.xpSemanal = 0")
     void resetarXpSemanal();
+
+    Optional<Usuario> findByTokenReset(String tokenReset);
 }

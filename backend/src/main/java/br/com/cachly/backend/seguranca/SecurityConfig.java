@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/api/auth/solicitar-reset").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/api/auth/resetar-senha").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/alunos").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/api/health").permitAll();
 
@@ -62,6 +64,9 @@ public class SecurityConfig {
                 .build();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend-url:http://localhost:4200}")
+    private String frontendUrl;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -70,12 +75,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Configuração explícita das origens (ex: React, Vue/Vite, Angular)
+        // Configuração explícita das origens (ex: React, Vue/Vite, Angular e a URL de Produção)
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:4200",
-                "http://localhost:8081"
+                "http://localhost:8081",
+                frontendUrl
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

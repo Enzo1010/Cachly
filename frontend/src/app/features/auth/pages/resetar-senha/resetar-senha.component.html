@@ -1,0 +1,141 @@
+<main class="pagina-resetar-senha">
+  <section class="painel-marca" aria-labelledby="titulo-marca">
+    <div class="painel-marca__conteudo">
+      <div class="recorte-logo recorte-logo--desktop" role="img" aria-label="Cachly"></div>
+      <h1 id="titulo-marca">Aprenda. Pratique. Evolua.</h1>
+      <p>
+        Transforme Sistemas Digitais e Arquitetura de Computadores em uma jornada de conquistas.
+      </p>
+
+      <ul class="beneficios" aria-label="Recursos da plataforma">
+        <li><span aria-hidden="true">01</span> Questões com explicações</li>
+        <li><span aria-hidden="true">02</span> Progresso por categoria</li>
+        <li><span aria-hidden="true">03</span> XP, níveis e competições</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="painel-acesso" aria-labelledby="titulo-resetar">
+    <div class="cartao-login">
+      <div class="recorte-logo recorte-logo--mobile" role="img" aria-label="Cachly"></div>
+
+      @if (tokenInvalido()) {
+        <div class="confirmacao-envio">
+          <div class="icone-confirmacao icone-erro">
+            <i class="pi pi-times-circle" aria-hidden="true"></i>
+          </div>
+          <h2 id="titulo-resetar">Link inválido ou expirado</h2>
+          <p>
+            Este link de redefinição não é mais válido. Solicite um novo link para redefinir sua
+            senha.
+          </p>
+          <a pButton class="botao-entrar" routerLink="/esqueci-senha">
+            <span pButtonLabel>Solicitar novo link</span>
+            <i pButtonIcon class="pi pi-envelope" aria-hidden="true"></i>
+          </a>
+        </div>
+      } @else if (sucesso()) {
+        <div class="confirmacao-envio">
+          <div class="icone-confirmacao icone-sucesso">
+            <i class="pi pi-check-circle" aria-hidden="true"></i>
+          </div>
+          <h2 id="titulo-resetar">Senha redefinida!</h2>
+          <p>Sua senha foi alterada com sucesso. Faça login com sua nova senha.</p>
+          <a pButton class="botao-entrar" routerLink="/login">
+            <span pButtonLabel>Ir para o login</span>
+            <i pButtonIcon class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+      } @else {
+        <header class="cabecalho-login">
+          <h2 id="titulo-resetar">Redefinir senha</h2>
+          <p>Crie uma nova senha para sua conta.</p>
+        </header>
+
+        <form [formGroup]="formulario" (ngSubmit)="resetar()" novalidate>
+          <div class="campo">
+            <label for="nova-senha">Nova senha</label>
+            <input
+              pInputText
+              id="nova-senha"
+              type="password"
+              formControlName="novaSenha"
+              autocomplete="new-password"
+              placeholder="Mínimo de 8 caracteres"
+              [readOnly]="salvando()"
+              [invalid]="
+                formulario.controls.novaSenha.invalid && formulario.controls.novaSenha.touched
+              "
+              aria-describedby="erro-nova-senha"
+            />
+            <div class="mensagem-campo" id="erro-nova-senha" aria-live="polite">
+              @if (
+                formulario.controls.novaSenha.touched &&
+                formulario.controls.novaSenha.hasError('required')
+              ) {
+                A nova senha é obrigatória.
+              } @else if (
+                formulario.controls.novaSenha.touched &&
+                formulario.controls.novaSenha.hasError('minlength')
+              ) {
+                A senha deve ter no mínimo 8 caracteres.
+              } @else {
+                <span class="dica-campo">A senha deve ter entre 8 e 72 caracteres.</span>
+              }
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="confirmacao-senha">Confirmar nova senha</label>
+            <input
+              pInputText
+              id="confirmacao-senha"
+              type="password"
+              formControlName="confirmacaoNovaSenha"
+              autocomplete="new-password"
+              placeholder="Repita a nova senha"
+              [readOnly]="salvando()"
+              [invalid]="
+                (formulario.controls.confirmacaoNovaSenha.invalid ||
+                  formulario.errors?.['senhasDiferentes']) &&
+                formulario.controls.confirmacaoNovaSenha.touched
+              "
+              aria-describedby="erro-confirmacao"
+            />
+            <div class="mensagem-campo" id="erro-confirmacao" aria-live="polite">
+              @if (
+                formulario.controls.confirmacaoNovaSenha.touched &&
+                formulario.controls.confirmacaoNovaSenha.hasError('required')
+              ) {
+                A confirmação é obrigatória.
+              } @else if (
+                formulario.controls.confirmacaoNovaSenha.touched &&
+                formulario.errors?.['senhasDiferentes']
+              ) {
+                As senhas não coincidem.
+              }
+            </div>
+          </div>
+
+          @if (mensagemErro()) {
+            <p-message severity="error" [text]="mensagemErro()!" styleClass="block w-full" />
+          }
+
+          <button
+            pButton
+            class="botao-entrar"
+            type="submit"
+            [disabled]="formulario.invalid || salvando()"
+          >
+            <span pButtonLabel>{{ salvando() ? 'Salvando...' : 'Redefinir senha' }}</span>
+            <i
+              pButtonIcon
+              [class]="salvando() ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </form>
+      }
+    </div>
+  </section>
+</main>

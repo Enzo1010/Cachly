@@ -2,6 +2,8 @@ package br.com.cachly.backend.usuario.autenticacao;
 
 import br.com.cachly.backend.usuario.Usuario;
 import br.com.cachly.backend.usuario.UsuarioLogadoService;
+import br.com.cachly.backend.usuario.SolicitarResetSenhaRequest;
+import br.com.cachly.backend.usuario.ResetarSenhaRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +77,16 @@ public class AutenticacaoController {
     public void revogarSessoes() {
         Usuario usuario = usuarioLogadoService.obterUsuarioAtual();
         usuarioService.revogarTokens(usuario.getId());
+    }
+
+    @PostMapping("/solicitar-reset")
+    public void solicitarResetSenha(@Valid @RequestBody SolicitarResetSenhaRequest request) {
+        usuarioService.solicitarResetSenha(request.email());
+    }
+
+    @PostMapping("/resetar-senha")
+    public void resetarSenha(@Valid @RequestBody ResetarSenhaRequest request) {
+        usuarioService.resetarSenha(request);
     }
 }
 

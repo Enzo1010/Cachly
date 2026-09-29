@@ -19,3 +19,25 @@ export const ROTAS_CADASTRO: Routes = [
     title: 'Criar conta | Cachly',
   },
 ];
+
+export const ROTAS_ESQUECI_SENHA: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/esqueci-senha/esqueci-senha.component').then(
+        (componente) => componente.EsqueciSenhaComponent,
+      ),
+    title: 'Esqueci minha senha | Cachly',
+  },
+];
+
+export const ROTAS_RESETAR_SENHA: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/resetar-senha/resetar-senha.component').then(
+        (componente) => componente.ResetarSenhaComponent,
+      ),
+    title: 'Redefinir senha | Cachly',
+  },
+];
