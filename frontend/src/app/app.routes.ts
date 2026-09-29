@@ -74,6 +74,7 @@ export const routes: Routes = [
       },
       {
         path: 'simulador',
+        canActivate: [alunoGuard],
         loadChildren: () =>
           import('./features/simulador/simulador.routes').then((rotas) => rotas.ROTAS_SIMULADOR),
       },
