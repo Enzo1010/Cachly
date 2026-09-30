@@ -259,7 +259,7 @@ form {
   text-decoration: underline;
 }
 
-button.botao-entrar {
+.botao-entrar {
   display: flex;
   height: 3.6rem;
   align-items: center;
@@ -275,17 +275,18 @@ button.botao-entrar {
   box-shadow: 0 0.9rem 1.8rem rgba(0, 100, 148, 0.2);
   cursor: pointer;
   font-weight: 800;
+  text-decoration: none;
   transition: background-position 0.3s ease, box-shadow 0.3s ease;
 }
 
-button.botao-entrar:hover,
-button.botao-entrar:focus-visible {
+.botao-entrar:hover,
+.botao-entrar:focus-visible {
   border: 0 !important;
   background-position: right center !important;
   box-shadow: 0 0.6rem 1.2rem rgba(0, 100, 148, 0.3);
 }
 
-button.botao-entrar:disabled {
+.botao-entrar:disabled {
   cursor: wait;
   opacity: 0.72;
 }

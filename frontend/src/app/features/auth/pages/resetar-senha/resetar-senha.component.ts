@@ -15,7 +15,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -49,7 +49,6 @@ function senhasIguaisValidator(group: AbstractControl): ValidationErrors | null 
 export class ResetarSenhaComponent implements OnInit {
   private readonly resetService = inject(ResetSenhaService);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly salvando = signal(false);
