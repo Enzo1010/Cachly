@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { EstudarStateService } from '../../services/estudar-state.service';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -7,6 +7,7 @@ import { CardModule } from 'primeng/card';
   selector: 'app-estudar-resumo',
   standalone: true,
   imports: [ButtonModule, CardModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex justify-content-center mt-5">
       <p-card styleClass="text-center p-4 max-w-30rem">

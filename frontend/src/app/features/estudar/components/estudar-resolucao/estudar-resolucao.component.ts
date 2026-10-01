@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { EstudarStateService } from '../../services/estudar-state.service';
 import { AlternativaEstudoResponse } from '../../models/estudar.model';
 import { ButtonModule } from 'primeng/button';
@@ -12,6 +12,7 @@ import { ForumQuestaoComponent } from '../forum-questao/forum-questao.component'
   selector: 'app-estudar-resolucao',
   standalone: true,
   imports: [ButtonModule, RadioButtonModule, FormsModule, CardModule, MessageModule, ForumQuestaoComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Header -->
     <div class="resolucao-header">

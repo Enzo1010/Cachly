@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ComentarioApiService, ComentarioResponse } from '../../services/comentario-api.service';
 import { ButtonModule } from 'primeng/button';
 import { TextareaModule } from 'primeng/textarea';
@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
   selector: 'app-forum-questao',
   standalone: true,
   imports: [ButtonModule, TextareaModule, FormsModule, DatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="forum-container">
       <h3 class="forum-title">Fórum e Comentários</h3>
