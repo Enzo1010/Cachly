@@ -6,6 +6,8 @@ import br.com.cachly.backend.categoria.CategoriaRepository;
 import br.com.cachly.backend.questao.DificuldadeQuestao;
 import br.com.cachly.backend.questao.Questao;
 import br.com.cachly.backend.questao.QuestaoRepository;
+import br.com.cachly.backend.questao.comentario.Comentario;
+import br.com.cachly.backend.questao.comentario.ComentarioRepository;
 import br.com.cachly.backend.resposta.TentativaQuestao;
 import br.com.cachly.backend.resposta.TentativaQuestaoRepository;
 import br.com.cachly.backend.resposta.XpService;
@@ -47,6 +49,7 @@ public class DataSeeder implements CommandLineRunner {
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
     private final QuestaoRepository questaoRepository;
+    private final ComentarioRepository comentarioRepository;
     private final TentativaQuestaoRepository tentativaQuestaoRepository;
     private final RankingSemanalHistoricoRepository rankingSemanalHistoricoRepository;
     private final DesafioConcluidoRepository desafioConcluidoRepository;
@@ -359,6 +362,23 @@ public class DataSeeder implements CommandLineRunner {
         rankingSemanalHistoricoRepository.saveAll(snapshotAnterior);
 
         // =========================================================================
+        // 6. FÓRUM / COMENTÁRIOS NAS QUESTÕES
+        // =========================================================================
+
+        // Comentários na Questão 1 (Mapeamento Direto)
+        criarComentario(q1, carlos, "Alguém pode me explicar por que o mapeamento associativo seria pior aqui?", 2);
+        criarComentario(q1, admin, "Excelente pergunta, Carlos! O mapeamento associativo não é necessariamente 'pior', mas exige comparadores em paralelo que aumentam o custo e podem atrasar um pouco o 'hit time'. Em sistemas embarcados simples, o mapeamento direto é muito mais eficiente em custo/benefício.", 15);
+        criarComentario(q1, beatriz, "Nossa, ajudou muito! Eu estava confundindo o cálculo do Offset.", 5);
+
+        // Comentários na Questão 3 (Thrashing)
+        criarComentario(q3, daniela, "Esse negócio de Thrashing parece muito com paginação de SO, né?", 8);
+        criarComentario(q3, beatriz, "Sim! Mas aqui acontece diretamente na cache L1/L2 porque dois blocos da RAM batem no mesmo índice. No SO seria a troca frenética de páginas entre RAM e HD.", 12);
+
+        // Comentários na Questão 9 (Trade-off 2-way vs 8-way)
+        criarComentario(q9, aluno, "Não entendi por que aumenta o consumo de energia...", 0);
+        criarComentario(q9, admin, "Pensa o seguinte: numa cache 8-way, o processador precisa ligar 8 blocos da cache e comparar a Tag dos 8 ao mesmo tempo para ver se deu Hit. Essa ativação de 8 comparadores em paralelo consome bem mais energia do que comparar só 2.", 22);
+
+        // =========================================================================
         // BANNER CONSOLE DE CONFIRMAÇÃO
         // =========================================================================
         System.out.println("=================================================================================");
@@ -373,6 +393,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void limparDadosAntigos() {
+        entityManager.createNativeQuery("DELETE FROM comentarios").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM desafios_concluidos").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM ranking_semanal_historico").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tentativas_questao").executeUpdate();
@@ -484,5 +505,14 @@ public class DataSeeder implements CommandLineRunner {
 
             tentativaQuestaoRepository.save(t);
         }
+    }
+
+    private void criarComentario(Questao questao, Usuario usuario, String conteudo, int upvotes) {
+        Comentario c = new Comentario();
+        c.setQuestao(questao);
+        c.setUsuario(usuario);
+        c.setConteudo(conteudo);
+        c.setUpvotes(upvotes);
+        comentarioRepository.save(c);
     }
 }

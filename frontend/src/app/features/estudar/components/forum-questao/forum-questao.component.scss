@@ -1,0 +1,123 @@
+.forum-container {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5edef;
+
+  .forum-title {
+    font-size: 1.25rem;
+    color: #102e45;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .novo-comentario {
+    margin-bottom: 2rem;
+    
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+  }
+
+  .comentarios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .comentario-item {
+    display: flex;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f4f7;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  .upvote-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 40px;
+
+    .upvote-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #667d8c;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #f0f4f7;
+        color: #247ba0;
+      }
+      
+      &.ativo {
+        color: #f76c14; /* Destaque laranja do Cachly */
+      }
+      
+      i {
+        font-size: 1.2rem;
+      }
+    }
+
+    .upvote-count {
+      font-weight: 600;
+      color: #102e45;
+      font-size: 1.1rem;
+    }
+  }
+
+  .comentario-conteudo {
+    flex: 1;
+  }
+
+  .comentario-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+
+    .autor-nome {
+      font-weight: 600;
+      color: #102e45;
+    }
+
+    .badge-admin {
+      background: #102e45;
+      color: white;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comentario-data {
+      color: #8c9ba5;
+      font-size: 0.85rem;
+    }
+  }
+
+  .comentario-texto {
+    color: #3b4c56;
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  .sem-comentarios {
+    color: #8c9ba5;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+  }
+}

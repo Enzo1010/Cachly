@@ -6,11 +6,12 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { MessageModule } from 'primeng/message';
+import { ForumQuestaoComponent } from '../forum-questao/forum-questao.component';
 
 @Component({
   selector: 'app-estudar-resolucao',
   standalone: true,
-  imports: [ButtonModule, RadioButtonModule, FormsModule, CardModule, MessageModule],
+  imports: [ButtonModule, RadioButtonModule, FormsModule, CardModule, MessageModule, ForumQuestaoComponent],
   template: `
     <!-- Header -->
     <div class="resolucao-header">
@@ -87,6 +88,8 @@ import { MessageModule } from 'primeng/message';
           <div class="acao-footer">
             <p-button label="Próxima Questão" icon="pi pi-arrow-right" iconPos="right" styleClass="botao-proximo" (onClick)="proxima()"></p-button>
           </div>
+          
+          <app-forum-questao [questaoId]="q.id" />
         } @else {
           <div class="acao-footer">
             <p-button
