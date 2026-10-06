@@ -44,7 +44,6 @@ export class LayoutPrincipalComponent {
         { icone: 'pi pi-th-large', rotulo: 'Visão Geral', rota: '/admin' },
         { icone: 'pi pi-question-circle', rotulo: 'Questões', rota: '/admin/questoes' },
         { icone: 'pi pi-tags', rotulo: 'Categorias', rota: '/admin/categorias' },
-        { icone: 'pi pi-server', rotulo: 'Simulador', rota: '/simulador' },
       ];
     }
     return [
