@@ -1,0 +1,111 @@
+.questoes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  color: #64748b;
+}
+
+.btn-acao-admin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  line-height: 1.25;
+
+  span {
+    text-decoration: none !important;
+  }
+
+  i {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  &--primario {
+    background: #006494;
+    color: #ffffff !important;
+    border: 1px solid #006494;
+    box-shadow: 0 2px 4px rgba(0, 100, 148, 0.2);
+
+    &:hover:not(:disabled) {
+      background: #025178;
+      border-color: #025178;
+      box-shadow: 0 4px 8px rgba(0, 100, 148, 0.3);
+      transform: translateY(-1px);
+      color: #ffffff !important;
+      text-decoration: none !important;
+    }
+  }
+}
+
+.tabela-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.col-id {
+  font-weight: 700;
+  color: #64748b;
+}
+
+.col-xp {
+  font-weight: 700;
+  color: #10b981;
+}
+
+.badge-dificuldade {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--facil {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &--medio {
+    background: #fef9c3;
+    color: #854d0e;
+  }
+
+  &--dificil {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}

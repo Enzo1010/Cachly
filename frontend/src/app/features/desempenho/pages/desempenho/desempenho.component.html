@@ -1,70 +1,156 @@
 <section class="pagina-desempenho">
-  <article class="cartao-categorias" aria-labelledby="titulo-categorias">
-    <header>
-      <i class="pi pi-chart-bar" aria-hidden="true"></i>
-      <h2 id="titulo-categorias">Desempenho por Categoria</h2>
-    </header>
-
-    <div class="lista-categorias">
-      @for (categoria of categorias(); track categoria.categoriaId) {
-        <div class="linha-categoria">
-          <div class="linha-categoria__cabecalho">
-            <span>{{ categoria.categoriaNome }}</span>
-            <span>{{ categoria.taxaAcerto }}%</span>
-          </div>
-          <div
-            class="barra"
-            role="progressbar"
-            [attr.aria-valuenow]="categoria.taxaAcerto"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            [attr.aria-label]="categoria.categoriaNome + ': ' + categoria.taxaAcerto + '% de acerto'"
-          >
-            <div
-              class="barra__preenchimento"
-              [class]="'barra__preenchimento--' + nivelDesempenho(categoria.taxaAcerto)"
-              [style.width.%]="categoria.taxaAcerto"
-            ></div>
-          </div>
-        </div>
-      }
-
-      @if (desempenho() && categorias().length === 0) {
-        <p class="lista-categorias__vazio">
-          Responda questões para começar a acompanhar seu desempenho por categoria.
-        </p>
-      }
+  <!-- Cabecalho Personalizado -->
+  <header class="header-visao-geral">
+    <div>
+      <h1 class="titulo-pagina">Meu Desempenho</h1>
+      <p class="subtitulo">{{ obterMensagemIncentivo() }}</p>
     </div>
-  </article>
+  </header>
 
-  @if (moduloAtual(); as modulo) {
-    <article class="cartao-modulo" aria-labelledby="titulo-modulo">
-      <header>
-        <i class="pi pi-sitemap" aria-hidden="true"></i>
-        <h2 id="titulo-modulo">Progresso do Módulo: {{ modulo.nomeCategoria }}</h2>
-      </header>
-
-      <div
-        class="barra-modulo"
-        role="progressbar"
-        [attr.aria-valuenow]="modulo.progresso"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      >
-        <span class="barra-modulo__trilha">
-          <span class="barra-modulo__preenchimento" [style.width.%]="modulo.progresso"></span>
-        </span>
-        <strong class="barra-modulo__valor">{{ modulo.progresso }}%</strong>
+  <!-- Nível 1: Visão Geral / KPIs -->
+  @if (desempenho(); as d) {
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon icon-precisao">
+          <i class="pi pi-bullseye"></i>
+        </div>
+        <div class="kpi-dados">
+          <span class="kpi-valor">{{ d.taxaAcerto }}%</span>
+          <span class="kpi-label">Precisão Geral</span>
+        </div>
       </div>
 
-      <ul class="lista-topicos">
-        @for (topico of modulo.topicos; track topico.nome) {
-          <li [class]="'topico topico--' + topico.status">
-            <i [class]="'pi ' + iconeTopico(topico.status)" aria-hidden="true"></i>
-            <span>{{ topico.nome }}</span>
-          </li>
-        }
-      </ul>
-    </article>
+      <div class="kpi-card">
+        <div class="kpi-icon icon-questoes">
+          <i class="pi pi-list"></i>
+        </div>
+        <div class="kpi-dados">
+          <span class="kpi-valor">{{ d.acertos }} <span class="kpi-minitext">/ {{ d.totalTentativas }}</span></span>
+          <span class="kpi-label">Questões Acertadas</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon icon-ofensiva">
+          <i class="pi pi-bolt"></i>
+        </div>
+        <div class="kpi-dados">
+          <span class="kpi-valor">{{ usuario()?.diasOfensiva ?? 0 }} <span class="kpi-minitext">dias</span></span>
+          <span class="kpi-label">Ofensiva Atual</span>
+        </div>
+      </div>
+    </div>
   }
+
+  <!-- Nível 2: Insights Acionáveis -->
+  <div class="insights-grid">
+    <!-- Ponto Forte -->
+    @if (categoriaMaisForte(); as forte) {
+      <div class="insight-card forte">
+        <div class="insight-badge badge-sucesso">Ponto Forte</div>
+        <h3>{{ forte.categoriaNome }}</h3>
+        <p>Você tem <strong>{{ forte.taxaAcerto }}%</strong> de precisão nesta área. Excelente domínio de conteúdo!</p>
+      </div>
+    }
+
+    <!-- Ponto de Atenção -->
+    @if (categoriaMaisFraca(); as fraca) {
+      <div class="insight-card fraca">
+        <div class="insight-badge badge-alerta">Precisa de Atenção</div>
+        <h3>{{ fraca.categoriaNome }}</h3>
+        <p>Sua taxa de acerto é de <strong>{{ fraca.taxaAcerto }}%</strong>. Recomendamos focar as próximas sessões aqui.</p>
+        <p-button label="Praticar Agora" icon="pi pi-play" routerLink="/estudar" styleClass="p-button-outlined p-button-danger mt-3"></p-button>
+      </div>
+    }
+  </div>
+
+  <!-- Nível 3: Detalhamento -->
+  <div class="detalhamento-container">
+    
+    <!-- Esquerda: Tabela de Barras (Desempenho por Categoria) -->
+    <article class="cartao-categorias" aria-labelledby="titulo-categorias">
+      <header>
+        <h2 id="titulo-categorias"><i class="pi pi-chart-bar" aria-hidden="true"></i> Raio-X por Categoria</h2>
+      </header>
+
+      <div class="lista-categorias">
+        @for (categoria of categorias(); track categoria.categoriaId) {
+          <div class="linha-categoria">
+            <div class="linha-categoria__cabecalho">
+              <span>{{ categoria.categoriaNome }}</span>
+              <span class="taxa-label">{{ categoria.taxaAcerto }}%</span>
+            </div>
+            <div
+              class="barra"
+              role="progressbar"
+              [attr.aria-valuenow]="categoria.taxaAcerto"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-label]="categoria.categoriaNome + ': ' + categoria.taxaAcerto + '% de acerto'"
+            >
+              <div
+                class="barra__preenchimento"
+                [class]="'barra__preenchimento--' + nivelDesempenho(categoria.taxaAcerto)"
+                [style.width.%]="categoria.taxaAcerto"
+              ></div>
+            </div>
+            <div class="categoria-meta">
+              {{ categoria.acertos }} acertos de {{ categoria.totalTentativas }} tentativas
+            </div>
+          </div>
+        }
+
+        @if (desempenho() && categorias().length === 0) {
+          <div class="empty-state">
+            <i class="pi pi-inbox"></i>
+            <p>Responda questões para gerar o seu raio-x de conhecimento.</p>
+          </div>
+        }
+      </div>
+    </article>
+
+    <!-- Direita: Tutor Inteligente (Módulo Atual) -->
+    @if (moduloAtual(); as modulo) {
+      <article class="cartao-modulo" aria-labelledby="titulo-modulo">
+        <header>
+          <div class="header-tutor">
+            <i class="pi pi-compass" aria-hidden="true"></i>
+            <div>
+              <span class="tutor-label">Tutor Inteligente recomenda:</span>
+              <h2 id="titulo-modulo">{{ modulo.nomeCategoria }}</h2>
+            </div>
+          </div>
+        </header>
+
+        <div class="modulo-progresso-container">
+          <div class="barra-modulo-header">
+            <span>Progresso da Trilha</span>
+            <strong>{{ modulo.progresso }}%</strong>
+          </div>
+          <div
+            class="barra-modulo"
+            role="progressbar"
+            [attr.aria-valuenow]="modulo.progresso"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <span class="barra-modulo__trilha">
+              <span class="barra-modulo__preenchimento" [style.width.%]="modulo.progresso"></span>
+            </span>
+          </div>
+        </div>
+
+        <ul class="lista-topicos">
+          @for (topico of modulo.topicos; track topico.nome) {
+            <li [class]="'topico topico--' + topico.status">
+              <div class="topico-icone">
+                <i [class]="'pi ' + iconeTopico(topico.status)" aria-hidden="true"></i>
+              </div>
+              <span class="topico-nome">{{ topico.nome }}</span>
+            </li>
+          }
+        </ul>
+      </article>
+    }
+  </div>
 </section>

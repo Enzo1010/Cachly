@@ -38,9 +38,11 @@ class DataSeederTest {
                 UsuarioRepository usuarioRepository,
                 CategoriaRepository categoriaRepository,
                 QuestaoRepository questaoRepository,
+                br.com.cachly.backend.questao.comentario.ComentarioRepository comentarioRepository,
                 TentativaQuestaoRepository tentativaQuestaoRepository,
                 RankingSemanalHistoricoRepository rankingSemanalHistoricoRepository,
                 DesafioConcluidoRepository desafioConcluidoRepository,
+                br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioSimuladorRepository,
                 PasswordEncoder passwordEncoder,
                 XpService xpService,
                 EntityManager entityManager
@@ -49,9 +51,11 @@ class DataSeederTest {
                     usuarioRepository,
                     categoriaRepository,
                     questaoRepository,
+                    comentarioRepository,
                     tentativaQuestaoRepository,
                     rankingSemanalHistoricoRepository,
                     desafioConcluidoRepository,
+                    desafioSimuladorRepository,
                     passwordEncoder,
                     xpService,
                     entityManager

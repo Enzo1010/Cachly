@@ -1,0 +1,139 @@
+<div class="questao-form-page">
+  <p-toast></p-toast>
+  
+  <div class="page-header">
+    <button class="btn-voltar" (click)="cancelar()">
+      <i class="pi pi-arrow-left"></i> Voltar
+    </button>
+    <div class="header-titles">
+      <h1 class="page-title">{{ editando() ? 'Editar Desafio' : 'Novo Desafio do Simulador' }}</h1>
+      <p class="page-subtitle">Preencha os detalhes do desafio para o simulador de cache</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="form-container">
+    <div class="form-secao">
+      <h2 class="secao-titulo">Informações Gerais</h2>
+      
+      <div class="campo-grupo">
+        <label for="titulo">Título *</label>
+        <input id="titulo" type="text" formControlName="titulo" placeholder="Ex: Cache Direto - Desafio 1" class="form-control" />
+      </div>
+
+      <div class="campo-grupo">
+        <label for="descricao">Descrição *</label>
+        <textarea id="descricao" formControlName="descricao" rows="3" placeholder="Descrição do desafio..." class="form-control"></textarea>
+      </div>
+
+      <div class="grid-2-cols">
+        <div class="campo-grupo">
+          <label for="dificuldade">Dificuldade *</label>
+          <select id="dificuldade" formControlName="dificuldade" class="form-control">
+            @for (d of dificuldades; track d.value) {
+              <option [value]="d.value">{{ d.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo-grupo">
+          <label for="xpRecompensa">XP Recompensa *</label>
+          <input id="xpRecompensa" type="number" formControlName="xpRecompensa" class="form-control" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-secao" formGroupName="configuracao">
+      <h2 class="secao-titulo">Configuração do Simulador</h2>
+      
+      <div class="grid-2-cols">
+        <div class="campo-grupo">
+          <label for="tamanhoCacheBytes">Tamanho da Cache (Bytes) *</label>
+          <input id="tamanhoCacheBytes" type="number" formControlName="tamanhoCacheBytes" class="form-control" />
+        </div>
+        <div class="campo-grupo">
+          <label for="tamanhoBlocoBytes">Tamanho do Bloco (Bytes) *</label>
+          <input id="tamanhoBlocoBytes" type="number" formControlName="tamanhoBlocoBytes" class="form-control" />
+        </div>
+        
+        <div class="campo-grupo">
+          <label for="mapeamento">Tipo de Mapeamento *</label>
+          <select id="mapeamento" formControlName="mapeamento" class="form-control">
+            @for (m of mapeamentos; track m.value) {
+              <option [value]="m.value">{{ m.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo-grupo">
+          <label for="numeroVias">Número de Vias (opcional)</label>
+          <input id="numeroVias" type="number" formControlName="numeroVias" class="form-control" min="1" />
+        </div>
+        
+        <div class="campo-grupo">
+          <label for="substituicao">Política de Substituição</label>
+          <select id="substituicao" formControlName="substituicao" class="form-control">
+            @for (s of substituicoes; track s.value) {
+              <option [value]="s.value">{{ s.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo-grupo">
+          <label for="enderecosTexto">Endereços de Memória (separados por vírgula) *</label>
+          <input id="enderecosTexto" type="text" formControlName="enderecosTexto" placeholder="Ex: 0, 4, 8, 12, 16" class="form-control" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-secao">
+      <h2 class="secao-titulo">Pergunta e Respostas</h2>
+      
+      <div class="campo-grupo">
+        <label for="pergunta">Pergunta do Desafio *</label>
+        <textarea id="pergunta" formControlName="pergunta" rows="2" placeholder="Ex: Quantos acertos (hits) ocorrerão nesta simulação?" class="form-control"></textarea>
+      </div>
+
+      <div class="opcoes-container" formArrayName="opcoes">
+        <h3 class="opcoes-titulo">Opções de Resposta</h3>
+        
+        @for (opcao of opcoesFormArray.controls; track $index) {
+          <div class="opcao-item" [formGroupName]="$index">
+            <div class="opcao-id">
+              <label>ID</label>
+              <input type="text" formControlName="id" placeholder="Ex: A" class="form-control" />
+            </div>
+            <div class="opcao-texto">
+              <label>Texto da Opção</label>
+              <input type="text" formControlName="texto" placeholder="Texto da resposta..." class="form-control w-full" />
+            </div>
+            <button type="button" class="btn-remover-opcao" (click)="removerOpcao($index)" title="Remover Opção">
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        }
+        
+        <button type="button" class="btn-adicionar-opcao" (click)="adicionarOpcao()">
+          <i class="pi pi-plus"></i> Adicionar Opção
+        </button>
+      </div>
+
+      <div class="grid-2-cols mt-4">
+        <div class="campo-grupo">
+          <label for="opcaoCorretaId">ID da Opção Correta *</label>
+          <input id="opcaoCorretaId" type="text" formControlName="opcaoCorretaId" placeholder="Ex: A" class="form-control w-full" />
+        </div>
+        <div class="campo-grupo">
+          <label for="dica">Dica (opcional)</label>
+          <input id="dica" type="text" formControlName="dica" placeholder="Uma dica para ajudar..." class="form-control w-full" />
+        </div>
+      </div>
+      
+      <div class="campo-grupo mt-4">
+        <label for="explicacao">Explicação (após resposta) *</label>
+        <textarea id="explicacao" formControlName="explicacao" rows="3" placeholder="Explique por que a resposta está correta..." class="form-control"></textarea>
+      </div>
+    </div>
+
+    <div class="form-acoes">
+      <p-button label="Cancelar" styleClass="p-button-secondary p-button-outlined" (onClick)="cancelar()"></p-button>
+      <p-button [label]="salvando() ? 'Salvando...' : 'Salvar Desafio'" [disabled]="form.invalid || salvando()" type="submit" styleClass="p-button-primary"></p-button>
+    </div>
+  </form>
+</div>

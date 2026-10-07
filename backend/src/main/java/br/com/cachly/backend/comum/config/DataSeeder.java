@@ -53,6 +53,7 @@ public class DataSeeder implements CommandLineRunner {
     private final TentativaQuestaoRepository tentativaQuestaoRepository;
     private final RankingSemanalHistoricoRepository rankingSemanalHistoricoRepository;
     private final DesafioConcluidoRepository desafioConcluidoRepository;
+    private final br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioSimuladorRepository;
     private final PasswordEncoder passwordEncoder;
     private final XpService xpService;
     private final EntityManager entityManager;
@@ -334,9 +335,11 @@ public class DataSeeder implements CommandLineRunner {
         gerarTentativasSimuladas(aluno, q12, 1, 0, tempoBase.plusDays(7), false); // 1 erro
 
         // =========================================================================
-        // 4. DESAFIOS DO SIMULADOR (DESAFIOS CONCLUÍDOS)
-        // Conclui 2 desafios (80 XP total) e deixa 2 em aberto para demo ao vivo
+        // 4. DESAFIOS DO SIMULADOR
+        // Popula as entidades de desafio e conclui 2 desafios (80 XP total)
         // =========================================================================
+        criarDesafiosSimulador();
+
         DesafioConcluido d1 = new DesafioConcluido();
         d1.setUsuario(aluno);
         d1.setDesafioId("cold-miss");
@@ -395,6 +398,7 @@ public class DataSeeder implements CommandLineRunner {
     private void limparDadosAntigos() {
         entityManager.createNativeQuery("DELETE FROM comentarios").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM desafios_concluidos").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM desafios_simulador").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM ranking_semanal_historico").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tentativas_questao").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM alternativas").executeUpdate();
@@ -506,7 +510,6 @@ public class DataSeeder implements CommandLineRunner {
             tentativaQuestaoRepository.save(t);
         }
     }
-
     private void criarComentario(Questao questao, Usuario usuario, String conteudo, int upvotes) {
         Comentario c = new Comentario();
         c.setQuestao(questao);
@@ -514,5 +517,83 @@ public class DataSeeder implements CommandLineRunner {
         c.setConteudo(conteudo);
         c.setUpvotes(upvotes);
         comentarioRepository.save(c);
+    }
+
+    private void criarDesafiosSimulador() {
+        br.com.cachly.backend.simulador.desafio.DesafioSimulador d1 = new br.com.cachly.backend.simulador.desafio.DesafioSimulador();
+        d1.setId("cold-miss");
+        d1.setTitulo("Miss Compulsório (Cold Start)");
+        d1.setDescricao("Quando a memória cache é inicializada, ela se encontra vazia (todas as linhas com bit de validade = 0). Nessa fase, o primeiro acesso a qualquer bloco gera obrigatoriamente uma falta compulsória.");
+        d1.setDificuldade(DificuldadeQuestao.FACIL);
+        d1.setXpRecompensa(30);
+        d1.setConfiguracao(new br.com.cachly.backend.simulador.SimulacaoRequest(64, 16, null, br.com.cachly.backend.simulador.TipoMapeamento.DIRETO, br.com.cachly.backend.simulador.PoliticaSubstituicao.LRU, List.of(0, 16, 32, 48)));
+        d1.setPergunta("Na primeira rodada de leitura desses 4 blocos de memória distintos, quantos misses e hits serão registrados?");
+        d1.setOpcoes(List.of(
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("A", "4 Misses e 0 Hits (todos os blocos precisam ser carregados da memória principal)"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("B", "2 Misses e 2 Hits (a localidade espacial antecipa os blocos pares)"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("C", "0 Misses e 4 Hits (a memória cache já inicia pré-carregada pelo barramento)"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("D", "3 Misses e 1 Hit (apenas a última linha sofre descarte por colisão)")
+        ));
+        d1.setOpcaoCorretaId("A");
+        d1.setDica("Lembre-se: no estado inicial, o processador ainda não trouxe nenhum bloco para as linhas da cache.");
+        d1.setExplicacao("Correto! Na primeira vez em que um bloco é referenciado após o boot da máquina, ocorre um Miss Compulsório (ou Cold Miss). Como os endereços 0, 16, 32 e 48 pertencem a blocos distintos (0, 1, 2 e 3), todos resultam em falta.");
+        desafioSimuladorRepository.save(d1);
+
+        br.com.cachly.backend.simulador.desafio.DesafioSimulador d2 = new br.com.cachly.backend.simulador.desafio.DesafioSimulador();
+        d2.setId("thrashing-direto");
+        d2.setTitulo("O Fenômeno do Thrashing no Mapeamento Direto");
+        d2.setDescricao("No mapeamento direto, a função modular (Endereço do Bloco % Número de Linhas) define uma única linha possível para cada bloco. Observe o que ocorre quando dois endereços competem pela mesma linha da cache.");
+        d2.setDificuldade(DificuldadeQuestao.MEDIO);
+        d2.setXpRecompensa(50);
+        d2.setConfiguracao(new br.com.cachly.backend.simulador.SimulacaoRequest(64, 16, null, br.com.cachly.backend.simulador.TipoMapeamento.DIRETO, br.com.cachly.backend.simulador.PoliticaSubstituicao.LRU, List.of(0, 64, 0, 64, 0, 64)));
+        d2.setPergunta("Mesmo repetindo a sequência de acessos 3 vezes consecutivas, por que a taxa de acerto é 0%?");
+        d2.setOpcoes(List.of(
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("A", "Porque ocorre conflito de linha (Thrashing): o bloco 4 expulsa o bloco 0 e vice-versa continuamente"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("B", "Porque o tamanho de bloco de 16 bytes é insuficiente para a arquitetura"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("C", "Porque a política LRU é incompatível com o mapeamento direto"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("D", "Porque a capacidade total da cache é excedida em todas as suas linhas")
+        ));
+        d2.setOpcaoCorretaId("A");
+        d2.setDica("Calcule o índice de linha para o Bloco 0 (endereço 0) e para o Bloco 4 (endereço 64).");
+        d2.setExplicacao("Perfeito! Em uma cache com 4 linhas, o Bloco 0 (0 / 16 = 0 % 4 = 0) e o Bloco 4 (64 / 16 = 4 % 4 = 0) são mapeados para a Linha 0. A cada acesso alternado, um bloco substitui o outro antes que possa ser reutilizado, gerando 100% de faltas por conflito (Thrashing).");
+        desafioSimuladorRepository.save(d2);
+
+        br.com.cachly.backend.simulador.desafio.DesafioSimulador d3 = new br.com.cachly.backend.simulador.desafio.DesafioSimulador();
+        d3.setId("solucao-associativa");
+        d3.setTitulo("Eliminando o Conflito com Associatividade (2-Way)");
+        d3.setDescricao("Para solucionar o problema de conflito visto no desafio anterior sem o alto custo de hardware de um totalmente associativo, organizamos as linhas em conjuntos com 2 vias (2-Way Set Associative).");
+        d3.setDificuldade(DificuldadeQuestao.MEDIO);
+        d3.setXpRecompensa(60);
+        d3.setConfiguracao(new br.com.cachly.backend.simulador.SimulacaoRequest(64, 16, 2, br.com.cachly.backend.simulador.TipoMapeamento.CONJUNTO_ASSOCIATIVO, br.com.cachly.backend.simulador.PoliticaSubstituicao.LRU, List.of(0, 64, 0, 64, 0, 64)));
+        d3.setPergunta("Executando a mesma sequência [0, 64, 0, 64, 0, 64], quantos HITS são obtidos agora na cache associativa por conjunto?");
+        d3.setOpcoes(List.of(
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("A", "4 Hits (os dois primeiros acessos são misses de aquecimento e os quatro seguintes são hits)"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("B", "6 Hits (todas as requisições encontram os blocos em cache)"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("C", "0 Hits (o conflito persiste pois ambos ainda mapeiam para o conjunto 0)"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("D", "2 Hits (apenas o primeiro bloco consegue ser preservado)")
+        ));
+        d3.setOpcaoCorretaId("A");
+        d3.setDica("Agora o Conjunto 0 possui 2 linhas (vias). O Bloco 0 e o Bloco 4 cabem simultaneamente no mesmo conjunto?");
+        d3.setExplicacao("Excelente dedução! Com 2 vias no Conjunto 0, o Bloco 0 reside na Via 0 e o Bloco 4 ocupa a Via 1. Ambos permanecem na cache juntos, eliminando os misses por conflito e convertendo todas as 4 repetições seguintes em HITS.");
+        desafioSimuladorRepository.save(d3);
+
+        br.com.cachly.backend.simulador.desafio.DesafioSimulador d4 = new br.com.cachly.backend.simulador.desafio.DesafioSimulador();
+        d4.setId("lru-vs-fifo");
+        d4.setTitulo("Duelo de Políticas: Localidade Temporal com LRU");
+        d4.setDescricao("Quando uma cache totalmente associativa fica cheia, a política de substituição precisa escolher qual bloco descartar. O algoritmo LRU (Least Recently Used) descarta o bloco que está há mais tempo sem sofrer acesso.");
+        d4.setDificuldade(DificuldadeQuestao.DIFICIL);
+        d4.setXpRecompensa(80);
+        d4.setConfiguracao(new br.com.cachly.backend.simulador.SimulacaoRequest(64, 16, null, br.com.cachly.backend.simulador.TipoMapeamento.TOTALMENTE_ASSOCIATIVO, br.com.cachly.backend.simulador.PoliticaSubstituicao.LRU, List.of(0, 16, 32, 48, 0, 80)));
+        d4.setPergunta("Ao solicitar o endereço 80 (bloco 5) no último passo, qual bloco é substituído da cache pela política LRU?");
+        d4.setOpcoes(List.of(
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("A", "Bloco 1 (endereço 16), pois o Bloco 0 foi reutilizado no passo 5 e teve sua prioridade renovada"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("B", "Bloco 0 (endereço 0), pois foi o primeiro a ser inserido na cache"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("C", "Bloco 3 (endereço 48), por se encontrar na última linha física"),
+                new br.com.cachly.backend.simulador.desafio.OpcaoDesafioEmbeddable("D", "Nenhum bloco é substituído porque a memória cache expande dinamicamente")
+        ));
+        d4.setOpcaoCorretaId("A");
+        d4.setDica("Observe atentamente o passo 5: o Bloco 0 foi acessado novamente logo antes do Bloco 5 chegar!");
+        d4.setExplicacao("Brilhante! O Bloco 0 entrou primeiro, mas seu acesso no passo 5 atualizou sua data de utilização para o tempo mais recente. Quando o Bloco 5 requisitou espaço no passo 6, o bloco com menor utilização recente era o Bloco 1 (acessado no passo 2), sendo ele a vítima correta do LRU.");
+        desafioSimuladorRepository.save(d4);
     }
 }

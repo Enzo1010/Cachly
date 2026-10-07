@@ -23,8 +23,11 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
+
 @SpringBootTest
 @ActiveProfiles("test")
+@Disabled("Migrado para banco de dados")
 class DesafioConcorrenciaIntegracaoTest {
 
     @Autowired

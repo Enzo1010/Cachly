@@ -1,0 +1,57 @@
+<div class="questoes-page">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gerenciamento de Desafios do Simulador</h1>
+      <p class="page-subtitle">Crie, edite ou exclua desafios para o simulador de cache</p>
+    </div>
+    <button class="btn-acao-admin btn-acao-admin--primario" type="button" (click)="novoDesafio()">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      <span>Novo Desafio</span>
+    </button>
+  </div>
+
+  <div class="tabela-card">
+    <p-table 
+      [value]="desafios()" 
+      [loading]="carregando()" 
+      [paginator]="true" 
+      [rows]="10" 
+      styleClass="p-datatable-striped">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Dificuldade</th>
+          <th>XP</th>
+          <th style="text-align: right;">Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-desafio>
+        <tr>
+          <td class="col-id">{{ desafio.id }}</td>
+          <td>{{ desafio.titulo }}</td>
+          <td>
+            <span class="badge-dificuldade badge-dificuldade--{{ desafio.dificuldade.toLowerCase() }}">
+              {{ desafio.dificuldade }}
+            </span>
+          </td>
+          <td class="col-xp">+{{ desafio.xpRecompensa }} XP</td>
+          <td style="text-align: right;">
+            <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-text p-button-info" (onClick)="editarDesafio(desafio.id)"></p-button>
+            <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-text p-button-danger" (onClick)="excluirDesafio(desafio)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 2rem;">
+            Nenhum desafio encontrado.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
