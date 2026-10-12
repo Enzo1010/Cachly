@@ -28,6 +28,9 @@ api:
 app:
   timezone: America/Sao_Paulo
   frontend-url: ${FRONTEND_URL:http://localhost:4200}
+  apps-script:
+    url: ${APPS_SCRIPT_URL}
+    secret: ${APPS_SCRIPT_SECRET}
 
 ranking:
   historico:

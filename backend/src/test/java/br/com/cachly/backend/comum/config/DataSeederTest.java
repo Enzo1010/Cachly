@@ -51,7 +51,7 @@ class DataSeederTest {
                     questaoRepository,
                     tentativaQuestaoRepository,
                     rankingSemanalHistoricoRepository,
-                    desafioConcluidoRepository,
+                    desaf_ioConcluidoRepository,
                     passwordEncoder,
                     xpService,
                     entityManager
