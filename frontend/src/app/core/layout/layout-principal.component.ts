@@ -1,4 +1,4 @@
-import { Component, HostListener, signal, computed } from '@angular/core';
+﻿import { Component, HostListener, signal, computed } from '@angular/core';
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -44,6 +44,7 @@ export class LayoutPrincipalComponent {
         { icone: 'pi pi-th-large', rotulo: 'Visão Geral', rota: '/admin' },
         { icone: 'pi pi-question-circle', rotulo: 'Questões', rota: '/admin/questoes' },
         { icone: 'pi pi-tags', rotulo: 'Categorias', rota: '/admin/categorias' },
+        { icone: 'pi pi-microchip', rotulo: 'Desafios', rota: '/admin/desafios' },
       ];
     }
     return [
@@ -117,3 +118,4 @@ export class LayoutPrincipalComponent {
     this.tituloPagina.set(typeof titulo === 'string' ? titulo : 'Visão Geral');
   }
 }
+

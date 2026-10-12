@@ -28,4 +28,31 @@ export const ROTAS_ADMIN: Routes = [
     data: { titulo: 'Gerenciamento de Categorias' },
     title: 'Categorias | Admin Cachly',
   },
+  {
+    path: 'desafios',
+    loadComponent: () =>
+      import('./pages/desafios-simulador/admin-desafios-simulador-list.component').then(
+        (m) => m.AdminDesafiosSimuladorListComponent
+      ),
+    data: { titulo: 'Desafios do Simulador' },
+    title: 'Desafios | Admin Cachly',
+  },
+  {
+    path: 'desafios/novo',
+    loadComponent: () =>
+      import('./pages/desafios-simulador/admin-desafios-simulador-form.component').then(
+        (m) => m.AdminDesafiosSimuladorFormComponent
+      ),
+    data: { titulo: 'Novo Desafio do Simulador' },
+    title: 'Novo Desafio | Admin Cachly',
+  },
+  {
+    path: 'desafios/editar/:id',
+    loadComponent: () =>
+      import('./pages/desafios-simulador/admin-desafios-simulador-form.component').then(
+        (m) => m.AdminDesafiosSimuladorFormComponent
+      ),
+    data: { titulo: 'Editar Desafio do Simulador' },
+    title: 'Editar Desafio | Admin Cachly',
+  },
 ];

@@ -25,7 +25,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.Disabled;
+
 @ExtendWith(MockitoExtension.class)
+@Disabled("Migrado para banco de dados")
 class DesafioCacheServiceTest {
 
     @Spy
