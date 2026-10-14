@@ -56,8 +56,11 @@ O núcleo da proposta é a convergência entre **rigor técnico** e **design de 
 |---|---|
 | **Simulador de Cache** | Laboratório interativo stateless para simulação de mapeamento Direto, Associativo por Conjunto ($N$-vias) e Totalmente Associativo com políticas LRU e FIFO. |
 | **Laboratório de Desafios** | Cenários práticos guiados (Cold Miss, Thrashing, Associatividade, Políticas) com verificação em tempo real, proteção transacional e concessão de XP único. |
+| **Painel de Gestão de Desafios (Admin)** | CRUD completo para administradores cadastrarem, editarem e gerenciarem desafios pedagógicos para o simulador. |
 | **Guia Conceitual & Breakdown Binário** | Modal didático integrado com 4 abas teóricas (Aritmética, Mapeamentos, Substituição e Hit/Miss) e blocos interativos clicáveis de Tag, Índice e Offset. |
 | **Banco de Questões & Estudo** | Questões técnicas categorizadas com proteção contra vazamento de respostas (`/api/questoes/estudo`), cálculo de pontuação por dificuldade e feedback imediato. |
+| **Fórum de Dúvidas nas Questões** | Discussão colaborativa por questão, permitindo que estudantes publiquem dúvidas conceituais e atribuam upvotes para destacar as melhores respostas. |
+| **Recuperação de Senha por E-mail** | Fluxo seguro de redefinição de credenciais via token temporário com envio transacional via Google Apps Script. |
 | **Engine de Gamificação** | Sistema de XP com cálculo de níveis, ofensivas diárias (*streaks*) sob consistência transacional com Lock Pessimista antecipado e Liga Semanal com agendador (`RankingScheduler`). |
 | **Análise de Desempenho** | Dashboard com gráfico de radar de domínio conceitual, identificação da categoria de menor rendimento e intervenção pedagógica que guia o aluno para o simulador. |
 | **Segurança e Sessões** | Autenticação JWT via cookies seguros `HttpOnly` + `SameSite=Strict`, proteção nativa contra CSRF, controle de perfil por roles (`ALUNO` e `ADMINISTRADOR`) e revogação imediata de sessões via controle de versão de token (`versaoToken`). |
@@ -180,9 +183,9 @@ Cachly/
 │   │       ├── alternativa/    # Modelagem e repositório de alternativas
 │   │       ├── categoria/      # Categorias de arquitetura e sistemas digitais
 │   │       ├── comum/          # Exceções, DTOs globais e SecurityFilter
-│   │       ├── questao/        # Endpoints protegidos e regras de questões
+│   │       ├── questao/        # Endpoints protegidos, regras de questões e comentários
 │   │       ├── resposta/       # Engine de respostas, XP e ofensivas
-│   │       ├── simulador/      # Engine stateless de simulação de cache
+│   │       ├── simulador/      # Engine stateless de simulação de cache e gestão de desafios
 │   │       └── usuario/        # Autenticação, alunos, perfis e ranking
 │   ├── src/main/resources/
 │   │   ├── db/migration/       # Scripts Flyway versionados (V1 → V19)
@@ -194,12 +197,14 @@ Cachly/
 │   ├── nginx.conf              # Configuração do Nginx e proxy reverso /api/
 │   ├── src/app/
 │   │   ├── core/               # Guards de rota, interceptors, layout e sessão
-│   │   ├── features/           # Módulos: simulador, estudar, desempenho, liga, perfil
+│   │   ├── features/           # Módulos: simulador, estudar, desempenho, liga, perfil, admin
 │   │   └── shared/             # Modelos, componentes e utilitários globais
 │   └── README.md
 │
 ├── docs/
-│   └── decisions/              # Architecture Decision Records (ADR-001, ADR-002)
+│   ├── decisions/              # Architecture Decision Records (ADR-001, ADR-002)
+│   ├── diagrama_de_classes/    # Diagrama de Classes UML do domínio
+│   └── RUNNING.md              # Guia consolidado de execução
 └── README.md
 ```
 

@@ -11,7 +11,11 @@ Com o Docker e Docker Desktop instalados, você pode subir o banco de dados, o b
    ```bash
    cp .env.example .env
    ```
-   *Edite o arquivo `.env` gerado definindo uma senha para o banco de dados e um segredo forte para o JWT (mínimo de 32 caracteres).*
+   *Edite o arquivo `.env` gerado definindo:*
+   - `DB_PASSWORD`: Senha do banco de dados PostgreSQL.
+   - `JWT_SECRET`: Segredo forte para assinatura dos tokens JWT (mínimo de 32 caracteres).
+   - `APPS_SCRIPT_URL` e `APPS_SCRIPT_SECRET` *(opcionais)*: Endpoint e token compartilhado do Google Apps Script para envio de e-mails de recuperação de senha.
+   - `FRONTEND_URL` *(opcional)*: URL base da aplicação para compor os links de redefinição enviados por e-mail (padrão: `http://localhost`).
 
 2. **Iniciar os containers**:
    ```bash
@@ -21,8 +25,9 @@ Com o Docker e Docker Desktop instalados, você pode subir o banco de dados, o b
 
 3. **Acessar os serviços**:
    - **Frontend (Aplicação Web):** [http://localhost](http://localhost)
-   - **Backend (API REST / Swagger):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+   - **Backend (API REST via Nginx):** [http://localhost/api/health](http://localhost/api/health)
    - **Banco de Dados (PostgreSQL):** `localhost:5432` (bd: `cachly`, usuário: `postgres`)
+   *(Nota: No ambiente Docker Compose, o backend opera protegido em rede interna atrás do proxy reverso Nginx para aplicação de rate limiting. Para acessar o Swagger UI em `http://localhost:8080/swagger-ui.html`, utilize a execução local tradicional do backend ou mapeie a porta 8080 temporariamente no `docker-compose.yml`).*
 
 4. **Derrubar os containers**:
    ```bash

@@ -6,7 +6,7 @@ com a API REST do backend.
 
 ## Tecnologias
 
-- Angular 21 com componentes standalone;
+- Angular 21 com componentes standalone e Angular Signals (`signal`, `computed`);
 - TypeScript em modo estrito;
 - Angular Router;
 - formulários reativos;
@@ -44,12 +44,14 @@ As regras completas de desenvolvimento do frontend estão documentadas no arquiv
 
 O frontend está totalmente funcional e integrado ao backend. O ecossistema inclui:
 
-- **Autenticação JWT stateless**: Login, persistência de sessão e proteção de rotas com guards.
-- **Painel de Perfil**: Modal para alterar senha e exibir estatísticas consolidadas de XP e ranking.
+- **Autenticação JWT stateless**: Login, persistência de sessão via cookie HttpOnly e proteção de rotas com guards.
+- **Recuperação de Senha**: Fluxo completo com solicitação por e-mail e redefinição com token.
+- **Painel de Perfil**: Modal para alterar senha e exibir estatísticas consolidadas de XP, nível e ranking.
 - **Estudo e Gamificação**: Listagem de questões, submissão de respostas, acúmulo de XP, níveis e ofensiva de estudos.
-- **Liga Semanal (Ranking)**: Tabela de classificação em tempo real mostrando os usuários mais dedicados da semana.
-- **Simulador de Memória Cache**: Engine interativa com step-by-step, além de um sistema de Desafios práticos que pontuam experiência.
-- **Administração**: CRUD de categorias e questões protegidos por RBAC.
+- **Fórum de Dúvidas**: Discussão em cada questão com envio de dúvidas e sistema de upvotes.
+- **Liga Semanal (Ranking)**: Tabela de classificação em tempo real mostrando os usuários mais dedicados da semana e histórico arquivado.
+- **Simulador de Memória Cache**: Engine interativa com visualização gráfica step-by-step e desafios práticos que pontuam XP único.
+- **Administração**: CRUD completo de categorias, questões e desafios do simulador com controle RBAC.
 
 O desenvolvimento atual utiliza o Nginx ou o `proxy.conf.json` (`npm start`) para espelhar as requisições `/api` para o backend rodando em `http://localhost:8080`.
 
