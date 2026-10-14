@@ -99,7 +99,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 │  │  └─────────────┘  └──────┬──────┘  └─────────────────────┘  │  │
 │  │                          │                                  │  │
 │  │  ┌───────────────────────▼──────────────────────────────┐   │  │
-│  │  │  Spring Data JPA  ·  Flyway Migrations (V1 → V14)    │   │  │
+│  │  │  Spring Data JPA  ·  Flyway Migrations (V1 → V19)    │   │  │
 │  └──┴──────────────────────────────────────────────────────┴───┘  │
 │                            │                                      │
 │  ┌─────────────────────────▼───────────────────┐                  │
@@ -132,7 +132,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 | Spring Security | 6.x | Autenticação JWT via cookie HttpOnly, filtros e RBAC |
 | Spring Data JPA | 3.x | Camada de persistência relacional |
 | PostgreSQL | 15 / 16 | Banco de dados relacional |
-| Flyway | 10.x | Versionamento e migração de schema (V1 a V14) |
+| Flyway | 10.x | Versionamento e migração de schema (V1 a V19) |
 | SpringDoc OpenAPI | 2.x | Documentação interativa (Swagger UI) |
 | JUnit 5 + Mockito | — | Cobertura de testes automatizados (138 casos) |
 | Lombok | — | Redução de boilerplate |
@@ -185,7 +185,7 @@ Cachly/
 │   │       ├── simulador/      # Engine stateless de simulação de cache
 │   │       └── usuario/        # Autenticação, alunos, perfis e ranking
 │   ├── src/main/resources/
-│   │   ├── db/migration/       # Scripts Flyway versionados (V1 → V7)
+│   │   ├── db/migration/       # Scripts Flyway versionados (V1 → V19)
 │   │   └── application.yml     # Configurações de banco, JWT e segurança
 │   └── README.md
 │

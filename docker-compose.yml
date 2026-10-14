@@ -29,6 +29,13 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRATION_HOURS=24
+      - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USERNAME=${MAIL_USERNAME:-}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+      - APPS_SCRIPT_URL=${APPS_SCRIPT_URL:-https://script.google.com/macros/s/dummy/exec}
+      - APPS_SCRIPT_SECRET=${APPS_SCRIPT_SECRET:-}
     depends_on:
       db:
         condition: service_healthy

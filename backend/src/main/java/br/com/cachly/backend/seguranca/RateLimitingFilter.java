@@ -47,7 +47,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
         Bucket bucket = null;
 
-        if (path.startsWith("/api/auth/login")) {
+        if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/solicitar-reset") || path.startsWith("/api/auth/resetar-senha")) {
             bucket = loginBuckets.get(ip, this::createNewLoginBucket);
         } else if (path.startsWith("/api/simulador/executar")) {
             bucket = simuladorBuckets.get(ip, this::createNewSimuladorBucket);

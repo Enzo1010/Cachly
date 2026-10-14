@@ -1,24 +1,27 @@
 package br.com.cachly.backend.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.net.http.HttpClient;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class EmailService {
 
     private final RestClient restClient;
 
-    @Value("${app.apps-script.secret}")
+    @Value("${app.apps-script.secret:}")
     private String sharedSecret;
 
     public EmailService(
-            @Value("${app.apps-script.url}") String appsScriptUrl
+            @Value("${app.apps-script.url:https://script.google.com/macros/s/dummy/exec}") String appsScriptUrl
     ) {
         HttpClient httpClient = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
@@ -30,6 +33,7 @@ public class EmailService {
                 .build();
     }
 
+    @Async
     public void enviarEmailResetSenha(
             String destinatario,
             String nome,
@@ -39,7 +43,7 @@ public class EmailService {
                 "email", destinatario,
                 "resetLink", linkReset,
                 "nome", nome,
-                "secret", sharedSecret
+                "secret", sharedSecret != null ? sharedSecret : ""
         );
 
         try {
@@ -50,12 +54,12 @@ public class EmailService {
                     .body(String.class);
 
             if (resposta == null || !resposta.replaceAll("\\s+", "").contains("\"status\":200")) {
-                throw new IllegalStateException("O Apps Script não confirmou o envio. Resposta recebida: " + resposta);
+                log.warn("O Apps Script não confirmou o envio. Resposta recebida: {}", resposta);
+            } else {
+                log.info("E-mail de reset de senha enviado com sucesso para {}", destinatario);
             }
         } catch (Exception e) {
-            System.err.println("Erro de conexão com Google Apps Script: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Falha na comunicação com o servidor de e-mails.");
+            log.error("Erro de conexão com Google Apps Script ao enviar e-mail para {}: {}", destinatario, e.getMessage());
         }
     }
 }

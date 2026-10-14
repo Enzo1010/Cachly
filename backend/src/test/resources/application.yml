@@ -7,6 +7,9 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/cachly}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:123}
+  mail:
+    host: localhost
+    port: 25
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,3 +21,10 @@ api:
     token:
       secret: segredo-apenas-para-testes-do-cachly-com-tamanho-suficiente
       expiration-hours: 24
+
+app:
+  timezone: America/Sao_Paulo
+  frontend-url: http://localhost:4200
+  apps-script:
+    url: https://script.google.com/macros/s/dummy/exec
+    secret: test-secret

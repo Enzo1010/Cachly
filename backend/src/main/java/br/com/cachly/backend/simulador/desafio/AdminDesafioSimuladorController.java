@@ -3,12 +3,14 @@ package br.com.cachly.backend.simulador.desafio;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/desafios-simulador")
+@PreAuthorize("hasRole('ADMINISTRADOR')")
 @RequiredArgsConstructor
 public class AdminDesafioSimuladorController {
 

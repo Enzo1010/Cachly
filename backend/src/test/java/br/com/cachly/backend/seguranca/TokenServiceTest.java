@@ -17,6 +17,7 @@ class TokenServiceTest {
         tokenService = new TokenService();
         ReflectionTestUtils.setField(tokenService, "secret", "segredo-para-testes-com-tamanho-suficiente-para-hmac");
         ReflectionTestUtils.setField(tokenService, "expirationHours", 24);
+        ReflectionTestUtils.invokeMethod(tokenService, "init");
     }
 
     @Test

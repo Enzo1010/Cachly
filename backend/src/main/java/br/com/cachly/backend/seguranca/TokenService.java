@@ -27,10 +27,15 @@ public class TokenService {
 
     @jakarta.annotation.PostConstruct
     protected void init() {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        if (this.secret != null) {
+            this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     private SecretKey getSecretKey() {
+        if (this.key == null && this.secret != null) {
+            this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        }
         return this.key;
     }
 
