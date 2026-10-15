@@ -17,94 +17,145 @@
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        background: radial-gradient(circle at 50% 30%, #06405e 0%, #03293d 70%, #021a27 100%);
+        background: radial-gradient(ellipse 80% 50% at 50% -15%, rgba(0, 100, 148, 0.22), transparent 70%), #07090c;
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         color: #ffffff;
-        padding: 32px 20px;
+        padding: 40px 20px 28px;
         box-sizing: border-box;
         text-align: center;
         overflow: hidden;
       ">
         <style>
-          @keyframes cachly-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+          @keyframes laser-beam {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(250%); }
           }
-          @keyframes cachly-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+          @keyframes linear-pulse {
+            0%, 100% { opacity: 0.92; filter: drop-shadow(0 0 24px rgba(27, 152, 224, 0.25)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 40px rgba(27, 152, 224, 0.45)); }
           }
-          @keyframes cachly-fade-in {
-            from { opacity: 0; transform: translateY(10px); }
+          @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.85); }
+          }
+          @keyframes linear-fade {
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
           }
         </style>
 
-        <!-- Top Spacer para centralizar harmonicamente -->
-        <div style="height: 10px;"></div>
+        <!-- Top Spacer -->
+        <div style="height: 12px;"></div>
 
-        <!-- Conteúdo Central -->
+        <!-- Conteúdo Central: Linear / Vercel Minimalist -->
         <div style="
+          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
-          max-width: 420px;
+          max-width: 440px;
           width: 100%;
-          animation: cachly-fade-in 0.8s ease-out;
+          animation: linear-fade 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         ">
-          <!-- Logo com animação suave -->
-          <div style="animation: cachly-float 3.2s ease-in-out infinite; margin-bottom: 28px;">
+          <!-- Luz ambiente traseira difusa (Backdrop Glow) -->
+          <div style="
+            position: absolute;
+            top: 20px;
+            width: 260px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(27, 152, 224, 0.2) 0%, rgba(0, 100, 148, 0.08) 50%, transparent 80%);
+            filter: blur(36px);
+            pointer-events: none;
+          "></div>
+
+          <!-- Logo Mark com Glow Suave -->
+          <div style="animation: linear-pulse 3s ease-in-out infinite; margin-bottom: 24px; position: relative; z-index: 1;">
             <img
               src="cachly-logo-branco-transparente_v2.png"
               alt="Cachly"
-              style="max-width: 230px; width: 100%; height: auto; filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));"
+              style="max-width: 210px; width: 100%; height: auto;"
             />
           </div>
 
-          <!-- Spinner Moderno com Glow -->
+          <!-- Barra Laser Ultrafina (Linear / Vercel Beam Loader) -->
           <div style="
-            width: 44px;
-            height: 44px;
-            border: 3px solid rgba(255, 255, 255, 0.12);
-            border-top: 3px solid #1b98e0;
-            border-right: 3px solid #1b98e0;
-            border-radius: 50%;
-            animation: cachly-spin 0.85s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
-            box-shadow: 0 0 18px rgba(27, 152, 224, 0.35);
-            margin-bottom: 22px;
-          "></div>
+            width: 190px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 18px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+          ">
+            <div style="
+              position: absolute;
+              inset: 0;
+              width: 50%;
+              background: linear-gradient(90deg, transparent 0%, #1b98e0 50%, #ffffff 80%, #1b98e0 95%, transparent 100%);
+              animation: laser-beam 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+              box-shadow: 0 0 10px #1b98e0;
+            "></div>
+          </div>
 
           <div style="font-size: 1.15rem; font-weight: 600; letter-spacing: 0.3px; color: #ffffff; margin-bottom: 6px;">
             Iniciando o Cachly...
           </div>
 
-          <div style="font-size: 0.88rem; color: #a5c3d4; font-weight: 400; max-width: 320px; line-height: 1.4;">
+          <div style="
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+          ">
             Sistemas Digitais & Arquitetura de Computadores
           </div>
         </div>
 
-        <!-- Card de Aviso Acadêmico / Free Tier Discreto -->
+        <!-- Terminal Status Pill no Rodapé (Vercel Console Style) -->
         <div style="
-          max-width: 460px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          max-width: 480px;
           width: 100%;
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          padding: 12px 18px;
-          box-sizing: border-box;
-          color: rgba(232, 241, 242, 0.8);
-          font-size: 0.74rem;
-          line-height: 1.45;
-          text-align: center;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-          animation: cachly-fade-in 1.2s ease-out;
+          animation: linear-fade 1s cubic-bezier(0.16, 1, 0.3, 1);
         ">
-          <div style="font-weight: 600; color: #1b98e0; margin-bottom: 3px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-            <span>ℹ️</span> Ambiente de Portfólio & Demonstração Acadêmica
+          <div style="
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            padding: 5px 14px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+          ">
+            <span style="
+              width: 6px;
+              height: 6px;
+              background: #10b981;
+              border-radius: 50%;
+              box-shadow: 0 0 8px #10b981;
+              animation: pulse-dot 2s ease-in-out infinite;
+            "></span>
+            <span>Ambiente de Portfólio & Demonstração Acadêmica</span>
           </div>
-          Este projeto utiliza infraestrutura em nuvem na camada gratuita (Render & Neon). Em caso de primeiro acesso após período de inatividade, o servidor pode levar até 40 segundos para despertar. Agradecemos a compreensão!
+
+          <div style="
+            font-size: 0.73rem;
+            color: #64748b;
+            line-height: 1.45;
+            text-align: center;
+            max-width: 440px;
+          ">
+            Este projeto utiliza infraestrutura em nuvem na camada gratuita. Em caso de primeiro acesso após período de inatividade, o servidor pode levar até 40 segundos para despertar. Agradecemos a compreensão!
+          </div>
         </div>
       </div>
     </app-root>
