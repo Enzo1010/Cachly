@@ -150,7 +150,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Qualquer bloco da memória principal pode ser armazenado em qualquer linha livre da cache.",
                         "A memória cache é dividida em conjuntos de vias, e o bloco pode ocupar qualquer via de um conjunto.",
                         "Os blocos são alocados sequencialmente na cache sem função de mapeamento prévia."
-                )
+                ),
+                1
         );
 
         Questao q2 = criarQuestao(catDireto,
@@ -162,7 +163,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Tag e Deslocamento apenas, dispensando o campo de Índice.",
                         "Conjunto (Set), Via e Deslocamento (Offset).",
                         "Página virtual, Quadro físico e Deslocamento (Offset)."
-                )
+                ),
+                3
         );
 
         Questao q3 = criarQuestao(catDireto,
@@ -174,7 +176,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Ocorre quando todas as linhas da cache estão cheias e a capacidade total é saturada.",
                         "Ocorre quando a memória principal opera em velocidade maior que a cache, congestionando o barramento.",
                         "Ocorre quando o algoritmo LRU falha na predição do próximo endereço acessado."
-                )
+                ),
+                2
         );
 
         // --- Categoria 2: Totalmente Associativo ---
@@ -192,7 +195,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Possui circuito de hardware muito mais simples e barato de construir do que o mapeamento direto.",
                         "O tempo de acesso (hit time) é menor devido à ausência de comparadores de tag.",
                         "Não requer nenhuma política de substituição (como LRU ou FIFO) quando a cache fica cheia."
-                )
+                ),
+                4
         );
 
         Questao q5 = criarQuestao(catTotalmente,
@@ -204,7 +208,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Tag, Índice e Deslocamento, onde o índice aponta o bloco na memória principal.",
                         "Índice e Offset apenas, pois a tag é desnecessária quando a busca é total.",
                         "Número da Via, Tag e Offset de byte."
-                )
+                ),
+                2
         );
 
         Questao q6 = criarQuestao(catTotalmente,
@@ -216,7 +221,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Porque a taxa de acertos do totalmente associativo decresce conforme o número de linhas aumenta.",
                         "Porque o protocolo de coerência MESI é matematicamente incompatível com mapeamento totalmente associativo.",
                         "Porque não é possível calcular os bits de deslocamento quando a cache possui mais de 64 linhas."
-                )
+                ),
+                1
         );
 
         // --- Categoria 3: Associativo por Conjunto ---
@@ -234,7 +240,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Cada bloco da RAM mapeia para N posições fixas e contíguas de memória principal.",
                         "A cache possui N linhas no total, funcionando como uma fila circular FIFO.",
                         "O processador executa N acessos em paralelo antes de consultar a memória principal."
-                )
+                ),
+                3
         );
 
         Questao q8 = criarQuestao(catConjunto,
@@ -246,7 +253,8 @@ public class DataSeeder implements CommandLineRunner {
                         "64 conjuntos e 6 bits de Índice.",
                         "4 conjuntos e 2 bits de Índice.",
                         "32 conjuntos e 5 bits de Índice."
-                )
+                ),
+                4
         );
 
         Questao q9 = criarQuestao(catConjunto,
@@ -258,7 +266,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Elimina os misses compulsórios, porém duplica o tamanho do campo de Offset.",
                         "Diminui o tamanho da Tag, mas inviabiliza o uso de algoritmos de substituição.",
                         "Aumenta a taxa de misses por capacidade, embora simplifique o circuito."
-                )
+                ),
+                2
         );
 
         // --- Categoria 4: Políticas de Substituição ---
@@ -276,7 +285,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Localidade Espacial, descartando o bloco com endereço mais distante no barramento.",
                         "Localidade Sequencial, descartando o bloco que foi inserido primeiro na cache.",
                         "Localidade Aleatória, escolhendo uma linha através de gerador pseudo-randômico."
-                )
+                ),
+                1
         );
 
         Questao q11 = criarQuestao(catSubstituicao,
@@ -288,7 +298,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Substitui o bloco que teve o menor número total de acessos desde a inicialização.",
                         "Substitui o bloco que causou o maior número de colisões de barramento.",
                         "Atualiza a prioridade a cada hit, protegendo blocos acessados recentemente."
-                )
+                ),
+                4
         );
 
         Questao q12 = criarQuestao(catSubstituicao,
@@ -300,7 +311,8 @@ public class DataSeeder implements CommandLineRunner {
                         "Porque o LRU armazena todos os blocos na memória Stack do sistema operacional com ponteiro SP.",
                         "Porque o FIFO requer mais bits de hardware do que o LRU para armazenar timestamps.",
                         "Porque o LRU nunca realiza substituição em caso de hit na cache."
-                )
+                ),
+                3
         );
 
         // =========================================================================
@@ -433,7 +445,7 @@ public class DataSeeder implements CommandLineRunner {
 
     private Questao criarQuestao(Categoria categoria, String enunciado, DificuldadeQuestao dificuldade,
                                  int xpBase, String explicacao, String alternativaCorretaTxt,
-                                 List<String> alternativasErradasTxt) {
+                                 List<String> alternativasErradasTxt, int posicaoCorreta) {
         Questao q = new Questao();
         q.setCategoria(categoria);
         q.setEnunciado(enunciado);
@@ -442,25 +454,24 @@ public class DataSeeder implements CommandLineRunner {
         q.setExplicacao(explicacao);
         q.setAtiva(true);
 
-        short ordem = 1;
-        Alternativa correta = new Alternativa();
-        correta.setTexto(alternativaCorretaTxt);
-        correta.setCorreta(true);
-        correta.setOrdem(ordem++);
-        correta.setQuestao(q);
-        correta.setAtiva(true);
-
         List<Alternativa> lista = new ArrayList<>();
-        lista.add(correta);
+        int erradaIdx = 0;
+        int totalAlternativas = alternativasErradasTxt.size() + 1;
 
-        for (String erradaTxt : alternativasErradasTxt) {
-            Alternativa errada = new Alternativa();
-            errada.setTexto(erradaTxt);
-            errada.setCorreta(false);
-            errada.setOrdem(ordem++);
-            errada.setQuestao(q);
-            errada.setAtiva(true);
-            lista.add(errada);
+        for (int i = 1; i <= totalAlternativas; i++) {
+            Alternativa alt = new Alternativa();
+            alt.setQuestao(q);
+            alt.setAtiva(true);
+            alt.setOrdem((short) i);
+
+            if (i == posicaoCorreta) {
+                alt.setTexto(alternativaCorretaTxt);
+                alt.setCorreta(true);
+            } else {
+                alt.setTexto(alternativasErradasTxt.get(erradaIdx++));
+                alt.setCorreta(false);
+            }
+            lista.add(alt);
         }
 
         q.setAlternativas(lista);
