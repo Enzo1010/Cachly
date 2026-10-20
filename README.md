@@ -6,9 +6,9 @@
   [![Java](https://img.shields.io/badge/Java-21-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://adoptium.net/)
   [![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?style=flat-square&logo=spring&logoColor=white)](https://spring.io/projects/spring-boot)
   [![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular&logoColor=white)](https://angular.dev/)
-  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/download/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/download/)
   [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-  ![Tests](https://img.shields.io/badge/Tests-194_passing-brightgreen?style=flat-square)
+  ![Tests](https://img.shields.io/badge/Tests-automated-blue?style=flat-square)
 
   <br/>
 
@@ -63,9 +63,9 @@ O núcleo da proposta é a convergência entre **rigor técnico** e **design de 
 | **Recuperação de Senha por E-mail** | Fluxo seguro de redefinição de credenciais via token temporário com envio transacional via Google Apps Script. |
 | **Engine de Gamificação** | Sistema de XP com cálculo de níveis, ofensivas diárias (*streaks*) sob consistência transacional com Lock Pessimista antecipado e Liga Semanal com agendador (`RankingScheduler`). |
 | **Análise de Desempenho** | Dashboard com gráfico de radar de domínio conceitual, identificação da categoria de menor rendimento e intervenção pedagógica que guia o aluno para o simulador. |
-| **Segurança e Sessões** | Autenticação JWT via cookies seguros `HttpOnly` + `SameSite=Strict`, proteção nativa contra CSRF, controle de perfil por roles (`ALUNO` e `ADMINISTRADOR`) e revogação imediata de sessões via controle de versão de token (`versaoToken`). |
+| **Segurança e Sessões** | Autenticação JWT via cookie `HttpOnly` + `Secure` + `SameSite=Strict`, RBAC para `ALUNO` e `ADMINISTRADOR` e revogação de tokens por `versaoToken`. O CSRF do Spring está desabilitado; a mitigação atual depende de a aplicação permanecer no mesmo site e do atributo `SameSite=Strict`. |
 
-> **Nota sobre o Escopo Atual:** As funcionalidades de **Liga Semanal** e **Conquistas** estão completamente desenvolvidas e 100% funcionais na camada de backend (incluindo o agendador e lógicas de gamificação). Contudo, devido ao controle do tamanho do projeto para a entrega, as telas correspondentes foram intencionalmente desativadas na interface visual desta versão.
+> **Nota sobre o Escopo Atual:** A **Liga Semanal** possui endpoints e agendador no backend, mas sua rota está desativada na interface. **Conquistas** possui somente uma tela desativada com dados mockados; não há endpoint ou persistência de conquistas no backend.
 
 ---
 
@@ -106,7 +106,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 │  └──┴──────────────────────────────────────────────────────┴───┘  │
 │                            │                                      │
 │  ┌─────────────────────────▼───────────────────┐                  │
-│  │  PostgreSQL 15 / 16                         │                  │
+│  │  PostgreSQL 15 (Docker Compose)             │                  │
 │  └─────────────────────────────────────────────┘                  │
 └───────────────────────────────────────────────────────────────────┘
 ```
@@ -117,11 +117,11 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 
 ### Decisões de Design e Arquitetura (ADRs)
 
-- **Autenticação via Cookies Seguros (`HttpOnly` + `SameSite=Strict`)**: Documentada na [ADR-001](docs/decisions/ADR-001-autenticacao-samesite-cookies.md). O JWT reside em cookie com flag `HttpOnly`, tornando-o inacessível via JavaScript (imunidade a XSS) e `SameSite=Strict`, impedindo envio em contextos cruzados (proteção robusta contra CSRF).
-- **Revogação Instantânea Stateless (`versaoToken`)**: Documentada na [ADR-002](docs/decisions/ADR-002-revogacao-jwt-versao-token.md). Resolve a limitação de expiração passiva do JWT: ao alterar a senha ou revogar sessões, a coluna `versao_token` na entidade `Usuario` é incrementada. Tokens anteriores com claim `iat` desatualizada são rejeitados imediatamente no `SecurityFilter`.
+- **Autenticação via Cookies Seguros (`HttpOnly` + `SameSite=Strict`)**: Documentada na [ADR-001](docs/decisions/ADR-001-autenticacao-samesite-cookies.md). O JWT não pode ser lido por JavaScript por causa de `HttpOnly`; isso reduz o impacto de roubo de token por XSS, mas não elimina o risco de XSS. `SameSite=Strict` é a mitigação de CSRF adotada enquanto frontend e API permanecem no mesmo site.
+- **Revogação de Sessões por `versaoToken`**: Documentada na [ADR-002](docs/decisions/ADR-002-revogacao-jwt-versao-token.md). Ao alterar a senha ou revogar sessões, a coluna `versao_token` é atualizada. Tokens anteriores são recusados pelo `SecurityFilter`, com tolerância deliberada de até um segundo para a precisão temporal da claim `iat`.
 - **Processamento do Simulador via Snapshots**: A engine do simulador de cache processa cada passo da sequência de acessos à memória no backend usando operadores bitwise nativos (`>>>`, `&`, `<<`) e devolve ao frontend um array imutável de deltas e explicações didáticas.
 - **Controle de Concorrência por Lock Pessimista Antecipado**: A verificação de duplicidade e atualização do XP/ofensiva do usuário utiliza `SELECT ... FOR UPDATE` (via `@Lock(LockModeType.PESSIMISTIC_WRITE)` do JPA) antecipado no início das transações de resposta e desafios, eliminando *race conditions* e prevenindo erros de concorrência ou duplicação de pontuação.
-- **Integridade de Dados por Exclusão Lógica**: Questões e alternativas nunca são removidas fisicamente. A flag `ativa = false` preserva o histórico de tentativas e métricas retroativas.
+- **Integridade de Dados por Exclusão Lógica**: No fluxo administrativo, questões, categorias e alternativas usam a flag `ativa = false`, preservando o histórico de tentativas e métricas retroativas. O seeder de demonstração, quando habilitado, limpa e recria os dados do cenário acadêmico.
 
 ---
 
@@ -132,12 +132,12 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 |---|---|---|
 | Java | 21 | Linguagem principal (LTS) |
 | Spring Boot | 4.1 | Framework base da aplicação |
-| Spring Security | 6.x | Autenticação JWT via cookie HttpOnly, filtros e RBAC |
-| Spring Data JPA | 3.x | Camada de persistência relacional |
-| PostgreSQL | 15 / 16 | Banco de dados relacional |
-| Flyway | 10.x | Versionamento e migração de schema (V1 a V19) |
-| SpringDoc OpenAPI | 2.x | Documentação interativa (Swagger UI) |
-| JUnit 5 + Mockito | — | Cobertura de testes automatizados (138 casos) |
+| Spring Security | 7.1 | Autenticação JWT via cookie HttpOnly, filtros e RBAC |
+| Spring Data JPA | 4.1 | Camada de persistência relacional |
+| PostgreSQL | 15 | Banco usado pelo Docker Compose |
+| Flyway | 12.4 | Versionamento e migração de schema (V1 a V19) |
+| SpringDoc OpenAPI | 3.1 | Documentação interativa (Swagger UI) |
+| JUnit 5 + Mockito | — | Testes automatizados de unidade, MVC, integração e concorrência |
 | Lombok | — | Redução de boilerplate |
 
 ### Frontend
@@ -212,14 +212,7 @@ Cachly/
 
 ## Qualidade e Cobertura de Testes
 
-A suíte de testes cobre os fluxos críticos de negócio com testes unitários e de integração no backend (Mockito, MockMvc) e testes unitários de componentes e serviços no frontend (Vitest).
-
-| Escopo | Tecnologia | Casos de Teste | Status |
-|---|---|:---:|:---:|
-| **Backend — Regras de Negócio, Gamificação, Simulador e Concorrência** | JUnit 5 + Mockito + Testes Concorrentes | 138 | Passing |
-| **Backend — Segurança JWT, RBAC, Revogação e Integração** | MockMvc + Spring Boot Test | Incluído | Passing |
-| **Frontend — Componentes, Estados, Formulários e Serviços** | Vitest + Angular TestBed | 56 | Passing |
-| **Total de Casos Automatizados** | — | **194** | **0 Failures** |
+A suíte combina testes unitários, MVC, integração e concorrência no backend, além de testes unitários de componentes e serviços no frontend. O resultado deve ser verificado no ambiente em que o projeto será executado; o backend depende de PostgreSQL nos testes de integração e inicializa o cliente HTTP do serviço de e-mail durante o contexto Spring.
 
 Para executar as suítes completas:
 

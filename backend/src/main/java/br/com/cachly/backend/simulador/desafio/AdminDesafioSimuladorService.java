@@ -2,17 +2,23 @@ package br.com.cachly.backend.simulador.desafio;
 
 import br.com.cachly.backend.comum.erro.ConflitoDeDadosException;
 import br.com.cachly.backend.comum.erro.RecursoNaoEncontradoException;
+import br.com.cachly.backend.comum.erro.RegraNegocioException;
+import br.com.cachly.backend.simulador.SimuladorCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
 public class AdminDesafioSimuladorService {
 
     private final DesafioSimuladorRepository repository;
+    private final SimuladorCacheService simuladorCacheService;
 
     @Transactional(readOnly = true)
     public List<DesafioCacheResponse> listarTodos() {
@@ -57,6 +63,8 @@ public class AdminDesafioSimuladorService {
     }
 
     private void atualizarEntidade(DesafioSimulador entidade, DesafioSimuladorRequest request) {
+        validarConsistencia(request);
+
         entidade.setTitulo(request.titulo());
         entidade.setDescricao(request.descricao());
         entidade.setDificuldade(request.dificuldade());
@@ -73,6 +81,24 @@ public class AdminDesafioSimuladorService {
                 entidade.getOpcoes().add(new OpcaoDesafioEmbeddable(o.id(), o.texto()))
             );
         }
+    }
+
+    private void validarConsistencia(DesafioSimuladorRequest request) {
+        Set<String> idsNormalizados = new HashSet<>();
+        for (OpcaoDesafioRequest opcao : request.opcoes()) {
+            String idNormalizado = opcao.id().trim().toUpperCase(Locale.ROOT);
+            if (!idsNormalizados.add(idNormalizado)) {
+                throw new RegraNegocioException("As opções do desafio devem possuir identificadores únicos");
+            }
+        }
+
+        String opcaoCorretaNormalizada = request.opcaoCorretaId().trim().toUpperCase(Locale.ROOT);
+        if (!idsNormalizados.contains(opcaoCorretaNormalizada)) {
+            throw new RegraNegocioException("A opção correta deve corresponder a uma das opções do desafio");
+        }
+
+        // Reutiliza as regras de domínio do simulador antes de persistir a configuração.
+        simuladorCacheService.executarSimulacao(request.configuracao());
     }
 
     private DesafioCacheResponse converterParaResponse(DesafioSimulador entidade) {

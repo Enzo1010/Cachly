@@ -62,7 +62,7 @@ export class AdminDesafiosSimuladorFormComponent implements OnInit {
       titulo: ['', Validators.required],
       descricao: ['', Validators.required],
       dificuldade: ['FACIL', Validators.required],
-      xpRecompensa: [100, [Validators.required, Validators.min(0)]],
+      xpRecompensa: [100, [Validators.required, Validators.min(1)]],
       configuracao: this.fb.group({
         tamanhoCacheBytes: [64, [Validators.required, Validators.min(1)]],
         tamanhoBlocoBytes: [16, [Validators.required, Validators.min(1)]],
@@ -74,7 +74,7 @@ export class AdminDesafiosSimuladorFormComponent implements OnInit {
       pergunta: ['', Validators.required],
       opcoes: this.fb.array([]),
       opcaoCorretaId: ['', Validators.required],
-      dica: [''],
+      dica: ['', Validators.required],
       explicacao: ['', Validators.required]
     });
 

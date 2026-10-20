@@ -8,12 +8,12 @@ persistência, validações, simulação didática e integração com o PostgreS
 - Java 21 (LTS)
 - Spring Boot 4.1
 - Maven Wrapper
-- Spring Security 6 (JWT stateless via cookies HttpOnly com SameSite=Strict)
-- Spring Data JPA
+- Spring Security 7.1 (JWT stateless via cookie HttpOnly com SameSite=Strict)
+- Spring Data JPA 4.1
 - Bean Validation
-- PostgreSQL 15/16
-- Flyway (Migrations versionadas V1 a V19)
-- SpringDoc OpenAPI (Swagger UI)
+- PostgreSQL 15 (imagem utilizada pelo Docker Compose)
+- Flyway 12.4 (migrations versionadas V1 a V19)
+- SpringDoc OpenAPI 3.1 (Swagger UI)
 - JUnit 5, Mockito e testes de concorrência multithreaded
 
 O pacote base da aplicação é:
@@ -66,7 +66,7 @@ A autenticação é stateless baseada em token JWT transmitido via cookie seguro
 
 | Perfil          | Descrição e Permissões |
 |-----------------|------------------------|
-| `ADMINISTRADOR` | Gestão de conteúdo pedagógico: criação, edição e ativação/desativação lógica de categorias, questões e desafios do simulador. |
+| `ADMINISTRADOR` | Gestão de conteúdo pedagógico: criação, edição e ativação/desativação lógica de categorias e questões; criação, edição e exclusão física de desafios do simulador. |
 | `ALUNO`         | Resolução de questões técnicas, submissão de desafios no simulador, consulta de desempenho, histórico e participação no ranking. |
 
 - Rotas administrativas exigem `@PreAuthorize("hasRole('ADMINISTRADOR')")`.
@@ -96,7 +96,7 @@ O backend aceita requisições das origens configuradas em `SecurityConfig.java`
 | Método | Endpoint                    | Descrição                                                              | Acesso      |
 |--------|-----------------------------|------------------------------------------------------------------------|-------------|
 | `POST` | `/api/auth/login`           | Autentica usuário e define cookie `token` (`HttpOnly`, `SameSite=Strict`) | Público     |
-| `POST` | `/api/auth/logout`          | Invalida o cookie de sessão                                           | Público     |
+| `POST` | `/api/auth/logout`          | Remove o cookie de sessão                                             | Autenticado |
 | `GET`  | `/api/auth/me`              | Retorna dados do usuário autenticado atual                             | Autenticado |
 | `POST` | `/api/auth/alterar-senha`   | Altera senha e revoga tokens anteriores                                | Autenticado |
 | `POST` | `/api/auth/revogar-sessoes` | Revoga todas as sessões ativas via incremento de `versaoToken`         | Autenticado |
@@ -117,6 +117,7 @@ O backend aceita requisições das origens configuradas em `SecurityConfig.java`
 |---------|----------------------------------|-----------------------------------|---------------|
 | `POST`  | `/api/categorias`                | Cadastra uma categoria            | **ADMIN**     |
 | `GET`   | `/api/categorias`                | Lista categorias ativas           | Autenticado   |
+| `GET`   | `/api/categorias/admin/todas`    | Lista todas as categorias         | **ADMIN**     |
 | `GET`   | `/api/categorias/{id}`           | Busca categoria por ID            | Autenticado   |
 | `PUT`   | `/api/categorias/{id}`           | Atualiza uma categoria            | **ADMIN**     |
 | `PATCH` | `/api/categorias/{id}/desativar` | Desativação lógica de categoria   | **ADMIN**     |

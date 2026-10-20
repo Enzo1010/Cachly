@@ -32,7 +32,7 @@ classDiagram
     class DificuldadeQuestao {
         <<Enumeration>>
         FACIL
-        MEDIA
+        MEDIO
         DIFICIL
     }
 
@@ -56,6 +56,8 @@ classDiagram
         +Integer diasOfensiva
         +LocalDate dataUltimaOfensiva
         +Long versaoToken
+        +String tokenReset
+        +OffsetDateTime tokenResetExpiraEm
         +OffsetDateTime criadoEm
         +OffsetDateTime atualizadoEm
     }
@@ -86,10 +88,34 @@ classDiagram
         +LocalDate dataSemana
     }
 
+    class Comentario {
+        +Long id
+        +String conteudo
+        +Integer upvotes
+    }
+
+    class DesafioSimulador {
+        +String id
+        +String titulo
+        +String descricao
+        +Integer xpRecompensa
+        +String opcaoCorretaId
+        +String dica
+        +String explicacao
+    }
+
+    class OpcaoDesafioEmbeddable {
+        <<Embeddable>>
+        +String id
+        +String texto
+    }
+
     %% Herança (Auditoria)
     EntidadeAuditavel <|-- Categoria
     EntidadeAuditavel <|-- Questao
     EntidadeAuditavel <|-- Alternativa
+    EntidadeAuditavel <|-- Comentario
+    EntidadeAuditavel <|-- DesafioSimulador
 
     %% Composição do Conteúdo
     Categoria "1" *-- "*" Questao : possui
@@ -100,15 +126,18 @@ classDiagram
     Usuario "1" --> "*" TentativaQuestao : realiza
     TentativaQuestao "*" --> "1" Questao : avalia
     TentativaQuestao "*" --> "1" Alternativa : selecionada
+    Questao "1" --> "*" Comentario : recebe
+    Usuario "1" --> "*" Comentario : publica
 
     %% Gamificação e Conta
     Usuario --> PerfilUsuario : perfil
     Usuario "1" --> "*" DesafioConcluido : conclui
     Usuario "1" --> "*" RankingSemanalHistorico : histórico
+    DesafioSimulador "1" *-- "*" OpcaoDesafioEmbeddable : opções
 ```
 
 ## Notas da Arquitetura de Dados
 
-- **EntidadeAuditavel**: Fornece de forma transparente rastreabilidade (quem criou/atualizou e quando) para entidades de gerenciamento de conteúdo (Categoria, Questão e Alternativa).
+- **EntidadeAuditavel**: Fornece de forma transparente rastreabilidade (quem criou/atualizou e quando) para Categoria, Questão, Alternativa, Comentário e Desafio do Simulador.
 - **DesafioConcluido e TentativaQuestao**: Representam o histórico de aprendizagem e engajamento do aluno. A proteção transacional pessimista (Lock no `Usuario`) atua antes da inserção nessas tabelas para evitar inflacionamento de XP.
-- **Exclusão Lógica**: Entidades core utilizam a propriedade `ativa` (Boolean) em vez de deleção física, preservando as integridades referenciais históricas.
+- **Exclusão Lógica**: Categorias, questões e alternativas usam a propriedade `ativa` (Boolean) no fluxo administrativo. Desafios do simulador são removidos fisicamente pelo endpoint administrativo.

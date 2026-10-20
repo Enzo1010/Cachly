@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 )
 @SecurityScheme(
         name = "bearerAuth",
-        description = "Autenticação via JWT (Bearer token). Faça o login para obter o token.",
+        description = "Autenticação via JWT. No fluxo web, o login define o cookie HttpOnly token; clientes de API podem informar o JWT como Bearer.",
         scheme = "bearer",
         type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT",
