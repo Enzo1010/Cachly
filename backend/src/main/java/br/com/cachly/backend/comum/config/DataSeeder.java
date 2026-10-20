@@ -18,7 +18,6 @@ import br.com.cachly.backend.usuario.Usuario;
 import br.com.cachly.backend.usuario.UsuarioRepository;
 import br.com.cachly.backend.usuario.aluno.RankingSemanalHistorico;
 import br.com.cachly.backend.usuario.aluno.RankingSemanalHistoricoRepository;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -38,8 +37,8 @@ import java.util.List;
  *
  * NOTA: Todos os dados gerados aqui são FICTÍCIOS para fins de demonstração acadêmica e testes manuais.
  * Este seeder é executado exclusivamente em perfis que NÃO sejam de teste (@Profile("!test")).
- * O comportamento intencional é limpar e repopular o banco a cada inicialização para garantir
- * um ambiente previsível e completo para bancas e apresentações.
+ * O seeder só popula bancos vazios. Em reinicializações e deploys posteriores, os dados
+ * existentes são preservados integralmente.
  */
 @Component
 @Profile("!test")
@@ -56,16 +55,12 @@ public class DataSeeder implements CommandLineRunner {
     private final br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioSimuladorRepository;
     private final PasswordEncoder passwordEncoder;
     private final XpService xpService;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Limpar dados anteriores para manter o cenário limpo e previsível a cada inicialização
-        limparDadosAntigos();
-
-        if (usuarioRepository.findByEmailIgnoreCase("aluno@teste.com").isPresent()) {
-            return; // Idempotência defensiva
+        if (bancoJaPossuiDados()) {
+            return;
         }
 
         // =========================================================================
@@ -407,16 +402,11 @@ public class DataSeeder implements CommandLineRunner {
         System.out.println("=================================================================================");
     }
 
-    private void limparDadosAntigos() {
-        entityManager.createNativeQuery("DELETE FROM comentarios").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM desafios_concluidos").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM desafios_simulador").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM ranking_semanal_historico").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM tentativas_questao").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM alternativas").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM questoes").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM categorias").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM usuarios WHERE email IN ('admin@cachly.com', 'aluno@teste.com', 'beatriz@teste.com', 'carlos@teste.com', 'daniela@teste.com')").executeUpdate();
+    private boolean bancoJaPossuiDados() {
+        return usuarioRepository.count() > 0
+                || categoriaRepository.count() > 0
+                || questaoRepository.count() > 0
+                || desafioSimuladorRepository.count() > 0;
     }
 
     private Usuario criarUsuario(String nome, String email, String senhaPlana, PerfilUsuario perfil,

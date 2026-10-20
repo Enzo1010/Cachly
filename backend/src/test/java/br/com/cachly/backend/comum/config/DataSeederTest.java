@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import br.com.cachly.backend.resposta.XpService;
-import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
@@ -44,8 +43,7 @@ class DataSeederTest {
                 DesafioConcluidoRepository desafioConcluidoRepository,
                 br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioSimuladorRepository,
                 PasswordEncoder passwordEncoder,
-                XpService xpService,
-                EntityManager entityManager
+                XpService xpService
         ) {
             return new DataSeeder(
                     usuarioRepository,
@@ -57,8 +55,7 @@ class DataSeederTest {
                     desafioConcluidoRepository,
                     desafioSimuladorRepository,
                     passwordEncoder,
-                    xpService,
-                    entityManager
+                    xpService
             );
         }
     }
@@ -190,7 +187,13 @@ class DataSeederTest {
         var paginaHistorico = rankingSemanalHistoricoRepository.findByDataSemana(datasHistorico.get(0), org.springframework.data.domain.PageRequest.of(0, 10));
         assertEquals(4, paginaHistorico.getTotalElements(), "Snapshot anterior deve conter os 4 alunos");
 
-        // 7. Teste de Idempotência: rodar novamente não deve quebrar nem duplicar dados
+        // 7. Teste de Idempotência: rodar novamente preserva os dados já criados
+        long quantidadeUsuarios = usuarioRepository.count();
+        long quantidadeCategorias = categoriaRepository.count();
+        long quantidadeQuestoes = questaoRepository.count();
         assertDoesNotThrow(() -> dataSeeder.run());
+        assertEquals(quantidadeUsuarios, usuarioRepository.count());
+        assertEquals(quantidadeCategorias, categoriaRepository.count());
+        assertEquals(quantidadeQuestoes, questaoRepository.count());
     }
 }

@@ -23,7 +23,7 @@ Com o Docker e Docker Desktop instalados, você pode subir o banco de dados, o b
    ```
    *(Adicione a flag `-d` para rodar em segundo plano desanexado do terminal).*
 
-   > **Atenção — dados de demonstração:** por escolha de projeto, o `DataSeeder` é ativado em todo perfil diferente de `test`. A cada inicialização ele remove e recria questões, categorias, tentativas, comentários, desafios e históricos do cenário acadêmico, além de criar contas de demonstração. Não utilize este Compose com dados reais que precisem ser preservados.
+   > **Dados de demonstração:** em perfis diferentes de `test`, o `DataSeeder` popula somente um banco vazio com contas, questões e desafios de demonstração. Em reinicializações e deploys posteriores, se já houver usuários, categorias, questões ou desafios, ele não altera nem remove os dados existentes.
 
 3. **Acessar os serviços**:
    - **Frontend (Aplicação Web):** [http://localhost](http://localhost)
@@ -72,7 +72,7 @@ export JWT_SECRET="segredo-de-desenvolvimento-local-do-cachly-com-tamanho-sufici
 ```
 A API ficará disponível em `http://localhost:8080`.
 
-> **Atenção — dados de demonstração:** sem o perfil `test`, a inicialização local também executa o `DataSeeder` e recria o cenário acadêmico. Use somente banco descartável ou de desenvolvimento.
+> **Dados de demonstração:** sem o perfil `test`, a inicialização local executa o `DataSeeder` apenas quando o banco está vazio. Dados já persistidos são preservados em reinicializações e deploys.
 
 **Para rodar os testes do backend:**
 - `.\mvnw.cmd test` (Windows)

@@ -121,7 +121,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 - **Revogação de Sessões por `versaoToken`**: Documentada na [ADR-002](docs/decisions/ADR-002-revogacao-jwt-versao-token.md). Ao alterar a senha ou revogar sessões, a coluna `versao_token` é atualizada. Tokens anteriores são recusados pelo `SecurityFilter`, com tolerância deliberada de até um segundo para a precisão temporal da claim `iat`.
 - **Processamento do Simulador via Snapshots**: A engine do simulador de cache processa cada passo da sequência de acessos à memória no backend usando operadores bitwise nativos (`>>>`, `&`, `<<`) e devolve ao frontend um array imutável de deltas e explicações didáticas.
 - **Controle de Concorrência por Lock Pessimista Antecipado**: A verificação de duplicidade e atualização do XP/ofensiva do usuário utiliza `SELECT ... FOR UPDATE` (via `@Lock(LockModeType.PESSIMISTIC_WRITE)` do JPA) antecipado no início das transações de resposta e desafios, eliminando *race conditions* e prevenindo erros de concorrência ou duplicação de pontuação.
-- **Integridade de Dados por Exclusão Lógica**: No fluxo administrativo, questões, categorias e alternativas usam a flag `ativa = false`, preservando o histórico de tentativas e métricas retroativas. O seeder de demonstração, quando habilitado, limpa e recria os dados do cenário acadêmico.
+- **Integridade de Dados por Exclusão Lógica**: No fluxo administrativo, questões, categorias e alternativas usam a flag `ativa = false`, preservando o histórico de tentativas e métricas retroativas. O seeder de demonstração preenche apenas bancos vazios e preserva os dados existentes em reinicializações e deploys.
 
 ---
 
