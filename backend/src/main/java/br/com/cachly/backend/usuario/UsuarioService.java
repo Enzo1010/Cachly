@@ -30,7 +30,7 @@ public class UsuarioService {
     private final XpService xpService;
     private final EmailService emailService;
 
-    @org.springframework.beans.factory.annotation.Value("${app.frontend-url:http://localhost:4200}")
+    @org.springframework.beans.factory.annotation.Value("${app.frontend-url:https://cachly.vercel.app}")
     private String frontendUrl;
 
     @Transactional
