@@ -76,11 +76,10 @@
                 A nova senha é obrigatória.
               } @else if (
                 formulario.controls.novaSenha.touched &&
-                formulario.controls.novaSenha.hasError('minlength')
+                (formulario.controls.novaSenha.hasError('minlength') ||
+                  formulario.controls.novaSenha.hasError('maxlength'))
               ) {
-                A senha deve ter no mínimo 8 caracteres.
-              } @else {
-                <span class="dica-campo">A senha deve ter entre 8 e 72 caracteres.</span>
+                A senha deve ter entre 8 e 72 caracteres.
               }
             </div>
           </div>
