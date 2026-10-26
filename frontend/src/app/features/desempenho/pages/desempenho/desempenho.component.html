@@ -1,156 +1,118 @@
-<section class="pagina-desempenho">
-  <!-- Cabecalho Personalizado -->
-  <header class="header-visao-geral">
-    <div>
-      <h1 class="titulo-pagina">Meu Desempenho</h1>
-      <p class="subtitulo">{{ obterMensagemIncentivo() }}</p>
-    </div>
+<section class="pagina-desempenho" aria-labelledby="titulo-desempenho">
+  <header class="cabecalho">
+    <p class="cabecalho__apoio">Seu plano de estudo</p>
+    <h1 id="titulo-desempenho">Meu Desempenho</h1>
+    <p>Veja suas tentativas e escolha o próximo passo com base no que você praticou.</p>
   </header>
 
-  <!-- Nível 1: Visão Geral / KPIs -->
-  @if (desempenho(); as d) {
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon icon-precisao">
-          <i class="pi pi-bullseye"></i>
-        </div>
-        <div class="kpi-dados">
-          <span class="kpi-valor">{{ d.taxaAcerto }}%</span>
-          <span class="kpi-label">Precisão Geral</span>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-icon icon-questoes">
-          <i class="pi pi-list"></i>
-        </div>
-        <div class="kpi-dados">
-          <span class="kpi-valor">{{ d.acertos }} <span class="kpi-minitext">/ {{ d.totalTentativas }}</span></span>
-          <span class="kpi-label">Questões Acertadas</span>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-icon icon-ofensiva">
-          <i class="pi pi-bolt"></i>
-        </div>
-        <div class="kpi-dados">
-          <span class="kpi-valor">{{ usuario()?.diasOfensiva ?? 0 }} <span class="kpi-minitext">dias</span></span>
-          <span class="kpi-label">Ofensiva Atual</span>
-        </div>
-      </div>
+  @if (carregando()) {
+    <div class="estado" role="status" aria-live="polite">
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+      <p>Carregando seu desempenho...</p>
     </div>
-  }
+  } @else if (erro()) {
+    <div class="estado" role="alert">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <h2>Não foi possível carregar seu desempenho</h2>
+      <p>Tente novamente para ver suas recomendações e tentativas.</p>
+      <button pButton type="button" (click)="carregarDesempenho()">
+        <i class="pi pi-refresh" aria-hidden="true"></i> Tentar novamente
+      </button>
+    </div>
+  } @else if (desempenho(); as dados) {
+    <section class="proximo-passo" aria-labelledby="titulo-proximo-passo">
+      <div class="proximo-passo__icone" aria-hidden="true"><i class="pi pi-compass"></i></div>
+      <div class="proximo-passo__conteudo">
+        <p class="proximo-passo__apoio">Seu próximo passo</p>
 
-  <!-- Nível 2: Insights Acionáveis -->
-  <div class="insights-grid">
-    <!-- Ponto Forte -->
-    @if (categoriaMaisForte(); as forte) {
-      <div class="insight-card forte">
-        <div class="insight-badge badge-sucesso">Ponto Forte</div>
-        <h3>{{ forte.categoriaNome }}</h3>
-        <p>Você tem <strong>{{ forte.taxaAcerto }}%</strong> de precisão nesta área. Excelente domínio de conteúdo!</p>
-      </div>
-    }
-
-    <!-- Ponto de Atenção -->
-    @if (categoriaMaisFraca(); as fraca) {
-      <div class="insight-card fraca">
-        <div class="insight-badge badge-alerta">Precisa de Atenção</div>
-        <h3>{{ fraca.categoriaNome }}</h3>
-        <p>Sua taxa de acerto é de <strong>{{ fraca.taxaAcerto }}%</strong>. Recomendamos focar as próximas sessões aqui.</p>
-        <p-button label="Praticar Agora" icon="pi pi-play" routerLink="/estudar" styleClass="p-button-outlined p-button-danger mt-3"></p-button>
-      </div>
-    }
-  </div>
-
-  <!-- Nível 3: Detalhamento -->
-  <div class="detalhamento-container">
-    
-    <!-- Esquerda: Tabela de Barras (Desempenho por Categoria) -->
-    <article class="cartao-categorias" aria-labelledby="titulo-categorias">
-      <header>
-        <h2 id="titulo-categorias"><i class="pi pi-chart-bar" aria-hidden="true"></i> Raio-X por Categoria</h2>
-      </header>
-
-      <div class="lista-categorias">
-        @for (categoria of categorias(); track categoria.categoriaId) {
-          <div class="linha-categoria">
-            <div class="linha-categoria__cabecalho">
-              <span>{{ categoria.categoriaNome }}</span>
-              <span class="taxa-label">{{ categoria.taxaAcerto }}%</span>
-            </div>
-            <div
-              class="barra"
-              role="progressbar"
-              [attr.aria-valuenow]="categoria.taxaAcerto"
-              aria-valuemin="0"
-              aria-valuemax="100"
-              [attr.aria-label]="categoria.categoriaNome + ': ' + categoria.taxaAcerto + '% de acerto'"
-            >
-              <div
-                class="barra__preenchimento"
-                [class]="'barra__preenchimento--' + nivelDesempenho(categoria.taxaAcerto)"
-                [style.width.%]="categoria.taxaAcerto"
-              ></div>
-            </div>
-            <div class="categoria-meta">
-              {{ categoria.acertos }} acertos de {{ categoria.totalTentativas }} tentativas
-            </div>
-          </div>
-        }
-
-        @if (desempenho() && categorias().length === 0) {
-          <div class="empty-state">
-            <i class="pi pi-inbox"></i>
-            <p>Responda questões para gerar o seu raio-x de conhecimento.</p>
-          </div>
-        }
-      </div>
-    </article>
-
-    <!-- Direita: Tutor Inteligente (Módulo Atual) -->
-    @if (moduloAtual(); as modulo) {
-      <article class="cartao-modulo" aria-labelledby="titulo-modulo">
-        <header>
-          <div class="header-tutor">
-            <i class="pi pi-compass" aria-hidden="true"></i>
-            <div>
-              <span class="tutor-label">Tutor Inteligente recomenda:</span>
-              <h2 id="titulo-modulo">{{ modulo.nomeCategoria }}</h2>
-            </div>
-          </div>
-        </header>
-
-        <div class="modulo-progresso-container">
-          <div class="barra-modulo-header">
-            <span>Progresso da Trilha</span>
-            <strong>{{ modulo.progresso }}%</strong>
-          </div>
-          <div
-            class="barra-modulo"
-            role="progressbar"
-            [attr.aria-valuenow]="modulo.progresso"
-            aria-valuemin="0"
-            aria-valuemax="100"
+        @if (dados.totalTentativas === 0) {
+          <h2 id="titulo-proximo-passo">Comece por uma categoria</h2>
+          <p>Responda algumas questões. Depois, você verá aqui em quais temas vale focar.</p>
+          <a pButton class="proximo-passo__acao" routerLink="/estudar">
+            Escolher o que estudar <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+        } @else if (categoriaParaRevisar(); as categoria) {
+          <h2 id="titulo-proximo-passo">Revise {{ categoria.categoriaNome }}</h2>
+          <p>
+            Você acertou <strong>{{ categoria.acertos }} de {{ categoria.totalTentativas }}</strong>
+            tentativas neste tema. Pratique mais questões desta categoria para reforçar o conteúdo.
+          </p>
+          <a
+            pButton
+            class="proximo-passo__acao"
+            routerLink="/estudar"
+            [queryParams]="{ categoriaId: categoria.categoriaId }"
           >
-            <span class="barra-modulo__trilha">
-              <span class="barra-modulo__preenchimento" [style.width.%]="modulo.progresso"></span>
-            </span>
-          </div>
+            Praticar {{ categoria.categoriaNome }}
+            <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+        } @else {
+          <h2 id="titulo-proximo-passo">Continue explorando os temas</h2>
+          <p>
+            Seus dados ainda não apontam uma categoria para revisão prioritária. Escolha um tema e
+            continue praticando.
+          </p>
+          <a pButton class="proximo-passo__acao" routerLink="/estudar">
+            Escolher uma categoria <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+        }
+      </div>
+    </section>
+
+    @if (dados.totalTentativas > 0) {
+      <section class="resumo" aria-label="Resumo das suas tentativas">
+        <div class="resumo__item">
+          <strong>{{ dados.totalTentativas }}</strong>
+          <span>Tentativas</span>
+        </div>
+        <div class="resumo__item">
+          <strong>{{ dados.acertos }}</strong>
+          <span>Acertos</span>
+        </div>
+        <div class="resumo__item">
+          <strong>{{ dados.taxaAcerto }}%</strong>
+          <span>Taxa de acerto</span>
+        </div>
+      </section>
+
+      <section class="categorias" aria-labelledby="titulo-categorias">
+        <div class="categorias__cabecalho">
+          <h2 id="titulo-categorias">Como você foi em cada categoria</h2>
+          <p>
+            Os percentuais representam acertos nas tentativas feitas, não a conclusão de uma trilha.
+          </p>
         </div>
 
-        <ul class="lista-topicos">
-          @for (topico of modulo.topicos; track topico.nome) {
-            <li [class]="'topico topico--' + topico.status">
-              <div class="topico-icone">
-                <i [class]="'pi ' + iconeTopico(topico.status)" aria-hidden="true"></i>
+        <div class="categorias__lista">
+          @for (categoria of categorias(); track categoria.categoriaId) {
+            <article class="categoria">
+              <div class="categoria__principal">
+                <div>
+                  <h3>{{ categoria.categoriaNome }}</h3>
+                  <p>
+                    {{ categoria.acertos }} acertos em {{ categoria.totalTentativas }} tentativas
+                  </p>
+                </div>
+                <strong>{{ categoria.taxaAcerto }}%</strong>
               </div>
-              <span class="topico-nome">{{ topico.nome }}</span>
-            </li>
+              <div class="categoria__barra" aria-hidden="true">
+                <span [style.width.%]="categoria.taxaAcerto"></span>
+              </div>
+              <a
+                class="categoria__acao"
+                routerLink="/estudar"
+                [queryParams]="{ categoriaId: categoria.categoriaId }"
+                [attr.aria-label]="'Praticar ' + categoria.categoriaNome"
+              >
+                Praticar este tema <i class="pi pi-arrow-right" aria-hidden="true"></i>
+              </a>
+            </article>
           }
-        </ul>
-      </article>
+        </div>
+        <p class="categorias__nota">
+          A sugestão de revisão considera temas com pelo menos 3 tentativas.
+        </p>
+      </section>
     }
-  </div>
+  }
 </section>

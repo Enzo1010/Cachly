@@ -1,359 +1,273 @@
 .pagina-desempenho {
-  padding: 2rem;
-  max-width: 1200px;
+  max-width: 1080px;
   margin: 0 auto;
-  font-family: var(--font-family, system-ui, sans-serif);
+  padding: clamp(1rem, 3vw, 2rem);
+  color: #102e45;
 }
 
-.header-visao-geral {
-  margin-bottom: 2rem;
+.cabecalho {
+  margin-bottom: 1.75rem;
 
-  .titulo-pagina {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #102e45;
-    margin: 0 0 0.5rem 0;
-  }
-
-  .subtitulo {
-    font-size: 1.1rem;
-    color: #667d8c;
-    margin: 0;
-  }
-}
-
-/* --- KPIs Grid --- */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.kpi-card {
-  background: #fff;
-  border: 1px solid #e5edef;
-  border-radius: 1.25rem;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  box-shadow: 0 4px 15px rgba(20, 64, 79, 0.03);
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(20, 64, 79, 0.06);
-  }
-
-  .kpi-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    i {
-      font-size: 1.75rem;
-    }
-  }
-
-  .icon-precisao { background: #e0f2fe; color: #0284c7; }
-  .icon-questoes { background: #f3e8ff; color: #9333ea; }
-  .icon-ofensiva { background: #ffedd5; color: #ea580c; }
-
-  .kpi-dados {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .kpi-valor {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #102e45;
-    line-height: 1.2;
-
-    .kpi-minitext {
-      font-size: 1rem;
-      color: #8c9ba5;
-      font-weight: 600;
-    }
-  }
-
-  .kpi-label {
-    font-size: 0.95rem;
-    color: #667d8c;
-    font-weight: 500;
-  }
-}
-
-/* --- Insights Grid --- */
-.insights-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.insight-card {
-  border-radius: 1.25rem;
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-
-  &.forte {
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border: 1px solid #bbf7d0;
-  }
-
-  &.fraca {
-    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-    border: 1px solid #fecaca;
-  }
-
-  .insight-badge {
-    display: inline-block;
-    padding: 0.4rem 1rem;
-    border-radius: 2rem;
+  &__apoio {
+    margin: 0 0 0.35rem;
+    color: #006494;
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 1rem;
   }
 
-  .badge-sucesso { background: #16a34a; color: #fff; }
-  .badge-alerta { background: #dc2626; color: #fff; }
+  h1 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    line-height: 1.15;
+  }
 
-  h3 {
-    margin: 0 0 0.75rem 0;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #102e45;
+  p:last-child {
+    margin: 0;
+    color: #506777;
+    line-height: 1.5;
+  }
+}
+
+.estado {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  background: #fff;
+  border: 1px solid #dce7ec;
+  border-radius: 1.25rem;
+  text-align: center;
+
+  > i {
+    color: #006494;
+    font-size: 2rem;
+  }
+
+  h2,
+  p {
+    margin: 0;
   }
 
   p {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.5;
-    color: #3b4c56;
+    color: #506777;
   }
 }
 
-/* --- Detalhamento Container (Raio-X & Tutor) --- */
-.detalhamento-container {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 2rem;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* --- Cartões Genericos --- */
-.cartao-categorias, .cartao-modulo {
-  background: #fff;
-  border: 1px solid #e5edef;
-  border-radius: 1.25rem;
-  padding: 2rem;
-  box-shadow: 0 4px 15px rgba(20, 64, 79, 0.03);
-
-  header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #f0f4f7;
-    padding-bottom: 1rem;
-
-    h2 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #102e45;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-
-      i { color: #247ba0; }
-    }
-  }
-}
-
-/* --- Raio-X Categorias --- */
-.lista-categorias {
+.proximo-passo {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: 1.5rem;
-}
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border-radius: 1.25rem;
+  background: linear-gradient(115deg, #103149, #006494);
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(16, 49, 73, 0.14);
 
-.linha-categoria {
-  &__cabecalho {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 0.5rem;
-    
-    span:first-child {
-      font-weight: 600;
-      color: #102e45;
-      font-size: 1rem;
-    }
-    
-    .taxa-label {
-      font-weight: 700;
-      color: #3b4c56;
-    }
+  &__icone {
+    display: grid;
+    flex: 0 0 3.25rem;
+    height: 3.25rem;
+    place-items: center;
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 1.5rem;
   }
 
-  .categoria-meta {
-    font-size: 0.85rem;
-    color: #8c9ba5;
-    margin-top: 0.4rem;
-  }
-}
-
-.barra {
-  height: 12px;
-  background: #f0f4f7;
-  border-radius: 1rem;
-  overflow: hidden;
-
-  &__preenchimento {
-    height: 100%;
-    border-radius: 1rem;
-    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-
-    &--alta { background: linear-gradient(90deg, #22c55e, #16a34a); }
-    &--media { background: linear-gradient(90deg, #f59e0b, #d97706); }
-    &--baixa { background: linear-gradient(90deg, #ef4444, #dc2626); }
-  }
-}
-
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #8c9ba5;
-
-  i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
+  &__conteudo {
+    max-width: 700px;
   }
 
-  p { margin: 0; }
-}
-
-/* --- Tutor Inteligente (Módulo) --- */
-.header-tutor {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  i {
-    font-size: 2rem;
-    color: #f76c14;
-    background: #fff7ef;
-    padding: 0.75rem;
-    border-radius: 50%;
-  }
-
-  .tutor-label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #f76c14;
+  &__apoio {
+    margin: 0 0 0.5rem;
+    color: #bce5f6;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.2rem;
   }
 
   h2 {
-    font-size: 1.25rem !important;
-    border: none !important;
-    padding: 0 !important;
+    margin: 0 0 0.7rem;
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+  }
+
+  p:not(.proximo-passo__apoio) {
+    margin: 0 0 1.4rem;
+    color: #e3f0f6;
+    line-height: 1.55;
+  }
+
+  strong {
+    color: #fff;
+  }
+
+  &__acao {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fff;
+    color: #064e73;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      background: #e6f3f9;
+      color: #064e73;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #f76c14;
+      outline-offset: 3px;
+    }
   }
 }
 
-.modulo-progresso-container {
-  margin-bottom: 2rem;
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 2.5rem;
 
-  .barra-modulo-header {
+  &__item {
     display: flex;
-    justify-content: space-between;
-    font-size: 0.95rem;
-    color: #667d8c;
-    margin-bottom: 0.5rem;
-
-    strong { color: #102e45; }
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #dce7ec;
+    border-radius: 1rem;
+    background: #fff;
   }
 
-  .barra-modulo {
-    height: 8px;
-    
-    &__trilha {
-      display: block;
-      height: 100%;
-      background: #f0f4f7;
-      border-radius: 1rem;
-      overflow: hidden;
-    }
-    
-    &__preenchimento {
-      display: block;
-      height: 100%;
-      background: #247ba0;
-      border-radius: 1rem;
-      transition: width 0.8s ease-out;
-    }
+  strong {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+
+  span {
+    color: #506777;
+    font-size: 0.9rem;
   }
 }
 
-.lista-topicos {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.categorias {
+  &__cabecalho {
+    margin-bottom: 1.25rem;
+
+    h2 {
+      margin: 0 0 0.4rem;
+      font-size: 1.4rem;
+    }
+
+    p {
+      margin: 0;
+      color: #506777;
+      line-height: 1.5;
+    }
+  }
+
+  &__lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+    gap: 1rem;
+  }
+
+  &__nota {
+    margin: 1rem 0 0;
+    color: #506777;
+    font-size: 0.85rem;
+  }
+}
+
+.categoria {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #dce7ec;
+  border-radius: 1rem;
+  background: #fff;
 
-  .topico {
+  &__principal {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
     gap: 1rem;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    border: 1px solid #e5edef;
-    transition: all 0.2s;
 
-    .topico-icone {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
+    h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
     }
 
-    .topico-nome {
-      font-weight: 500;
-      color: #3b4c56;
+    p {
+      margin: 0;
+      color: #506777;
+      font-size: 0.88rem;
     }
 
-    &--concluido {
-      background: #f8fafc;
-      border-color: #f0f4f7;
-      i { color: #16a34a; }
-      .topico-nome { color: #8c9ba5; text-decoration: line-through; }
+    strong {
+      color: #006494;
+      font-size: 1.25rem;
+      white-space: nowrap;
+    }
+  }
+
+  &__barra {
+    height: 0.55rem;
+    margin: 1.25rem 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #e7eff3;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #1684b5;
+    }
+  }
+
+  &__acao {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    margin-top: auto;
+    color: #005a84;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
     }
 
-    &--atual {
-      background: #e0f2fe;
-      border-color: #bae6fd;
-      i { color: #0284c7; }
-      .topico-nome { color: #0369a1; font-weight: 700; }
+    &:focus-visible {
+      outline: 3px solid #f76c14;
+      outline-offset: 4px;
+      border-radius: 0.2rem;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .proximo-passo {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .resumo {
+    gap: 0.5rem;
+
+    &__item {
+      padding: 0.9rem;
     }
 
-    &--bloqueado {
-      opacity: 0.6;
-      i { color: #cbd5e1; }
+    strong {
+      font-size: 1.4rem;
+    }
+
+    span {
+      font-size: 0.78rem;
     }
   }
 }
