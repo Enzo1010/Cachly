@@ -59,4 +59,18 @@ describe('SimuladorFormComponent', () => {
       })
     );
   });
+
+  it('deve exigir número de vias e política de substituição no mapeamento associativo por conjunto', () => {
+    const emitSpy = vi.spyOn(component.simular, 'emit');
+
+    component.form.controls.mapeamento.setValue('CONJUNTO_ASSOCIATIVO');
+    expect(component.form.controls.numeroVias.value).toBe(2);
+    expect(component.form.valid).toBe(true);
+
+    component.form.controls.numeroVias.setValue(null);
+    expect(component.form.invalid).toBe(true);
+
+    component.onSubmit();
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
 });

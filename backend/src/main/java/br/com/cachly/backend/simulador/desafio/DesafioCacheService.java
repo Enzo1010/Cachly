@@ -32,12 +32,14 @@ public class DesafioCacheService {
     private final DesafioConcluidoRepository desafioConcluidoRepository;
     private final DesafioSimuladorRepository desafioRepository;
 
+    @Transactional(readOnly = true)
     public List<DesafioCacheResponse> listarDesafios() {
         return desafioRepository.findAll().stream()
                 .map(this::paraResponse)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public DesafioCacheResponse obterDesafio(String id) {
         DesafioSimulador desafio = buscarDesafioOuFalhar(id);
         return paraResponse(desafio);

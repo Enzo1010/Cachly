@@ -132,21 +132,29 @@ export class SimuladorFormComponent {
         const substituicaoCtrl = this.form.controls.substituicao;
         
         if (mapeamento === 'DIRETO') {
+          numeroViasCtrl.clearValidators();
           numeroViasCtrl.disable();
           numeroViasCtrl.setValue(null);
+          substituicaoCtrl.clearValidators();
           substituicaoCtrl.disable();
           substituicaoCtrl.setValue(null);
         } else if (mapeamento === 'TOTALMENTE_ASSOCIATIVO') {
+          numeroViasCtrl.clearValidators();
           numeroViasCtrl.disable();
           numeroViasCtrl.setValue(null);
+          substituicaoCtrl.setValidators([Validators.required]);
           substituicaoCtrl.enable();
           if (!substituicaoCtrl.value) substituicaoCtrl.setValue('LRU');
         } else {
+          numeroViasCtrl.setValidators([Validators.required]);
           numeroViasCtrl.enable();
           if (!numeroViasCtrl.value) numeroViasCtrl.setValue(2);
+          substituicaoCtrl.setValidators([Validators.required]);
           substituicaoCtrl.enable();
           if (!substituicaoCtrl.value) substituicaoCtrl.setValue('LRU');
         }
+        numeroViasCtrl.updateValueAndValidity();
+        substituicaoCtrl.updateValueAndValidity();
       });
   }
 
@@ -157,6 +165,16 @@ export class SimuladorFormComponent {
     
     if (val.tamanhoBlocoBytes > val.tamanhoCacheBytes) {
       this.notificacoes.add({ severity: 'error', summary: 'Erro de Configuração', detail: 'O Bloco não pode ser maior que a Cache!' });
+      return;
+    }
+
+    if (val.mapeamento === 'CONJUNTO_ASSOCIATIVO' && !val.numeroVias) {
+      this.notificacoes.add({ severity: 'error', summary: 'Erro de Configuração', detail: 'Selecione o número de vias para o mapeamento associativo por conjunto!' });
+      return;
+    }
+
+    if (val.mapeamento !== 'DIRETO' && !val.substituicao) {
+      this.notificacoes.add({ severity: 'error', summary: 'Erro de Configuração', detail: 'Selecione uma política de substituição!' });
       return;
     }
     

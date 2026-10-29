@@ -147,6 +147,14 @@ export class SimuladorStateService {
   }
 
   setModo(novoModo: 'livre' | 'desafio'): void {
+    if (this.modo() !== novoModo) {
+      this.simulacao.set(null);
+      this.passoAtualIndex.set(0);
+      this.error.set(null);
+      this.resultadoDesafio.set(null);
+      this.opcaoSelecionada.set(null);
+      this.erroDesafio.set(null);
+    }
     this.modo.set(novoModo);
     if (novoModo === 'desafio' && this.desafios().length === 0) {
       this.carregarDesafios();

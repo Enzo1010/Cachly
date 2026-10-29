@@ -60,6 +60,9 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         if (bancoJaPossuiDados()) {
+            if (desafioSimuladorRepository.count() == 0) {
+                criarDesafiosSimulador();
+            }
             return;
         }
 

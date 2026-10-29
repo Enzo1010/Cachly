@@ -103,7 +103,12 @@ class RespostaConcorrenciaIntegracaoTest {
 
     @AfterEach
     void tearDown() {
-        tentativaQuestaoRepository.deleteAll();
+        if (aluno != null && aluno.getId() != null) {
+            var tentativasDoAluno = tentativaQuestaoRepository
+                    .findByUsuarioIdOrderByRespondidaEmDesc(aluno.getId(), org.springframework.data.domain.Pageable.unpaged())
+                    .getContent();
+            tentativaQuestaoRepository.deleteAll(tentativasDoAluno);
+        }
         if (questao != null && questao.getId() != null) {
             alternativaRepository.deleteAll(questao.getAlternativas());
             questaoRepository.deleteById(questao.getId());
