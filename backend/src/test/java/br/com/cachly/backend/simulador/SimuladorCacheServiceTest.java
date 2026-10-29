@@ -191,18 +191,19 @@ class SimuladorCacheServiceTest {
     }
 
     @Test
-    @DisplayName("Deve explicar Miss de Conflito no Mapeamento Direto sem mencionar FIFO ou LRU e sem citar Conjunto")
+    @DisplayName("Deve explicar Miss Compulsório e Miss de Conflito (3 Cs) no Mapeamento Direto sem mencionar FIFO ou LRU e sem citar Conjunto")
     void deveExplicarMissDeConflitoNoMapeamentoDiretoSemMencionarPoliticaSubstituicao() {
         // Cache de 8 bytes, bloco de 4 bytes = 2 linhas (linhas 0 e 1)
-        // Endereço 0 (bloco 0 -> linha 0, offset 0, tag 0)
-        // Endereço 8 (bloco 2 -> linha 0, offset 0, tag 1) -> colide na linha 0
+        // Endereço 0 (bloco 0 -> linha 0, offset 0, tag 0) -> 1º acesso ao bloco 0 (Compulsório em linha vazia)
+        // Endereço 8 (bloco 2 -> linha 0, offset 0, tag 1) -> 1º acesso ao bloco 2 (Compulsório substituindo linha ocupada)
+        // Endereço 0 (bloco 0 -> linha 0, offset 0, tag 0) -> 2º acesso ao bloco 0 após evicção por colisão (Miss de Conflito)
         SimulacaoRequest request = new SimulacaoRequest(
                 8,
                 4,
                 null,
                 TipoMapeamento.DIRETO,
                 null,
-                List.of(0, 8)
+                List.of(0, 8, 0)
         );
 
         SimulacaoResponse response = service.executarSimulacao(request);
@@ -211,14 +212,70 @@ class SimuladorCacheServiceTest {
         assertTrue(passo1.explicacao().contains("Verificando a Linha 0 para a Tag 0"));
         assertFalse(passo1.explicacao().contains("Conjunto"));
 
-        PassoSimulacaoResponse passoConflito = response.passos().get(1);
+        PassoSimulacaoResponse passoCompulsorioComSubstituicao = response.passos().get(1);
+        assertFalse(passoCompulsorioComSubstituicao.hit());
+        assertEquals(0, passoCompulsorioComSubstituicao.blocoSubstituido());
+        assertTrue(passoCompulsorioComSubstituicao.explicacao().contains("Verificando a Linha 0 para a Tag 1"));
+        assertTrue(passoCompulsorioComSubstituicao.explicacao().contains("MISS COMPULSÓRIO!"));
+        assertTrue(passoCompulsorioComSubstituicao.explicacao().contains("No Mapeamento Direto não há algoritmo de substituição"));
+
+        PassoSimulacaoResponse passoConflito = response.passos().get(2);
         assertFalse(passoConflito.hit());
         assertEquals(0, passoConflito.blocoSubstituido());
-        assertTrue(passoConflito.explicacao().contains("Verificando a Linha 0 para a Tag 1"));
+        assertTrue(passoConflito.explicacao().contains("Verificando a Linha 0 para a Tag 0"));
         assertTrue(passoConflito.explicacao().contains("MISS DE CONFLITO!"));
         assertTrue(passoConflito.explicacao().contains("No Mapeamento Direto não há algoritmo de substituição"));
         assertFalse(passoConflito.explicacao().contains("FIFO"), "Explicação não deve mencionar FIFO em mapeamento direto");
         assertFalse(passoConflito.explicacao().contains("LRU"), "Explicação não deve mencionar LRU em mapeamento direto");
         assertFalse(passoConflito.explicacao().contains("Conjunto"), "Explicação de mapeamento direto não deve citar Conjunto");
+    }
+
+    @Test
+    @DisplayName("Deve classificar primeiro acesso a 64 como Miss Compulsório e retorno a 0 como Miss de Conflito (64B, bloco 2B)")
+    void deveClassificarPrimeiroAcessoAoBlocoComoCompulsorioMesmoEmLinhaOcupada() {
+        SimulacaoRequest request = new SimulacaoRequest(
+                64,
+                2,
+                null,
+                TipoMapeamento.DIRETO,
+                null,
+                List.of(0, 1, 2, 63, 64, 0)
+        );
+
+        SimulacaoResponse response = service.executarSimulacao(request);
+
+        // Passo 5 (índice 4): endereço 64 (bloco 32) nunca foi acessado antes -> Miss Compulsório
+        PassoSimulacaoResponse passo64 = response.passos().get(4);
+        assertFalse(passo64.hit());
+        assertEquals(0, passo64.blocoSubstituido());
+        assertTrue(passo64.explicacao().contains("MISS COMPULSÓRIO!"));
+        assertFalse(passo64.explicacao().contains("MISS DE CONFLITO!"));
+
+        // Passo 6 (índice 5): endereço 0 (bloco 0) já foi acessado antes e sofreu colisão -> Miss de Conflito
+        PassoSimulacaoResponse passoRetorno0 = response.passos().get(5);
+        assertFalse(passoRetorno0.hit());
+        assertEquals(0, passoRetorno0.blocoSubstituido());
+        assertTrue(passoRetorno0.explicacao().contains("MISS DE CONFLITO!"));
+    }
+
+    @Test
+    @DisplayName("Deve respeitar seleção de Mapeamento Direto na explicação mesmo quando há apenas 1 linha (cache 8B, bloco 8B)")
+    void deveRespeitarMapeamentoDiretoComUmaUnicaLinha() {
+        SimulacaoRequest request = new SimulacaoRequest(
+                8,
+                8,
+                null,
+                TipoMapeamento.DIRETO,
+                null,
+                List.of(0, 8)
+        );
+
+        SimulacaoResponse response = service.executarSimulacao(request);
+
+        assertEquals(1, response.totalLinhas());
+        assertEquals(0, response.bitsIndice());
+        String explicacaoPasso1 = response.passos().get(0).explicacao();
+        assertTrue(explicacaoPasso1.contains("Verificando a Linha 0 para a Tag 0"));
+        assertFalse(explicacaoPasso1.contains("Totalmente Associativo"));
     }
 }

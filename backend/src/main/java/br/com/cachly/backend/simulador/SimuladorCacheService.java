@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Serviço responsável por executar a simulação didática da memória cache.
@@ -58,6 +60,9 @@ public class SimuladorCacheService {
         // Ele incrementa a cada evento de acesso ou substituição de bloco na cache.
         long tempoGlobal = 0;
 
+        // Conjunto de blocos já referenciados para classificar Miss Compulsório (3 Cs) com precisão.
+        Set<Integer> blocosAcessados = new HashSet<>();
+
         for (int i = 0; i < request.enderecos().size(); i++) {
             int passoNumero = i + 1;
             int endereco = request.enderecos().get(i);
@@ -65,7 +70,10 @@ public class SimuladorCacheService {
             int offsetMask = (bitsOffset >= 32) ? -1 : (1 << bitsOffset) - 1;
             int offset = endereco & offsetMask;
 
-            Integer indiceObj = bitsIndice == 0 ? null : (endereco >>> bitsOffset) & ((1 << bitsIndice) - 1);
+            int enderecoBloco = endereco >>> bitsOffset;
+            boolean primeiroAcessoAoBloco = blocosAcessados.add(enderecoBloco);
+
+            Integer indiceObj = bitsIndice == 0 ? null : enderecoBloco & ((1 << bitsIndice) - 1);
             int tag = endereco >>> (bitsOffset + bitsIndice);
 
             // Reduz o escopo de busca apenas para as linhas pertencentes ao conjunto calculado (ou todas se for totalmente associativo)
@@ -90,12 +98,10 @@ public class SimuladorCacheService {
             }
             explicacao.append(String.format(" e Offset = %d. ", offset));
             
-            if (indiceObj != null) {
-                if (mapeamento == TipoMapeamento.DIRETO) {
-                    explicacao.append(String.format("Verificando a Linha %d para a Tag %d... ", indiceObj, tag));
-                } else {
-                    explicacao.append(String.format("Procurando pela Tag %d dentro do Conjunto %d... ", tag, indiceObj));
-                }
+            if (mapeamento == TipoMapeamento.DIRETO) {
+                explicacao.append(String.format("Verificando a Linha %d para a Tag %d... ", indice, tag));
+            } else if (mapeamento == TipoMapeamento.CONJUNTO_ASSOCIATIVO) {
+                explicacao.append(String.format("Procurando pela Tag %d dentro do Conjunto %d... ", tag, indice));
             } else {
                 explicacao.append(String.format("Procurando pela Tag %d em toda a cache (Totalmente Associativo)... ", tag));
             }
@@ -121,17 +127,29 @@ public class SimuladorCacheService {
                     explicacao.append(String.format("MISS! A Tag %d não foi encontrada. Fomos buscar na RAM e trouxemos o bloco para a Linha %d, que estava VAZIA. Esse é um 'Miss Compulsório' (inevitável no primeiro acesso ao bloco).", tag, linhaAlvo.indiceLinha));
                 } else if (mapeamento == TipoMapeamento.DIRETO) {
                     linhaAlvo = candidatoLinhas.get(0);
-                    explicacao.append(String.format("MISS DE CONFLITO! A Tag %d mapeia diretamente para a Linha %d, que já estava ocupada pela Tag %d. No Mapeamento Direto não há algoritmo de substituição (a posição na cache é unívoca): o bloco anterior foi compulsoriamente substituído.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    if (primeiroAcessoAoBloco) {
+                        explicacao.append(String.format("MISS COMPULSÓRIO! A Tag %d nunca havia sido acessada antes e mapeia diretamente para a Linha %d, que já estava ocupada pela Tag %d. No Mapeamento Direto não há algoritmo de substituição (a posição na cache é unívoca): o bloco anterior foi compulsoriamente substituído.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    } else {
+                        explicacao.append(String.format("MISS DE CONFLITO! A Tag %d mapeia diretamente para a Linha %d, que já estava ocupada pela Tag %d. No Mapeamento Direto não há algoritmo de substituição (a posição na cache é unívoca): o bloco anterior foi compulsoriamente substituído.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    }
                 } else if (substituicao == PoliticaSubstituicao.LRU) {
                     linhaAlvo = candidatoLinhas.stream()
                             .min(Comparator.comparingLong(l -> l.ultimaUtilizacao))
                             .orElseThrow();
-                    explicacao.append(String.format("MISS! A Tag %d não estava na cache e o conjunto estava CHEIO. A política LRU escolheu evictar a Linha %d (Tag antiga %d) por ser a menos usada recentemente. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    if (primeiroAcessoAoBloco) {
+                        explicacao.append(String.format("MISS COMPULSÓRIO! A Tag %d nunca havia sido acessada antes e o conjunto estava CHEIO. A política LRU escolheu evictar a Linha %d (Tag antiga %d) por ser a menos usada recentemente. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    } else {
+                        explicacao.append(String.format("MISS! A Tag %d não estava na cache e o conjunto estava CHEIO. A política LRU escolheu evictar a Linha %d (Tag antiga %d) por ser a menos usada recentemente. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    }
                 } else { 
                     linhaAlvo = candidatoLinhas.stream()
                             .min(Comparator.comparingLong(l -> l.ordemChegada))
                             .orElseThrow();
-                    explicacao.append(String.format("MISS! A Tag %d não estava na cache e o conjunto estava CHEIO. A política FIFO evictou a Linha %d (Tag antiga %d) por ser a mais antiga a ter entrado. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    if (primeiroAcessoAoBloco) {
+                        explicacao.append(String.format("MISS COMPULSÓRIO! A Tag %d nunca havia sido acessada antes e o conjunto estava CHEIO. A política FIFO evictou a Linha %d (Tag antiga %d) por ser a mais antiga a ter entrado. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    } else {
+                        explicacao.append(String.format("MISS! A Tag %d não estava na cache e o conjunto estava CHEIO. A política FIFO evictou a Linha %d (Tag antiga %d) por ser a mais antiga a ter entrado. O novo bloco tomou seu lugar.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    }
                 }
 
                 // Efetua a carga do novo bloco na linha alvo

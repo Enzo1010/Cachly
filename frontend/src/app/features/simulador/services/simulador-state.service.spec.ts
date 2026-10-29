@@ -121,4 +121,15 @@ describe('SimuladorStateService', () => {
     expect(service.simulacao()?.totalMisses).toBe(2);
     expect(mockSessaoService.atualizarAposResposta).toHaveBeenCalledWith(130, 2, 'Dev Junior');
   });
+
+  it('deve limpar simulação anterior ao alternar da simulação livre para o laboratório de desafios', () => {
+    service.simulacao.set(mockResultado.simulacao);
+    service.passoAtualIndex.set(0);
+
+    service.setModo('desafio');
+
+    expect(service.modo()).toBe('desafio');
+    expect(service.simulacao()).toBeNull();
+    expect(service.resultadoDesafio()).toBeNull();
+  });
 });

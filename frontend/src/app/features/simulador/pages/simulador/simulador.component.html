@@ -151,6 +151,12 @@
               </button>
             }
           </div>
+
+          @if (!state.desafioSelecionado() && state.erroDesafio()) {
+            <div style="margin-top: 1rem;">
+              <p-message severity="error" [text]="state.erroDesafio()!"></p-message>
+            </div>
+          }
         </div>
 
         <!-- Painel Ativo da Missão -->
@@ -273,7 +279,7 @@
       }
 
       <!-- ============== SIMULAÇÃO ATIVA ============== -->
-      @if (state.simulacao() && state.passoAtual()) {
+      @if (state.simulacao() && state.passoAtual() && (state.modo() === 'livre' || (state.desafioSelecionado() && state.resultadoDesafio()))) {
 
         @if (state.modo() === 'desafio') {
           <div class="desafio-sim-header sim-fadein">
