@@ -38,4 +38,5 @@ export interface RespostaResponse {
   readonly nivelAtual: number;
   readonly nomeNivel: string;
   readonly xpTotal: number;
+  readonly diasOfensiva?: number;
 }

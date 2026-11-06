@@ -39,7 +39,7 @@ Este projeto é desenvolvido como Trabalho de Projeto Integrador IV no âmbito d
 O estudo investiga o uso de plataformas educacionais aplicadas ao ensino de Sistemas Digitais e Arquitetura de Computadores, com foco em três eixos principais:
 
 1. **Facilitação do aprendizado ativo** — resolução de questões técnicas organizadas por categoria e dificuldade, com correção em tempo real e proteção estrita de gabarito no backend.
-2. **Rastreamento de desempenho e remediação ativa** — coleta de acertos, erros e mapeamento de fraquezas por conceito (gráfico de radar), sugerindo intervenções pedagógicas direcionadas ao laboratório.
+2. **Rastreamento de desempenho e remediação ativa** — coleta de acertos, erros e mapeamento visual de domínio por conceito, sugerindo intervenções pedagógicas direcionadas ao laboratório.
 3. **Simulação didática de hardware** — módulo de simulação de memória cache onde o estudante visualiza a decomposição binária, o comportamento passo a passo das linhas/conjuntos e compreende acertos (*hits*), faltas (*misses*), políticas de substituição e desafios práticos.
 
 ---
@@ -62,7 +62,7 @@ O núcleo da proposta é a convergência entre **rigor técnico** e **design de 
 | **Fórum de Dúvidas nas Questões** | Discussão colaborativa por questão, permitindo que estudantes publiquem dúvidas conceituais e atribuam upvotes para destacar as melhores respostas. |
 | **Recuperação de Senha por E-mail** | Fluxo seguro de redefinição de credenciais via token temporário com envio transacional via Google Apps Script. |
 | **Engine de Gamificação** | Sistema de XP com cálculo de níveis, ofensivas diárias (*streaks*) sob consistência transacional com Lock Pessimista antecipado e Liga Semanal com agendador (`RankingScheduler`). |
-| **Análise de Desempenho** | Dashboard com gráfico de radar de domínio conceitual, identificação da categoria de menor rendimento e intervenção pedagógica que guia o aluno para o simulador. |
+| **Análise de Desempenho** | Dashboard com barras de domínio conceitual por categoria, identificação da categoria de menor rendimento e intervenção pedagógica que guia o aluno para o estudo ou simulador. |
 | **Segurança e Sessões** | Autenticação JWT via cookie `HttpOnly` + `Secure` + `SameSite=Strict`, RBAC para `ALUNO` e `ADMINISTRADOR` e revogação de tokens por `versaoToken`. O CSRF do Spring está desabilitado; a mitigação atual depende de a aplicação permanecer no mesmo site e do atributo `SameSite=Strict`. |
 
 > **Nota sobre o Escopo Atual:** A **Liga Semanal** possui endpoints e agendador no backend, mas sua rota está desativada na interface. **Conquistas** possui somente uma tela desativada com dados mockados; não há endpoint ou persistência de conquistas no backend.
@@ -149,7 +149,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 | Chart.js | 4.x | Visualização gráfica (Hit/Miss e tendências) |
 | Angular Signals | 21 | Gerenciamento reativo de estado de alta performance |
 | SCSS | — | Estilização modular com design system proprietário |
-| Vitest | 4.x | Suíte de testes unitários ultrarrápida (66 casos) |
+| Vitest | 4.x | Suíte de testes unitários ultrarrápida (67 casos) |
 
 ### Infraestrutura & DevOps
 | Ferramenta | Uso |

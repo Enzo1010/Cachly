@@ -8,7 +8,7 @@ public record RespostaResponse(
         Integer xpConcedido,
         Integer nivelAtual,
         String nomeNivel,
-        Integer xpTotal
+        Integer xpTotal,
+        Integer diasOfensiva
 ) {
 }
-

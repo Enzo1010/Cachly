@@ -22,14 +22,20 @@ export class SessaoService {
     );
   }
 
-  atualizarAposResposta(xpTotal: number, nivel: number, nomeNivel: string): void {
+  atualizarAposResposta(
+    xpTotal: number,
+    nivel: number,
+    nomeNivel: string,
+    diasOfensiva?: number
+  ): void {
     const atual = this.usuarioAtual();
     if (atual) {
       this.usuarioAtual.set({
         ...atual,
         xpTotal,
         nivel,
-        nomeNivel
+        nomeNivel,
+        diasOfensiva: diasOfensiva ?? atual.diasOfensiva
       });
     }
   }

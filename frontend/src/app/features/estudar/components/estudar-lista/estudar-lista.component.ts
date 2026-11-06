@@ -72,7 +72,7 @@ import { SlicePipe } from '@angular/common';
               <div class="cta-icon"><i class="pi pi-play-circle"></i></div>
               <div>
                 <p class="cta-contagem"><strong>{{ state.questoes().length }}</strong> questões prontas</p>
-                <p class="cta-desc">Responda as questões para ganhar XP e subir de nível</p>
+                <p class="cta-desc">Responda em sequência ou clique diretamente em uma questão abaixo</p>
               </div>
             </div>
             <button class="cta-button" (click)="state.iniciarEstudo()">
@@ -81,10 +81,15 @@ import { SlicePipe } from '@angular/common';
             </button>
           </div>
 
-          <!-- Lista de questões (preview opcional para ver o que tem) -->
+          <!-- Lista de questões clicáveis -->
           <div class="questoes-lista">
             @for (q of state.questoes(); track q.id; let i = $index) {
-              <div class="questao-preview">
+              <button
+                type="button"
+                class="questao-preview"
+                (click)="state.iniciarEstudo(i)"
+                [attr.aria-label]="'Abrir questão ' + (i + 1)"
+              >
                 <div class="questao-numero">{{ i + 1 }}</div>
                 <div class="questao-body">
                   <div class="questao-badges">
@@ -93,7 +98,8 @@ import { SlicePipe } from '@angular/common';
                   </div>
                   <p class="questao-texto">{{ q.enunciado | slice:0:150 }}{{ q.enunciado.length > 150 ? '...' : '' }}</p>
                 </div>
-              </div>
+                <i class="pi pi-chevron-right questao-arrow" aria-hidden="true"></i>
+              </button>
             }
           </div>
         }
@@ -324,6 +330,7 @@ import { SlicePipe } from '@angular/common';
 
     .questao-preview {
       display: flex;
+      width: 100%;
       align-items: center;
       gap: 1.25rem;
       padding: 1.25rem 1.5rem;
@@ -331,7 +338,22 @@ import { SlicePipe } from '@angular/common';
       border: 1px solid #e5edef;
       border-radius: 1rem;
       box-shadow: 0 0.45rem 1.1rem rgba(20, 64, 79, 0.04);
-      transition: all 0.15s;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+    }
+    .questao-preview:hover {
+      border-color: #a8d4df;
+      box-shadow: 0 0.7rem 1.6rem rgba(20, 64, 79, 0.08);
+      transform: translateY(-1px);
+    }
+    .questao-preview:hover .questao-numero {
+      background: #006494;
+      color: #fff;
+    }
+    .questao-preview:hover .questao-arrow {
+      color: #006494;
+      transform: translateX(2px);
     }
 
     .questao-numero {
@@ -345,11 +367,18 @@ import { SlicePipe } from '@angular/common';
       color: #667d8c;
       font-weight: 800;
       font-size: 0.95rem;
+      transition: all 0.15s;
     }
 
     .questao-body {
       flex: 1;
       min-width: 0;
+    }
+
+    .questao-arrow {
+      color: #c5d0d6;
+      font-size: 0.95rem;
+      transition: all 0.15s;
     }
 
     .questao-badges {

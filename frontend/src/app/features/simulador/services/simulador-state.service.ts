@@ -208,11 +208,12 @@ export class SimuladorStateService {
         this.passoAtualIndex.set(0);
         this.carregandoVerificacao.set(false);
 
-        if (resultado.correto && resultado.xpGanho > 0 && this.sessao) {
+        if (this.sessao && ((resultado.correto && resultado.xpGanho > 0) || resultado.diasOfensiva !== undefined)) {
           this.sessao.atualizarAposResposta(
             resultado.xpTotalAtual,
             resultado.nivelAtual,
-            resultado.nomeNivel
+            resultado.nomeNivel,
+            resultado.diasOfensiva
           );
         }
       }),

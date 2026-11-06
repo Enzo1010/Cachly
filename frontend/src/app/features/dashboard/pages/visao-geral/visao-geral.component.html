@@ -14,16 +14,36 @@
   </section>
 
   <section class="estatisticas-academicas">
-    <!-- Gráfico de Radar: Visão Geral Pedagógica -->
+    <!-- Barras de Domínio por Conceito -->
     <div class="grafico-container">
       <h3 class="grafico-container__titulo">Seu Domínio em Arquitetura</h3>
-      <p class="grafico-container__subtitulo">Uma visão geral da sua taxa de acerto por conceito.</p>
+      <p class="grafico-container__subtitulo">Taxa de acerto por conceito estudado.</p>
 
-      @if (dadosGraficoRadar().labels.length > 0) {
-        <p-chart type="radar" [data]="dadosGraficoRadar()" [options]="opcoesGraficoRadar" height="300px"></p-chart>
+      @if (categoriasDominio().length > 0) {
+        <div class="dominio-lista">
+          @for (cat of categoriasDominio(); track cat.categoriaId) {
+            <div class="dominio-item">
+              <div class="dominio-item__topo">
+                <span class="dominio-item__nome">{{ cat.categoriaNome }}</span>
+                <div class="dominio-item__valores">
+                  <span class="dominio-item__contagem">{{ cat.acertos }}/{{ cat.totalTentativas }}</span>
+                  <strong class="dominio-item__taxa dominio-item__taxa--{{ nivelDominio(cat.taxaAcerto) }}">
+                    {{ cat.taxaAcerto }}%
+                  </strong>
+                </div>
+              </div>
+              <div class="dominio-item__trilha" aria-hidden="true">
+                <span
+                  class="dominio-item__preenchimento dominio-item__preenchimento--{{ nivelDominio(cat.taxaAcerto) }}"
+                  [style.width.%]="cat.taxaAcerto"
+                ></span>
+              </div>
+            </div>
+          }
+        </div>
       } @else {
         <div class="grafico-container__vazio">
-          Responda questões para gerar seu gráfico.
+          Responda questões para visualizar seu domínio por conceito.
         </div>
       }
     </div>

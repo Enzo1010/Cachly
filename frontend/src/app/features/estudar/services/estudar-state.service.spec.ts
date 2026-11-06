@@ -32,7 +32,6 @@ describe('EstudarStateService', () => {
   });
 
   it('deve formatar mensagens especificas de erro quando a API retornar 400 Bad Request com campos', () => {
-    // Prepara o state mockado com uma questao para satisfazer a checagem questaoAtiva() != null
     service.questoes.set([{
       id: 99,
       enunciado: 'Questão Teste',
@@ -42,14 +41,11 @@ describe('EstudarStateService', () => {
     }]);
     service.iniciarEstudo();
 
-    // Tenta submeter uma resposta
     service.responder(1);
 
-    // Intercepta a requisição na API
     const req = httpMock.expectOne('/api/questoes/99/respostas');
     expect(req.request.method).toBe('POST');
 
-    // Emula a resposta de erro customizada do backend (ApiExceptionHandler)
     const erroBackend = {
       erro: 'Bad Request',
       mensagem: 'Existem campos inválidos na requisição',
@@ -61,13 +57,11 @@ describe('EstudarStateService', () => {
 
     req.flush(erroBackend, { status: 400, statusText: 'Bad Request' });
 
-    // Avalia se o Signal de erro foi atualizado desempacotando as mensagens do dict "campos",
-    // em vez de usar a mensagem global ofuscada
     expect(service.error()).toBe('Erro de Validação: O ID da alternativa não existe | Usuário sem permissão para essa categoria');
     expect(service.respondendo()).toBe(false);
   });
 
-  it('deve processar resposta com sucesso e atualizar a sessão com nomeNivel correto (não undefined)', () => {
+  it('deve processar resposta com sucesso e atualizar a sessão com nomeNivel e diasOfensiva', () => {
     const spyAtualizar = vi.spyOn(sessaoService, 'atualizarAposResposta');
 
     service.questoes.set([{
@@ -93,7 +87,8 @@ describe('EstudarStateService', () => {
       xpConcedido: 10,
       nivelAtual: 2,
       nomeNivel: 'Dev Junior',
-      xpTotal: 110
+      xpTotal: 110,
+      diasOfensiva: 3
     };
 
     req.flush(respostaMock);
@@ -101,7 +96,7 @@ describe('EstudarStateService', () => {
     expect(service.resultadoResposta()).toEqual(respostaMock);
     expect(service.resultadoResposta()?.nomeNivel).toBe('Dev Junior');
     expect(spyAtualizar).toHaveBeenCalledTimes(1);
-    expect(spyAtualizar).toHaveBeenCalledWith(110, 2, 'Dev Junior');
+    expect(spyAtualizar).toHaveBeenCalledWith(110, 2, 'Dev Junior', 3);
     expect(spyAtualizar).not.toHaveBeenCalledWith(expect.anything(), expect.anything(), undefined);
     expect(service.respondendo()).toBe(false);
     expect(service.sessaoResumo()).toEqual({
@@ -109,5 +104,19 @@ describe('EstudarStateService', () => {
       acertos: 1,
       xpTotalGanho: 10
     });
+  });
+
+  it('deve iniciar o estudo diretamente no indice da questao selecionada', () => {
+    service.questoes.set([
+      { id: 1, enunciado: 'Q1', dificuldade: 'FACIL', xpBase: 10, alternativas: [] },
+      { id: 2, enunciado: 'Q2', dificuldade: 'MEDIA', xpBase: 20, alternativas: [] },
+      { id: 3, enunciado: 'Q3', dificuldade: 'DIFICIL', xpBase: 30, alternativas: [] }
+    ]);
+
+    service.iniciarEstudo(2);
+
+    expect(service.telaAtual()).toBe('RESOLUCAO');
+    expect(service.questaoAtualIndex()).toBe(2);
+    expect(service.questaoAtiva()?.id).toBe(3);
   });
 });

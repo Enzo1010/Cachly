@@ -89,9 +89,11 @@ export class EstudarStateService {
     });
   }
 
-  iniciarEstudo(): void {
-    if (this.questoes().length > 0) {
-      this.questaoAtualIndex.set(0);
+  iniciarEstudo(indiceInicial = 0): void {
+    const total = this.questoes().length;
+    if (total > 0) {
+      const indiceValido = Math.min(Math.max(0, indiceInicial), total - 1);
+      this.questaoAtualIndex.set(indiceValido);
       this.resultadoResposta.set(null);
       this.sessaoResumo.set({ questoesRespondidas: 0, acertos: 0, xpTotalGanho: 0 });
       this.telaAtual.set('RESOLUCAO');
@@ -121,8 +123,13 @@ export class EstudarStateService {
           xpTotalGanho: r.xpTotalGanho + res.xpConcedido
         }));
         
-        // Atualiza sessão global
-        this.sessao.atualizarAposResposta(res.xpTotal, res.nivelAtual, res.nomeNivel);
+        // Atualiza sessão global (incluindo ofensiva diária)
+        this.sessao.atualizarAposResposta(
+          res.xpTotal,
+          res.nivelAtual,
+          res.nomeNivel,
+          res.diasOfensiva
+        );
       },
       error: (err: HttpErrorResponse) => {
         this.respondendo.set(false);

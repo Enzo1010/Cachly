@@ -88,7 +88,7 @@ class SimuladorControllerTest {
                 new br.com.cachly.backend.simulador.desafio.ResultadoDesafioResponse(
                         true, "A", "Parabéns", 30,
                         new SimulacaoResponse(2, 2, 28, 4, 4, 1, 0, 1, 0.0, 100.0, List.of()),
-                        1, "Estagiário", 30
+                        1, "Estagiário", 30, 1
                 );
 
         when(desafioCacheService.verificarDesafio(any(), any(), any())).thenReturn(resultadoMock);

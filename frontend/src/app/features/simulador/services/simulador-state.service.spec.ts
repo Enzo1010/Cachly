@@ -119,7 +119,7 @@ describe('SimuladorStateService', () => {
     expect(mockSimuladorService.verificarDesafio).toHaveBeenCalledWith('cold-miss', { opcaoSelecionadaId: 'A' });
     expect(service.resultadoDesafio()?.correto).toBe(true);
     expect(service.simulacao()?.totalMisses).toBe(2);
-    expect(mockSessaoService.atualizarAposResposta).toHaveBeenCalledWith(130, 2, 'Dev Junior');
+    expect(mockSessaoService.atualizarAposResposta).toHaveBeenCalledWith(130, 2, 'Dev Junior', undefined);
   });
 
   it('deve limpar simulação anterior ao alternar da simulação livre para o laboratório de desafios', () => {

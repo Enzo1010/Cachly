@@ -2,8 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonDirective } from 'primeng/button';
-import { ChartModule } from 'primeng/chart';
-import type { ChartOptions } from 'chart.js';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 import { DesempenhoCategoriaResponse } from '../../../../shared/models/desempenho.model';
@@ -20,7 +18,7 @@ interface IndicadorVisaoGeral {
 
 @Component({
   selector: 'app-visao-geral',
-  imports: [ButtonDirective, ChartModule, RouterLink],
+  imports: [ButtonDirective, RouterLink],
   templateUrl: './visao-geral.component.html',
   styleUrl: './visao-geral.component.scss',
 })
@@ -53,6 +51,13 @@ export class VisaoGeralComponent {
     ];
   });
 
+  protected readonly categoriasDominio = computed<readonly DesempenhoCategoriaResponse[]>(() => {
+    const categorias = this.desempenho()?.estatisticasPorCategoria ?? [];
+    return [...categorias].sort(
+      (a, b) => b.taxaAcerto - a.taxaAcerto || b.totalTentativas - a.totalTentativas,
+    );
+  });
+
   protected readonly piorCategoria = computed<DesempenhoCategoriaResponse | null>(() => {
     const categorias = this.desempenho()?.estatisticasPorCategoria ?? [];
     const elegiveis = categorias
@@ -66,49 +71,11 @@ export class VisaoGeralComponent {
     return elegiveis[0] ?? null;
   });
 
-  protected readonly dadosGraficoRadar = computed(() => {
-    const categorias = this.desempenho()?.estatisticasPorCategoria ?? [];
-    return {
-      labels: categorias.map((c) => c.categoriaNome),
-      datasets: [
-        {
-          label: 'Taxa de Acerto (%)',
-          backgroundColor: 'rgba(59, 130, 246, 0.2)',
-          borderColor: 'rgba(59, 130, 246, 1)',
-          pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
-          data: categorias.map((c) => c.taxaAcerto),
-        },
-      ],
-    };
-  });
-
-  protected readonly opcoesGraficoRadar: ChartOptions<'radar'> = {
-    plugins: {
-      legend: {
-        labels: {
-          color: '#495057',
-        },
-      },
-    },
-    scales: {
-      r: {
-        pointLabels: {
-          color: '#495057',
-        },
-        grid: {
-          color: '#ebedef',
-        },
-        angleLines: {
-          color: '#ebedef',
-        },
-        suggestedMin: 0,
-        suggestedMax: 100,
-      },
-    },
-  };
+  protected nivelDominio(taxaAcerto: number): 'alto' | 'medio' | 'baixo' {
+    if (taxaAcerto >= 70) return 'alto';
+    if (taxaAcerto >= 40) return 'medio';
+    return 'baixo';
+  }
 
   protected irParaSimulador(): void {
     void this.router.navigateByUrl('/simulador');

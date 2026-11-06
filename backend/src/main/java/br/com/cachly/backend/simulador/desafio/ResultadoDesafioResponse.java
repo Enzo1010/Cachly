@@ -10,5 +10,6 @@ public record ResultadoDesafioResponse(
         SimulacaoResponse simulacao,
         Integer nivelAtual,
         String nomeNivel,
-        Integer xpTotalAtual
+        Integer xpTotalAtual,
+        Integer diasOfensiva
 ) {}

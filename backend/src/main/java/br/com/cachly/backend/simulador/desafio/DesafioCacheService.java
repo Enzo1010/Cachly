@@ -84,6 +84,7 @@ public class DesafioCacheService {
         Integer nivelAtual = (usuarioAtualizado != null && usuarioAtualizado.getNivel() != null) ? usuarioAtualizado.getNivel() : 1;
         String nomeNivel = xpService.nomeDoNivel(nivelAtual);
         Integer xpTotalAtual = (usuarioAtualizado != null && usuarioAtualizado.getXpTotal() != null) ? usuarioAtualizado.getXpTotal() : 0;
+        Integer diasOfensiva = (usuarioAtualizado != null && usuarioAtualizado.getDiasOfensiva() != null) ? usuarioAtualizado.getDiasOfensiva() : 0;
 
         return new ResultadoDesafioResponse(
                 correto,
@@ -93,7 +94,8 @@ public class DesafioCacheService {
                 simulacao,
                 nivelAtual,
                 nomeNivel,
-                xpTotalAtual
+                xpTotalAtual,
+                diasOfensiva
         );
     }
 

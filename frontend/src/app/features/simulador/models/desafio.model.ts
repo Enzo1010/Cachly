@@ -30,4 +30,5 @@ export interface ResultadoDesafio {
   readonly nivelAtual: number;
   readonly nomeNivel: string;
   readonly xpTotalAtual: number;
+  readonly diasOfensiva?: number;
 }

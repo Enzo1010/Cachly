@@ -77,7 +77,7 @@ public class RespostaService {
                 .orElse(null);
 
         // O evento modificou o usuário em uma instância persistente gerenciada pelo listener.
-        // Recarregamos a instância para garantir que vamos retornar os dados frescos (XP/Nível atualizados)
+        // Recarregamos a instância para garantir que vamos retornar os dados frescos (XP/Nível/Ofensiva atualizados)
         // e não os dados "stale" do objeto desanexado original.
         Usuario usuarioAtualizado = usuarioRepository.findById(usuarioBloqueado.getId()).orElse(usuarioBloqueado);
 
@@ -89,7 +89,8 @@ public class RespostaService {
                 xpGanho,
                 usuarioAtualizado.getNivel(),
                 xpService.nomeDoNivel(usuarioAtualizado.getNivel()),
-                usuarioAtualizado.getXpTotal()
+                usuarioAtualizado.getXpTotal(),
+                usuarioAtualizado.getDiasOfensiva()
         );
     }
 }
