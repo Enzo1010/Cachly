@@ -3,8 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   FormBuilder,
-  FormControl,
-  FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
@@ -16,7 +14,6 @@ import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
 import { PerfilApiService } from '../../services/perfil-api.service';
@@ -40,7 +37,6 @@ function senhasIguaisValidator(group: AbstractControl): ValidationErrors | null 
     Dialog,
     InputText,
     MessageModule,
-    ToggleSwitch,
   ],
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
@@ -67,11 +63,6 @@ export class PerfilComponent {
       : nome.charAt(0).toUpperCase() || 'U';
   });
 
-  protected readonly formularioConfiguracoes = new FormGroup({
-    notificacoesEstudo: new FormControl(true, { nonNullable: true }),
-    perfilPublico: new FormControl(true, { nonNullable: true }),
-  });
-
   protected readonly formularioEdicao = this.fb.nonNullable.group(
     {
       nome: [''],
@@ -82,7 +73,7 @@ export class PerfilComponent {
     },
     {
       validators: [senhasIguaisValidator],
-    }
+    },
   );
 
   protected abrirEdicao(): void {
@@ -124,7 +115,8 @@ export class PerfilComponent {
           this.notificacoes.add({
             severity: 'success',
             summary: 'Senha alterada com sucesso!',
-            detail: 'Sua sessão foi encerrada por segurança. Por favor, faça login com sua nova senha.',
+            detail:
+              'Sua sessão foi encerrada por segurança. Por favor, faça login com sua nova senha.',
             life: 5000,
           });
           this.sessao
@@ -157,7 +149,8 @@ export class PerfilComponent {
   }
 
   protected sair(): void {
-    this.sessao.encerrar()
+    this.sessao
+      .encerrar()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         void this.router.navigateByUrl('/login');

@@ -149,7 +149,7 @@ O sistema segue um modelo **Cliente-Servidor desacoplado**. A API REST e a SPA A
 | Chart.js | 4.x | Visualização gráfica (Hit/Miss e tendências) |
 | Angular Signals | 21 | Gerenciamento reativo de estado de alta performance |
 | SCSS | — | Estilização modular com design system proprietário |
-| Vitest | 4.x | Suíte de testes unitários ultrarrápida (56 casos) |
+| Vitest | 4.x | Suíte de testes unitários ultrarrápida (66 casos) |
 
 ### Infraestrutura & DevOps
 | Ferramenta | Uso |

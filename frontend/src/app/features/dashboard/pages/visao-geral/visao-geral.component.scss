@@ -10,7 +10,8 @@
 }
 
 .boas-vindas,
-.indicador {
+.indicador,
+.grafico-container {
   border: 1px solid #e5edef;
   border-radius: 1rem;
   background: #fff;
@@ -73,8 +74,41 @@
   text-transform: uppercase;
 }
 
+.estatisticas-academicas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.grafico-container {
+  padding: clamp(1.5rem, 4vw, 2rem);
+}
+
+.grafico-container__titulo {
+  margin: 0;
+  color: #102e45;
+  font-size: 1.25rem;
+}
+
+.grafico-container__subtitulo {
+  margin: 0.45rem 0 1.5rem;
+  color: #667d8c;
+  font-size: 0.9rem;
+}
+
+.grafico-container__vazio {
+  display: flex;
+  height: 300px;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  text-align: center;
+}
+
 .objetivo {
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   min-height: 17rem;
   border-radius: 1rem;
@@ -87,6 +121,10 @@
 .objetivo__conteudo {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
   max-width: 43rem;
 }
 
@@ -211,6 +249,12 @@
   margin-top: 0.25rem;
   color: #667d8c;
   font-size: 0.8rem;
+}
+
+@media (max-width: 960px) {
+  .estatisticas-academicas {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {

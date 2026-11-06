@@ -4,20 +4,19 @@
 
     <div class="dados-perfil">
       <h2 id="titulo-perfil">{{ usuario()?.nome }}</h2>
-      <p class="email-perfil" style="margin-top: 0; color: var(--text-color-secondary); font-size: 0.9rem;">{{ usuario()?.email }}</p>
+      <p class="email-perfil">{{ usuario()?.email }}</p>
       <p>{{ usuario()?.perfil === 'ADMINISTRADOR' ? 'Administrador Cachly' : 'Aluno Cachly' }}</p>
       @if (usuario()?.perfil !== 'ADMINISTRADOR') {
         <div class="insignias" aria-label="Resumo do perfil">
-          <span
-            ><i class="pi pi-star-fill" aria-hidden="true" style="color: var(--yellow-500);"></i> {{ usuario()?.xpTotal ?? 0 }} XP
-            total</span
-          >
-          <span
-            ><i class="pi pi-sparkles" aria-hidden="true" style="color: var(--blue-500);"></i> Nível {{ usuario()?.nivel ?? 1 }}</span
-          >
-          <span
-            ><i class="pi pi-bolt" aria-hidden="true" style="color: var(--orange-500);"></i> {{ usuario()?.diasOfensiva ?? 0 }} dias de ofensiva</span
-          >
+          <span>
+            <i class="pi pi-star-fill" aria-hidden="true"></i> {{ usuario()?.xpTotal ?? 0 }} XP total
+          </span>
+          <span>
+            <i class="pi pi-sparkles" aria-hidden="true"></i> Nível {{ usuario()?.nivel ?? 1 }}
+          </span>
+          <span>
+            <i class="pi pi-bolt" aria-hidden="true"></i> {{ usuario()?.diasOfensiva ?? 0 }} dias de ofensiva
+          </span>
         </div>
       }
     </div>
@@ -26,39 +25,36 @@
       <i pButtonIcon class="pi pi-lock" aria-hidden="true"></i>
       <span pButtonLabel>Alterar senha</span>
     </button>
-
   </article>
 
   <article class="cartao-configuracoes" aria-labelledby="titulo-configuracoes">
     <header>
-      <i class="pi pi-cog" aria-hidden="true"></i>
-      <h2 id="titulo-configuracoes">Configurações da conta</h2>
+      <i class="pi pi-shield" aria-hidden="true"></i>
+      <h2 id="titulo-configuracoes">Segurança e sessão</h2>
     </header>
 
-    <form [formGroup]="formularioConfiguracoes">
+    <div class="lista-configuracoes">
       <div class="configuracao">
         <div>
-          <h3>Notificações de estudo</h3>
-          <p>Lembretes diários para você não perder o ritmo.</p>
+          <h3>Revogação automática de sessões</h3>
+          <p>Ao alterar sua senha, o acesso em outros navegadores ou dispositivos é invalidado imediatamente.</p>
         </div>
-        <p-toggleswitch formControlName="notificacoesEstudo" aria-label="Notificações de estudo" />
+        <span class="badge-seguranca">
+          <i class="pi pi-check-circle" aria-hidden="true"></i> Ativo
+        </span>
       </div>
 
       <div class="configuracao">
         <div>
-          <h3>Privacidade da liga</h3>
-          <p>Permitir que outros alunos vejam seu perfil no ranking.</p>
+          <h3>Encerrar acesso neste dispositivo</h3>
+          <p>Desconecta sua conta com segurança e remove a sessão ativa deste navegador.</p>
         </div>
-        <p-toggleswitch formControlName="perfilPublico" aria-label="Privacidade da liga" />
+        <button pButton class="botao-encerrar" type="button" (click)="sair()">
+          <i pButtonIcon class="pi pi-sign-out" aria-hidden="true"></i>
+          <span pButtonLabel>Sair da conta</span>
+        </button>
       </div>
-    </form>
-
-    <button pButton class="botao-encerrar" type="button" (click)="sair()">
-      <i pButtonIcon class="pi pi-sign-out" aria-hidden="true"></i>
-      <span pButtonLabel>Sair da conta</span>
-    </button>
-
-
+    </div>
   </article>
 </section>
 

@@ -6,7 +6,10 @@ import { ChartModule } from 'primeng/chart';
 import type { ChartOptions } from 'chart.js';
 
 import { SessaoService } from '../../../../core/autenticacao/sessao.service';
+import { DesempenhoCategoriaResponse } from '../../../../shared/models/desempenho.model';
 import { DesempenhoApiService } from '../../../../shared/services/desempenho-api.service';
+
+const MINIMO_TENTATIVAS_PARA_RECOMENDAR = 3;
 
 interface IndicadorVisaoGeral {
   readonly destaque: string;
@@ -44,30 +47,29 @@ export class VisaoGeralComponent {
       },
       {
         destaque: `Nível ${this.sessao.usuario()?.nivel ?? 1}`,
-        descricao: 'Sua Posição',
+        descricao: this.sessao.usuario()?.nomeNivel ?? 'Nível Atual',
         icone: 'pi pi-crown',
-        variacao: 'pi pi-arrow-right',
       },
     ];
   });
 
-  protected readonly piorCategoria = computed(() => {
+  protected readonly piorCategoria = computed<DesempenhoCategoriaResponse | null>(() => {
     const categorias = this.desempenho()?.estatisticasPorCategoria ?? [];
-    if (categorias.length === 0) return null;
-    
-    // Encontra a categoria com menor taxa de acerto, ignorando quem tem 0 tentativas
-    const categoriasValidas = categorias.filter(c => c.totalTentativas > 0);
-    if (categoriasValidas.length === 0) return null;
+    const elegiveis = categorias
+      .filter(
+        (c) =>
+          c.totalTentativas >= MINIMO_TENTATIVAS_PARA_RECOMENDAR &&
+          c.acertos < c.totalTentativas,
+      )
+      .sort((a, b) => a.taxaAcerto - b.taxaAcerto || b.totalTentativas - a.totalTentativas);
 
-    return categoriasValidas.reduce((menor, atual) =>
-      atual.taxaAcerto < menor.taxaAcerto ? atual : menor
-    );
+    return elegiveis[0] ?? null;
   });
 
   protected readonly dadosGraficoRadar = computed(() => {
     const categorias = this.desempenho()?.estatisticasPorCategoria ?? [];
     return {
-      labels: categorias.map(c => c.categoriaNome),
+      labels: categorias.map((c) => c.categoriaNome),
       datasets: [
         {
           label: 'Taxa de Acerto (%)',
@@ -77,9 +79,9 @@ export class VisaoGeralComponent {
           pointBorderColor: '#fff',
           pointHoverBackgroundColor: '#fff',
           pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
-          data: categorias.map(c => c.taxaAcerto)
-        }
-      ]
+          data: categorias.map((c) => c.taxaAcerto),
+        },
+      ],
     };
   });
 
@@ -87,9 +89,9 @@ export class VisaoGeralComponent {
     plugins: {
       legend: {
         labels: {
-          color: '#495057'
-        }
-      }
+          color: '#495057',
+        },
+      },
     },
     scales: {
       r: {
@@ -100,16 +102,15 @@ export class VisaoGeralComponent {
           color: '#ebedef',
         },
         angleLines: {
-          color: '#ebedef'
+          color: '#ebedef',
         },
         suggestedMin: 0,
-        suggestedMax: 100
-      }
-    }
+        suggestedMax: 100,
+      },
+    },
   };
 
   protected irParaSimulador(): void {
     void this.router.navigateByUrl('/simulador');
   }
 }
-
