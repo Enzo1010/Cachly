@@ -73,4 +73,23 @@ describe('SimuladorFormComponent', () => {
     component.onSubmit();
     expect(emitSpy).not.toHaveBeenCalled();
   });
+
+  it('deve impedir simulação quando número de vias excede o total de linhas da cache', () => {
+    const emitSpy = vi.spyOn(component.simular, 'emit');
+
+    component.form.controls.tamanhoCacheBytes.setValue(32);
+    component.form.controls.tamanhoBlocoBytes.setValue(8); // 4 linhas no total
+    component.form.controls.mapeamento.setValue('CONJUNTO_ASSOCIATIVO');
+    component.form.controls.numeroVias.setValue(8); // 8 vias > 4 linhas
+
+    component.onSubmit();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+    expect(messageServiceMock.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'error',
+        summary: 'Erro de Configuração'
+      })
+    );
+  });
 });

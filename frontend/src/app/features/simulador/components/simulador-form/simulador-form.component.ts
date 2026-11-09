@@ -173,6 +173,16 @@ export class SimuladorFormComponent {
       return;
     }
 
+    const totalLinhas = val.tamanhoCacheBytes / val.tamanhoBlocoBytes;
+    if (val.mapeamento === 'CONJUNTO_ASSOCIATIVO' && val.numeroVias && val.numeroVias > totalLinhas) {
+      this.notificacoes.add({
+        severity: 'error',
+        summary: 'Erro de Configuração',
+        detail: `O número de vias (${val.numeroVias}) não pode exceder o total de linhas da cache (${totalLinhas})!`
+      });
+      return;
+    }
+
     if (val.mapeamento !== 'DIRETO' && !val.substituicao) {
       this.notificacoes.add({ severity: 'error', summary: 'Erro de Configuração', detail: 'Selecione uma política de substituição!' });
       return;

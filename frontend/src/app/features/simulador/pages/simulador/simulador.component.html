@@ -100,7 +100,7 @@
                 }
                 <div class="spec-item">
                   <span class="spec-label">Substituição</span>
-                  <strong class="spec-value">{{ desafio.configuracao.substituicao || 'N/A' }}</strong>
+                  <strong class="spec-value">{{ desafio.configuracao.mapeamento === 'DIRETO' ? 'N/A' : (desafio.configuracao.substituicao || 'N/A') }}</strong>
                 </div>
               </div>
 

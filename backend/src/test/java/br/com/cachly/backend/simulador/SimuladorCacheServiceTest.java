@@ -50,7 +50,9 @@ class SimuladorCacheServiceTest {
         assertFalse(response.passos().get(2).hit()); // 8 -> Miss
         assertFalse(response.passos().get(3).hit()); // 12 -> Miss
         assertTrue(response.passos().get(4).hit());  // 0 -> Hit
+        assertEquals(0, response.passos().get(4).blocoSubstituido());
         assertTrue(response.passos().get(5).hit());  // 4 -> Hit
+        assertEquals(1, response.passos().get(5).blocoSubstituido());
     }
 
     @Test

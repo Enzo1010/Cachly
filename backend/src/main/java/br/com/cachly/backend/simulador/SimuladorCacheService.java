@@ -109,6 +109,7 @@ public class SimuladorCacheService {
             if (isHit) {
                 totalHits++;
                 linhaHit.ultimaUtilizacao = tempoGlobal++;
+                blocoSubstituido = linhaHit.indiceLinha;
                 explicacao.append(String.format("HIT! Encontramos a Tag %d na Linha %d! O acesso foi super rápido pois o bloco inteiro (com o offset %d) já estava na cache.", tag, linhaHit.indiceLinha, offset));
                 if (substituicao == PoliticaSubstituicao.LRU) {
                     explicacao.append(String.format(" Pela política LRU, a Linha %d foi atualizada como a 'mais recentemente usada'.", linhaHit.indiceLinha));
