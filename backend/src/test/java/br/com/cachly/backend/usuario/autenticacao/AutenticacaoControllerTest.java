@@ -108,8 +108,21 @@ class AutenticacaoControllerTest {
                 .andExpect(jsonPath("$.perfil").value("ALUNO"))
                 .andExpect(jsonPath("$.xpTotal").value(0))
                 .andExpect(jsonPath("$.nivel").value(1))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie().maxAge("token", 86400))
                 .andExpect(jsonPath("$.senha").doesNotExist())
                 .andExpect(jsonPath("$.senhaHash").doesNotExist());
+    }
+
+    @Test
+    void deveManterCookiePorTrintaDiasQuandoLembrarLogin() throws Exception {
+        when(usuarioService.autenticar(any())).thenReturn(new UsuarioService.AuthResult(
+                new UsuarioSessaoResponse(1L, "Aluno", "aluno@teste.com", PerfilUsuario.ALUNO, 0, 1, 0, "Estagiário"), "token-teste"));
+        mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"email":"aluno@teste.com","senha":"senha123","lembrarLogin":true}
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie().maxAge("token", 2592000));
     }
 
     @Test

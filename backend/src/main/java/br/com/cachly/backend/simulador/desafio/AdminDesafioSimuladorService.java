@@ -21,21 +21,21 @@ public class AdminDesafioSimuladorService {
     private final SimuladorCacheService simuladorCacheService;
 
     @Transactional(readOnly = true)
-    public List<DesafioCacheResponse> listarTodos() {
+    public List<AdminDesafioSimuladorResponse> listarTodos() {
         return repository.findAll().stream()
                 .map(this::converterParaResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public DesafioCacheResponse obterPorId(String id) {
+    public AdminDesafioSimuladorResponse obterPorId(String id) {
         return repository.findById(id)
                 .map(this::converterParaResponse)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Desafio não encontrado"));
     }
 
     @Transactional
-    public DesafioCacheResponse cadastrar(DesafioSimuladorRequest request) {
+    public AdminDesafioSimuladorResponse cadastrar(DesafioSimuladorRequest request) {
         if (repository.existsById(request.id())) {
             throw new ConflitoDeDadosException("Já existe um desafio com este identificador (ID)");
         }
@@ -46,7 +46,7 @@ public class AdminDesafioSimuladorService {
     }
 
     @Transactional
-    public DesafioCacheResponse atualizar(String id, DesafioSimuladorRequest request) {
+    public AdminDesafioSimuladorResponse atualizar(String id, DesafioSimuladorRequest request) {
         DesafioSimulador entidade = repository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Desafio não encontrado"));
         
@@ -101,12 +101,12 @@ public class AdminDesafioSimuladorService {
         simuladorCacheService.executarSimulacao(request.configuracao());
     }
 
-    private DesafioCacheResponse converterParaResponse(DesafioSimulador entidade) {
+    private AdminDesafioSimuladorResponse converterParaResponse(DesafioSimulador entidade) {
         List<OpcaoDesafioResponse> opcoes = entidade.getOpcoes().stream()
                 .map(o -> new OpcaoDesafioResponse(o.getId(), o.getTexto()))
                 .toList();
 
-        return new DesafioCacheResponse(
+        return new AdminDesafioSimuladorResponse(
                 entidade.getId(),
                 entidade.getTitulo(),
                 entidade.getDescricao(),
@@ -115,7 +115,9 @@ public class AdminDesafioSimuladorService {
                 entidade.getConfiguracao(),
                 entidade.getPergunta(),
                 opcoes,
-                entidade.getDica()
+                entidade.getDica(),
+                entidade.getOpcaoCorretaId(),
+                entidade.getExplicacao()
         );
     }
 }

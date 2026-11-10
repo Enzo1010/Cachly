@@ -67,7 +67,9 @@ public class UsuarioService {
                         "E-mail ou senha inválidos"
                 ));
 
-        String token = tokenService.gerarToken(usuario);
+        String token = Boolean.TRUE.equals(request.lembrarLogin())
+                ? tokenService.gerarToken(usuario, true)
+                : tokenService.gerarToken(usuario);
 
         return new AuthResult(new UsuarioSessaoResponse(
                 usuario.getId(),

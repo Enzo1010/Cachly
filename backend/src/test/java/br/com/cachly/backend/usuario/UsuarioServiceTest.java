@@ -112,6 +112,17 @@ class UsuarioServiceTest {
     }
 
     @Test
+    void deveGerarSessaoLembradaQuandoSolicitado() {
+        Usuario usuario = criarUsuarioAtivo();
+        when(usuarioRepository.findByEmailIgnoreCase("ana.silva@exemplo.com")).thenReturn(Optional.of(usuario));
+        when(codificadorSenha.matches("senha-segura", "hash-bcrypt")).thenReturn(true);
+        when(tokenService.gerarToken(usuario, true)).thenReturn("token-lembrado");
+        var resultado = usuarioService.autenticar(new AutenticacaoRequest("ana.silva@exemplo.com", "senha-segura", true));
+        assertEquals("token-lembrado", resultado.token());
+        verify(tokenService).gerarToken(usuario, true);
+    }
+
+    @Test
     void deveAutenticarUsuarioAtivoComCredenciaisValidas() {
         Usuario usuario = criarUsuarioAtivo();
         when(usuarioRepository.findByEmailIgnoreCase("ana.silva@exemplo.com"))

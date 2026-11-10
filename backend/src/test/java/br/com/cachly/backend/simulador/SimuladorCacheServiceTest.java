@@ -193,6 +193,15 @@ class SimuladorCacheServiceTest {
     }
 
     @Test
+    void deveDistinguirMissDeCapacidadeDeConflito() {
+        var resposta = service.executarSimulacao(new SimulacaoRequest(16, 4, null,
+                TipoMapeamento.DIRETO, null, List.of(0, 4, 8, 12, 16, 0)));
+        assertEquals(0, resposta.totalHits());
+        assertTrue(resposta.passos().getLast().explicacao().contains("MISS DE CAPACIDADE!"));
+        assertFalse(resposta.passos().getLast().explicacao().contains("MISS DE CONFLITO!"));
+    }
+
+    @Test
     @DisplayName("Deve explicar Miss Compulsório e Miss de Conflito (3 Cs) no Mapeamento Direto sem mencionar FIFO ou LRU e sem citar Conjunto")
     void deveExplicarMissDeConflitoNoMapeamentoDiretoSemMencionarPoliticaSubstituicao() {
         // Cache de 8 bytes, bloco de 4 bytes = 2 linhas (linhas 0 e 1)

@@ -198,6 +198,14 @@ export class SimuladorFormComponent {
       .split(',')
       .map((e: string) => parseInt(e.trim(), 10))
       .filter((e: number) => !isNaN(e));
+
+    if (enderecos.length > 200 || enderecos.some(e => !Number.isSafeInteger(e) || e > 2147483647)) {
+      this.notificacoes.add({
+        severity: 'error', summary: 'Endereços fora do limite',
+        detail: 'Informe até 200 endereços inteiros entre 0 e 2147483647.'
+      });
+      return;
+    }
       
     const request: SimulacaoRequest = {
       tamanhoCacheBytes: val.tamanhoCacheBytes,

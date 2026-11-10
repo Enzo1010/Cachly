@@ -16,57 +16,38 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import br.com.cachly.backend.resposta.XpService;
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.flyway.schemas=seed_test",
+        "spring.flyway.default-schema=seed_test",
+        "spring.jpa.properties.hibernate.default_schema=seed_test"
+})
 @ActiveProfiles("test")
+@org.springframework.transaction.annotation.Transactional
 class DataSeederTest {
 
-    @TestConfiguration
-    static class Config {
-        @Bean
-        public DataSeeder dataSeeder(
-                UsuarioRepository usuarioRepository,
-                CategoriaRepository categoriaRepository,
-                QuestaoRepository questaoRepository,
-                br.com.cachly.backend.questao.comentario.ComentarioRepository comentarioRepository,
-                TentativaQuestaoRepository tentativaQuestaoRepository,
-                RankingSemanalHistoricoRepository rankingSemanalHistoricoRepository,
-                DesafioConcluidoRepository desafioConcluidoRepository,
-                br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioSimuladorRepository,
-                PasswordEncoder passwordEncoder,
-                XpService xpService
-        ) {
-            return new DataSeeder(
-                    usuarioRepository,
-                    categoriaRepository,
-                    questaoRepository,
-                    comentarioRepository,
-                    tentativaQuestaoRepository,
-                    rankingSemanalHistoricoRepository,
-                    desafioConcluidoRepository,
-                    desafioSimuladorRepository,
-                    passwordEncoder,
-                    xpService
-            );
-        }
-    }
+    private DataSeeder dataSeeder;
 
     @Autowired
-    private DataSeeder dataSeeder;
+    private br.com.cachly.backend.questao.comentario.ComentarioRepository comentarioRepository;
+
+    @Autowired
+    private XpService xpService;
+
+    @org.junit.jupiter.api.BeforeEach
+    void prepararSeeder() {
+        dataSeeder = new DataSeeder(usuarioRepository, categoriaRepository, questaoRepository,
+                comentarioRepository, tentativaQuestaoRepository, rankingSemanalHistoricoRepository,
+                desafioConcluidoRepository, desafioRepository, passwordEncoder, xpService);
+    }
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -93,58 +74,7 @@ class DataSeederTest {
     private EntityManager entityManager;
 
     @Autowired
-    private TransactionTemplate transactionTemplate;
-
-    private List<Usuario> usuariosPreservados = new ArrayList<>();
-
-    @BeforeEach
-    void limparBancoParaTeste() {
-        transactionTemplate.executeWithoutResult(status -> {
-            usuariosPreservados = new ArrayList<>(usuarioRepository.findAll().stream()
-                    .filter(u -> !u.getEmail().endsWith("@cachly.com") && !u.getEmail().endsWith("@teste.com"))
-                    .toList());
-            entityManager.createNativeQuery("DELETE FROM comentarios").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM desafios_concluidos").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM desafios_simulador").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM ranking_semanal_historico").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM tentativas_questao").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM alternativas").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM questoes").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM categorias").executeUpdate();
-            entityManager.createNativeQuery("DELETE FROM usuarios").executeUpdate();
-        });
-    }
-
-    @AfterEach
-    void restaurarUsuariosPreservados() {
-        if (!usuariosPreservados.isEmpty()) {
-            transactionTemplate.executeWithoutResult(status -> {
-                for (Usuario u : usuariosPreservados) {
-                    entityManager.createNativeQuery(
-                            "INSERT INTO usuarios (id, nome, email, senha_hash, perfil, xp_total, xp_semanal, nivel, dias_ofensiva, data_ultima_ofensiva, ativo, versao_token, token_reset, token_reset_expira_em, criado_em, atualizado_em) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    )
-                    .setParameter(1, u.getId())
-                    .setParameter(2, u.getNome())
-                    .setParameter(3, u.getEmail())
-                    .setParameter(4, u.getSenhaHash())
-                    .setParameter(5, u.getPerfil().name())
-                    .setParameter(6, u.getXpTotal())
-                    .setParameter(7, u.getXpSemanal())
-                    .setParameter(8, u.getNivel())
-                    .setParameter(9, u.getDiasOfensiva())
-                    .setParameter(10, u.getDataUltimaOfensiva())
-                    .setParameter(11, u.getAtivo())
-                    .setParameter(12, u.getVersaoToken())
-                    .setParameter(13, u.getTokenReset())
-                    .setParameter(14, u.getTokenResetExpiraEm())
-                    .setParameter(15, u.getCriadoEm())
-                    .setParameter(16, u.getAtualizadoEm())
-                    .executeUpdate();
-                }
-            });
-        }
-    }
+    private br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioRepository;
 
     @Test
     @DisplayName("Deve popular cenário acadêmico completo com consistência matemática e idempotência")
@@ -253,7 +183,15 @@ class DataSeederTest {
         long quantidadeUsuarios = usuarioRepository.count();
         long quantidadeCategorias = categoriaRepository.count();
         long quantidadeQuestoes = questaoRepository.count();
+        var desafioEditado = desafioRepository.findById("cold-miss").orElseThrow();
+        desafioEditado.setTitulo("Título editado pelo administrador");
+        desafioRepository.saveAndFlush(desafioEditado);
+        desafioRepository.deleteById("lru-vs-fifo");
+        desafioRepository.flush();
         assertDoesNotThrow(() -> dataSeeder.run());
+        entityManager.clear();
+        assertEquals("Título editado pelo administrador", desafioRepository.findById("cold-miss").orElseThrow().getTitulo());
+        assertFalse(desafioRepository.existsById("lru-vs-fifo"), "Reiniciar não deve recriar desafios excluídos");
         assertEquals(quantidadeUsuarios, usuarioRepository.count());
         assertEquals(quantidadeCategorias, categoriaRepository.count());
         assertEquals(quantidadeQuestoes, questaoRepository.count());

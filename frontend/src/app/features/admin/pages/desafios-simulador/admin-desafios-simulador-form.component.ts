@@ -59,6 +59,7 @@ export class AdminDesafiosSimuladorFormComponent implements OnInit {
 
   private iniciarFormulario(): void {
     this.form = this.fb.group({
+      id: ['', [Validators.required, Validators.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), Validators.maxLength(255)]],
       titulo: ['', Validators.required],
       descricao: ['', Validators.required],
       dificuldade: ['FACIL', Validators.required],
@@ -153,7 +154,7 @@ export class AdminDesafiosSimuladorFormComponent implements OnInit {
 
     const payload: DesafioSimuladorRequest = {
       ...formValue,
-      id: this.desafioId() ?? undefined,
+      id: this.desafioId() ?? formValue.id,
       configuracao: {
         tamanhoCacheBytes: formValue.configuracao.tamanhoCacheBytes,
         tamanhoBlocoBytes: formValue.configuracao.tamanhoBlocoBytes,

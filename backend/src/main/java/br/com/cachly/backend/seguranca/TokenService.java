@@ -23,6 +23,9 @@ public class TokenService {
     @Value("${api.security.token.expiration-hours:24}")
     private Integer expirationHours;
 
+    @Value("${api.security.token.remember-expiration-hours:720}")
+    private Integer rememberExpirationHours;
+
     private SecretKey key;
 
     @jakarta.annotation.PostConstruct
@@ -40,8 +43,12 @@ public class TokenService {
     }
 
     public String gerarToken(Usuario usuario) {
+        return gerarToken(usuario, false);
+    }
+
+    public String gerarToken(Usuario usuario, boolean lembrarLogin) {
         Instant agora = Instant.now();
-        Instant expiracao = agora.plus(expirationHours, ChronoUnit.HOURS);
+        Instant expiracao = agora.plus(lembrarLogin ? rememberExpirationHours : expirationHours, ChronoUnit.HOURS);
 
         return Jwts.builder()
                 .subject(usuario.getEmail())

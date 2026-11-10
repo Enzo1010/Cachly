@@ -4,9 +4,9 @@ spring:
   profiles:
     active: test
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/cachly}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:123}
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/cachly_test}
+    username: ${TEST_DB_USERNAME:postgres}
+    password: ${TEST_DB_PASSWORD:123}
   mail:
     host: localhost
     port: 25

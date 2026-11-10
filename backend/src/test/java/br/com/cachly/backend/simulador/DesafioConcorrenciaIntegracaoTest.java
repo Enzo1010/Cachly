@@ -23,11 +23,9 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Disabled;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Disabled("Migrado para banco de dados")
 class DesafioConcorrenciaIntegracaoTest {
 
     @Autowired
@@ -39,10 +37,18 @@ class DesafioConcorrenciaIntegracaoTest {
     @Autowired
     private DesafioConcluidoRepository desafioConcluidoRepository;
 
+    @Autowired
+    private br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioRepository;
+
     private Usuario aluno;
+    private String desafioId;
 
     @BeforeEach
     void setUp() {
+        var desafio = DesafiosTeste.todos().getFirst();
+        desafio.setId("concorrencia-" + UUID.randomUUID());
+        desafioId = desafio.getId();
+        desafioRepository.saveAndFlush(desafio);
         aluno = new Usuario();
         aluno.setNome("Aluno Desafio Concorrente");
         aluno.setEmail("aluno.desafio.concorrente." + UUID.randomUUID() + "@email.com");
@@ -58,8 +64,10 @@ class DesafioConcorrenciaIntegracaoTest {
 
     @AfterEach
     void tearDown() {
-        desafioConcluidoRepository.deleteAll();
+        desafioConcluidoRepository.deleteAll(desafioConcluidoRepository.findAll().stream()
+                .filter(d -> d.getUsuario().getId().equals(aluno.getId())).toList());
         usuarioRepository.deleteById(aluno.getId());
+        desafioRepository.deleteById(desafioId);
     }
 
     @Test
@@ -77,7 +85,7 @@ class DesafioConcorrenciaIntegracaoTest {
                 startLatch.await();
                 VerificarDesafioRequest request = new VerificarDesafioRequest("A");
                 try {
-                    return desafioCacheService.verificarDesafio("cold-miss", request, aluno);
+                    return desafioCacheService.verificarDesafio(desafioId, request, aluno);
                 } finally {
                     finishLatch.countDown();
                 }

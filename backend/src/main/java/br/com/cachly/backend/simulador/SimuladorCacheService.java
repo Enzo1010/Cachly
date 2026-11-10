@@ -62,6 +62,8 @@ public class SimuladorCacheService {
 
         // Conjunto de blocos já referenciados para classificar Miss Compulsório (3 Cs) com precisão.
         Set<Integer> blocosAcessados = new HashSet<>();
+        // Referência totalmente associativa LRU, de igual capacidade, para separar os 3 Cs.
+        var cacheReferencia = new java.util.LinkedHashSet<Integer>();
 
         for (int i = 0; i < request.enderecos().size(); i++) {
             int passoNumero = i + 1;
@@ -72,6 +74,11 @@ public class SimuladorCacheService {
 
             int enderecoBloco = endereco >>> bitsOffset;
             boolean primeiroAcessoAoBloco = blocosAcessados.add(enderecoBloco);
+            boolean presenteNaReferencia = cacheReferencia.remove(enderecoBloco);
+            if (cacheReferencia.size() == totalLinhas) {
+                cacheReferencia.removeFirst();
+            }
+            cacheReferencia.add(enderecoBloco);
 
             Integer indiceObj = bitsIndice == 0 ? null : enderecoBloco & ((1 << bitsIndice) - 1);
             int tag = endereco >>> (bitsOffset + bitsIndice);
@@ -130,6 +137,8 @@ public class SimuladorCacheService {
                     linhaAlvo = candidatoLinhas.get(0);
                     if (primeiroAcessoAoBloco) {
                         explicacao.append(String.format("MISS COMPULSÓRIO! A Tag %d nunca havia sido acessada antes e mapeia diretamente para a Linha %d, que já estava ocupada pela Tag %d. No Mapeamento Direto não há algoritmo de substituição (a posição na cache é unívoca): o bloco anterior foi compulsoriamente substituído.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
+                    } else if (!presenteNaReferencia) {
+                        explicacao.append(String.format("MISS DE CAPACIDADE! O bloco da Tag %d também não estaria em uma cache totalmente associativa LRU com a mesma capacidade. O conjunto de blocos reutilizados excedeu a capacidade disponível. A Linha %d foi atualizada com o bloco solicitado.", tag, linhaAlvo.indiceLinha));
                     } else {
                         explicacao.append(String.format("MISS DE CONFLITO! A Tag %d mapeia diretamente para a Linha %d, que já estava ocupada pela Tag %d. No Mapeamento Direto não há algoritmo de substituição (a posição na cache é unívoca): o bloco anterior foi compulsoriamente substituído.", tag, linhaAlvo.indiceLinha, linhaAlvo.tag));
                     }

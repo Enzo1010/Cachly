@@ -34,6 +34,15 @@ class AdminDesafioSimuladorServiceTest {
     private AdminDesafioSimuladorService service;
 
     @Test
+    void deveRetornarGabaritoEExplicacaoSomenteNaRespostaAdministrativa() {
+        var desafio = br.com.cachly.backend.simulador.DesafiosTeste.todos().getFirst();
+        when(repository.findById(desafio.getId())).thenReturn(java.util.Optional.of(desafio));
+        var resposta = service.obterPorId(desafio.getId());
+        org.junit.jupiter.api.Assertions.assertEquals(desafio.getOpcaoCorretaId(), resposta.opcaoCorretaId());
+        org.junit.jupiter.api.Assertions.assertEquals(desafio.getExplicacao(), resposta.explicacao());
+    }
+
+    @Test
     @DisplayName("Deve rejeitar desafio cuja opção correta não existe")
     void deveRejeitarOpcaoCorretaAusente() {
         when(repository.existsById("cache-basica")).thenReturn(false);

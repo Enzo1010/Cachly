@@ -27,6 +27,12 @@ public class AutenticacaoController {
     private final UsuarioService usuarioService;
     private final UsuarioLogadoService usuarioLogadoService;
 
+    @org.springframework.beans.factory.annotation.Value("${api.security.token.expiration-hours:24}")
+    private long horasSessao;
+
+    @org.springframework.beans.factory.annotation.Value("${api.security.token.remember-expiration-hours:720}")
+    private long horasSessaoLembrada;
+
     @PostMapping("/login")
     public UsuarioSessaoResponse autenticar(
             @Valid @RequestBody AutenticacaoRequest request,
@@ -34,7 +40,7 @@ public class AutenticacaoController {
     ) {
         AuthResult authResult = usuarioService.autenticar(request);
         
-        long maxAge = Boolean.TRUE.equals(request.lembrarLogin()) ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+        long maxAge = (Boolean.TRUE.equals(request.lembrarLogin()) ? horasSessaoLembrada : horasSessao) * 3600;
 
         ResponseCookie cookie = ResponseCookie.from("token", authResult.token())
                 .httpOnly(true)

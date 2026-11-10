@@ -14,6 +14,11 @@
   <form [formGroup]="form" (ngSubmit)="salvar()" class="form-container">
     <div class="form-secao">
       <h2 class="secao-titulo">Informações Gerais</h2>
+      <div class="campo-grupo">
+        <label for="identificador">Identificador *</label>
+        <input id="identificador" type="text" formControlName="id" [readOnly]="editando()" placeholder="Ex: cache-direta-basica" class="form-control" />
+        <small>Use letras minúsculas, números e hífens. O identificador não muda após o cadastro.</small>
+      </div>
       
       <div class="campo-grupo">
         <label for="titulo">Título *</label>
@@ -71,7 +76,7 @@
           <label for="substituicao">Política de Substituição</label>
           <select id="substituicao" formControlName="substituicao" class="form-control">
             @for (s of substituicoes; track s.value) {
-              <option [value]="s.value">{{ s.label }}</option>
+              <option [ngValue]="s.value">{{ s.label }}</option>
             }
           </select>
         </div>
@@ -120,7 +125,7 @@
           <input id="opcaoCorretaId" type="text" formControlName="opcaoCorretaId" placeholder="Ex: A" class="form-control w-full" />
         </div>
         <div class="campo-grupo">
-          <label for="dica">Dica (opcional)</label>
+          <label for="dica">Dica *</label>
           <input id="dica" type="text" formControlName="dica" placeholder="Uma dica para ajudar..." class="form-control w-full" />
         </div>
       </div>

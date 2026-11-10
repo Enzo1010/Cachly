@@ -46,7 +46,7 @@ public class ComentarioService {
     @Transactional
     public void darUpvote(Long comentarioId) {
         Long usuarioLogadoId = usuarioLogadoService.obterUsuarioAtual().getId();
-        Comentario comentario = comentarioRepository.findById(comentarioId)
+        Comentario comentario = comentarioRepository.findByIdForUpdate(comentarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Comentário não encontrado"));
         
         if (comentario.getUpvotedBy().contains(usuarioLogadoId)) {

@@ -6,6 +6,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM Comentario c WHERE c.id = :id")
+    java.util.Optional<Comentario> findByIdForUpdate(@Param("id") Long id);
     
     @Query("""
         SELECT DISTINCT c FROM Comentario c

@@ -25,10 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.Disabled;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled("Migrado para banco de dados")
 class DesafioCacheServiceTest {
 
     @Spy
@@ -46,6 +44,9 @@ class DesafioCacheServiceTest {
     @Mock
     private br.com.cachly.backend.simulador.desafio.DesafioConcluidoRepository desafioConcluidoRepository;
 
+    @Mock
+    private br.com.cachly.backend.simulador.desafio.DesafioSimuladorRepository desafioRepository;
+
     @InjectMocks
     private DesafioCacheService desafioCacheService;
 
@@ -53,6 +54,10 @@ class DesafioCacheServiceTest {
 
     @BeforeEach
     void setUp() {
+        var desafios = DesafiosTeste.todos();
+        lenient().when(desafioRepository.findAll()).thenReturn(desafios);
+        lenient().when(desafioRepository.findById(any())).thenAnswer(invocacao ->
+                desafios.stream().filter(d -> d.getId().equals(invocacao.getArgument(0))).findFirst());
         usuario = new Usuario();
         usuario.setId(1L);
         usuario.setNome("Aluno Teste");

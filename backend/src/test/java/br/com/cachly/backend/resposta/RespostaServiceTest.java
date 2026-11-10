@@ -89,6 +89,18 @@ class RespostaServiceTest {
     }
 
     @Test
+    void deveIgnorarGabaritoInativoAposEdicaoDaQuestao() {
+        alternativaCorreta.setAtiva(false);
+        alternativaIncorreta.setCorreta(true);
+        when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
+        when(tentativaQuestaoRepository.save(any())).thenReturn(new TentativaQuestao());
+        when(usuarioRepository.findById(usuario.getId())).thenReturn(Optional.of(usuario));
+        var resposta = respostaService.responder(1L, new RespostaRequest(101L), usuario);
+        assertTrue(resposta.correta());
+        assertEquals(101L, resposta.alternativaCorretaId());
+    }
+
+    @Test
     void deveRegistrarRespostaCorretaEConcederXp() {
         when(questaoRepository.findByIdAndAtivaTrue(1L)).thenReturn(Optional.of(questao));
         when(tentativaQuestaoRepository.existsByUsuarioIdAndQuestaoIdAndCorretaTrue(10L, 1L)).thenReturn(false);

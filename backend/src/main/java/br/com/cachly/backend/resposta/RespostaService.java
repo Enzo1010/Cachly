@@ -71,7 +71,7 @@ public class RespostaService {
         eventPublisher.publishEvent(new QuestaoRespondidaEvent(usuarioBloqueado, questao, correta, primeiraVezCorreta));
 
         Long alternativaCorretaId = questao.getAlternativas().stream()
-                .filter(a -> Boolean.TRUE.equals(a.getCorreta()))
+                .filter(a -> Boolean.TRUE.equals(a.getAtiva()) && Boolean.TRUE.equals(a.getCorreta()))
                 .map(Alternativa::getId)
                 .findFirst()
                 .orElse(null);

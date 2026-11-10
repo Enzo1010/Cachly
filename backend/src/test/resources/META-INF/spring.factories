@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationContextInitializer=br.com.cachly.backend.config.BancoTesteInitializer

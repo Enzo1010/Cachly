@@ -12,6 +12,8 @@ import java.util.List;
 
 public record DesafioSimuladorRequest(
         @NotBlank(message = "O ID (identificador único) é obrigatório")
+        @Size(max = 255, message = "O identificador deve ter até 255 caracteres")
+        @jakarta.validation.constraints.Pattern(regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "Use letras minúsculas, números e hífens no identificador")
         String id,
 
         @NotBlank(message = "O título é obrigatório")

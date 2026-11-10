@@ -92,4 +92,21 @@ describe('SimuladorFormComponent', () => {
       })
     );
   });
+  it('deve rejeitar endereços acima do intervalo e mais de 200 acessos', () => {
+    const emitir = vi.spyOn(component.simular, 'emit');
+    for (const entrada of ['2147483648', '9999999999999999999999999', Array(201).fill('0').join(',')]) {
+      component.form.controls.enderecosStr.setValue(entrada);
+      component.onSubmit();
+    }
+    expect(emitir).not.toHaveBeenCalled();
+    expect(messageServiceMock.add).toHaveBeenCalledWith(expect.objectContaining({ summary: 'Endereços fora do limite' }));
+  });
+
+  it('deve aceitar o maior endereço suportado', () => {
+    const emitir = vi.spyOn(component.simular, 'emit');
+    component.form.controls.enderecosStr.setValue('2147483647');
+    component.onSubmit();
+    expect(emitir).toHaveBeenCalledWith(expect.objectContaining({ enderecos: [2147483647] }));
+  });
+
 });

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { SimuladorStateService } from './simulador-state.service';
 import { SimuladorCacheService } from './simulador-cache.service';
 import { SessaoService } from '../../../core/autenticacao/sessao.service';
@@ -132,4 +132,52 @@ describe('SimuladorStateService', () => {
     expect(service.simulacao()).toBeNull();
     expect(service.resultadoDesafio()).toBeNull();
   });
+  it('deve ignorar resultado de missão anterior após trocar de missão', () => {
+    const resposta = new Subject<ResultadoDesafio>();
+    vi.mocked(mockSimuladorService.verificarDesafio!).mockReturnValue(resposta);
+    service.selecionarDesafio(mockDesafio);
+    service.selecionarOpcao('A');
+    service.verificarDesafio();
+    service.selecionarDesafio({ ...mockDesafio, id: 'outra-missao' });
+    resposta.next(mockResultado);
+    expect(service.desafioSelecionado()?.id).toBe('outra-missao');
+    expect(service.resultadoDesafio()).toBeNull();
+    expect(service.simulacao()).toBeNull();
+    expect(service.carregandoVerificacao()).toBe(false);
+    expect(mockSessaoService.atualizarAposResposta).toHaveBeenCalled();
+  });
+
+  it('deve cancelar simulação pendente ao mudar de modo e permitir nova execução', () => {
+    const resposta = new Subject<typeof mockResultado.simulacao>();
+    vi.mocked(mockSimuladorService.executarSimulacao!).mockReturnValue(resposta);
+    service.onSimular(mockDesafio.configuracao);
+    expect(service.loading()).toBe(true);
+    service.setModo('desafio');
+    resposta.next(mockResultado.simulacao);
+    expect(service.simulacao()).toBeNull();
+    expect(service.loading()).toBe(false);
+    service.setModo('livre');
+    vi.mocked(mockSimuladorService.executarSimulacao!).mockReturnValue(of(mockResultado.simulacao));
+    service.onSimular(mockDesafio.configuracao);
+    expect(service.simulacao()?.totalMisses).toBe(2);
+  });
+
+  it('deve manter o carregamento da missão atual ao chegar uma resposta antiga', () => {
+    const antiga = new Subject<ResultadoDesafio>();
+    const atual = new Subject<ResultadoDesafio>();
+    vi.mocked(mockSimuladorService.verificarDesafio!).mockReturnValueOnce(antiga).mockReturnValueOnce(atual);
+    service.selecionarDesafio(mockDesafio);
+    service.selecionarOpcao('A');
+    service.verificarDesafio();
+    service.selecionarDesafio({ ...mockDesafio, id: 'outra' });
+    service.selecionarOpcao('A');
+    service.verificarDesafio();
+    antiga.next(mockResultado);
+    expect(service.carregandoVerificacao()).toBe(true);
+    expect(service.resultadoDesafio()).toBeNull();
+    atual.next(mockResultado);
+    expect(service.carregandoVerificacao()).toBe(false);
+    expect(service.resultadoDesafio()).toEqual(mockResultado);
+  });
+
 });

@@ -17,23 +17,23 @@ public class AdminDesafioSimuladorController {
     private final AdminDesafioSimuladorService adminService;
 
     @GetMapping
-    public List<DesafioCacheResponse> listar() {
+    public List<AdminDesafioSimuladorResponse> listar() {
         return adminService.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public DesafioCacheResponse obterPorId(@PathVariable String id) {
+    public AdminDesafioSimuladorResponse obterPorId(@PathVariable String id) {
         return adminService.obterPorId(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DesafioCacheResponse cadastrar(@Valid @RequestBody DesafioSimuladorRequest request) {
+    public AdminDesafioSimuladorResponse cadastrar(@Valid @RequestBody DesafioSimuladorRequest request) {
         return adminService.cadastrar(request);
     }
 
     @PutMapping("/{id}")
-    public DesafioCacheResponse atualizar(@PathVariable String id, @Valid @RequestBody DesafioSimuladorRequest request) {
+    public AdminDesafioSimuladorResponse atualizar(@PathVariable String id, @Valid @RequestBody DesafioSimuladorRequest request) {
         return adminService.atualizar(id, request);
     }
 

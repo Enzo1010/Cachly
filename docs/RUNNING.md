@@ -77,7 +77,20 @@ A API ficará disponível em `http://localhost:8080`.
 **Para rodar os testes do backend:**
 - `.\mvnw.cmd test` (Windows)
 - `./mvnw test` (Linux/Mac)
-*(O banco de dados PostgreSQL deve estar em execução durante os testes de integração)*
+O PostgreSQL deve estar em execução. Crie um banco exclusivo antes da primeira execução:
+
+```sql
+CREATE DATABASE cachly_test;
+```
+
+Os testes usam `TEST_DB_URL` (padrão `jdbc:postgresql://localhost:5432/cachly_test`),
+`TEST_DB_USERNAME` (padrão `postgres`) e `TEST_DB_PASSWORD` (padrão local `123`).
+Eles não reutilizam `DB_URL`, `DB_USERNAME` ou `DB_PASSWORD`. Uma proteção interrompe
+a inicialização se o nome do banco não terminar em `_test`. Use somente um banco
+descartável: os testes de integração criam e removem seus próprios registros.
+
+O teste do seeder executa em uma transação revertida ao final, sem limpar tabelas
+nem tentar restaurar parcialmente dados de desenvolvimento.
 
 ### 3. Frontend
 

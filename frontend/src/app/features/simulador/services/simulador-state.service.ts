@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Subject, exhaustMap, tap, catchError, of } from 'rxjs';
+import { Subject, exhaustMap, tap, catchError, of, takeUntil } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SimulacaoRequest, SimulacaoResponse, PassoSimulacaoResponse } from '../models/simulador.model';
 import { DesafioCache, ResultadoDesafio } from '../models/desafio.model';
@@ -18,6 +18,9 @@ export class SimuladorStateService {
   private readonly simuladorService = inject(SimuladorCacheService);
   private readonly sessao = inject(SessaoService, { optional: true });
   private readonly simularSubject = new Subject<SimulacaoRequest>();
+
+  private contexto = 0;
+  private readonly contextoAlterado = new Subject<void>();
 
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
@@ -37,14 +40,13 @@ export class SimuladorStateService {
 
   constructor() {
     this.simularSubject.pipe(
-      tap(() => {
+      exhaustMap((request) => {
         this.loading.set(true);
         this.error.set(null);
         this.simulacao.set(null);
         this.passoAtualIndex.set(0);
-      }),
-      exhaustMap((request) => 
-        this.simuladorService.executarSimulacao(request).pipe(
+        return this.simuladorService.executarSimulacao(request).pipe(
+          takeUntil(this.contextoAlterado),
           tap((response) => {
             this.simulacao.set(response);
             this.loading.set(false);
@@ -54,10 +56,17 @@ export class SimuladorStateService {
             this.error.set(err.error?.mensagem || 'Erro ao comunicar com o servidor');
             return of(null);
           })
-        )
-      ),
+        );
+      }),
       takeUntilDestroyed()
     ).subscribe();
+  }
+
+  private invalidarContexto(): void {
+    this.contexto++;
+    this.contextoAlterado.next();
+    this.loading.set(false);
+    this.carregandoVerificacao.set(false);
   }
 
   toggleSidebar(): void {
@@ -148,6 +157,7 @@ export class SimuladorStateService {
 
   setModo(novoModo: 'livre' | 'desafio'): void {
     if (this.modo() !== novoModo) {
+      this.invalidarContexto();
       this.simulacao.set(null);
       this.passoAtualIndex.set(0);
       this.error.set(null);
@@ -181,6 +191,7 @@ export class SimuladorStateService {
   }
 
   selecionarDesafio(desafio: DesafioCache): void {
+    this.invalidarContexto();
     this.desafioSelecionado.set(desafio);
     this.opcaoSelecionada.set(null);
     this.resultadoDesafio.set(null);
@@ -196,18 +207,14 @@ export class SimuladorStateService {
   verificarDesafio(): void {
     const desafio = this.desafioSelecionado();
     const opcao = this.opcaoSelecionada();
-    if (!desafio || !opcao) return;
+    if (!desafio || !opcao || this.carregandoVerificacao()) return;
+    const contexto = this.contexto;
 
     this.carregandoVerificacao.set(true);
     this.erroDesafio.set(null);
 
     this.simuladorService.verificarDesafio(desafio.id, { opcaoSelecionadaId: opcao }).pipe(
       tap((resultado) => {
-        this.resultadoDesafio.set(resultado);
-        this.simulacao.set(resultado.simulacao);
-        this.passoAtualIndex.set(0);
-        this.carregandoVerificacao.set(false);
-
         if (this.sessao && ((resultado.correto && resultado.xpGanho > 0) || resultado.diasOfensiva !== undefined)) {
           this.sessao.atualizarAposResposta(
             resultado.xpTotalAtual,
@@ -216,8 +223,15 @@ export class SimuladorStateService {
             resultado.diasOfensiva
           );
         }
+        if (contexto !== this.contexto) return;
+        this.resultadoDesafio.set(resultado);
+        this.simulacao.set(resultado.simulacao);
+        this.passoAtualIndex.set(0);
+        this.carregandoVerificacao.set(false);
+
       }),
       catchError((err: HttpErrorResponse) => {
+        if (contexto !== this.contexto) return of(null);
         this.carregandoVerificacao.set(false);
         this.erroDesafio.set(err.error?.mensagem || 'Erro ao validar o desafio');
         return of(null);

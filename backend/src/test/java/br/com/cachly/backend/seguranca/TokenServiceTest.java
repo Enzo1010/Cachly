@@ -17,6 +17,7 @@ class TokenServiceTest {
         tokenService = new TokenService();
         ReflectionTestUtils.setField(tokenService, "secret", "segredo-para-testes-com-tamanho-suficiente-para-hmac");
         ReflectionTestUtils.setField(tokenService, "expirationHours", 24);
+        ReflectionTestUtils.setField(tokenService, "rememberExpirationHours", 720);
         ReflectionTestUtils.invokeMethod(tokenService, "init");
     }
 
@@ -34,6 +35,18 @@ class TokenServiceTest {
 
         String email = tokenService.validarToken(token);
         assertEquals("ana.silva@exemplo.com", email);
+    }
+
+    @Test
+    void deveAlinharExpiracaoComLembrarLogin() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setEmail("aluno@teste.com");
+        usuario.setPerfil(PerfilUsuario.ALUNO);
+        var normal = tokenService.extrairClaims(tokenService.gerarToken(usuario));
+        var lembrado = tokenService.extrairClaims(tokenService.gerarToken(usuario, true));
+        assertEquals(24 * 3600000L, normal.getExpiration().getTime() - normal.getIssuedAt().getTime());
+        assertEquals(720 * 3600000L, lembrado.getExpiration().getTime() - lembrado.getIssuedAt().getTime());
     }
 
     @Test
