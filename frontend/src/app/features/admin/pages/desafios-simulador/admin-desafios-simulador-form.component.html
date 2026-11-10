@@ -98,8 +98,8 @@
       <div class="opcoes-container" formArrayName="opcoes">
         <h3 class="opcoes-titulo">Opções de Resposta</h3>
         
-        @for (opcao of opcoesFormArray.controls; track $index) {
-          <div class="opcao-item" [formGroupName]="$index">
+        @for (opcao of opcoesFormArray.controls; track opcao) {
+          <div class="opcao-item" [formGroup]="opcao">
             <div class="opcao-id">
               <label>ID</label>
               <input type="text" formControlName="id" placeholder="Ex: A" class="form-control" />

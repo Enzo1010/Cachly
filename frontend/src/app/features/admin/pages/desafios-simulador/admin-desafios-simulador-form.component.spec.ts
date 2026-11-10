@@ -52,4 +52,48 @@ describe('Formulário administrativo de desafios', () => {
       configuracao: expect.objectContaining({ substituicao: null })
     }));
   });
+
+  it('deve mostrar os textos das alternativas quando a resposta chega após renderizar o formulário', () => {
+    id = desafio.id;
+    const resposta = new Subject<DesafioCacheResponse>();
+    api.obterPorId.mockReturnValue(resposta);
+    const fixture = TestBed.createComponent(AdminDesafiosSimuladorFormComponent);
+    fixture.detectChanges();
+    const carregado = {
+      ...desafio,
+      opcoes: ['A', 'B', 'C', 'D'].map(letra => ({ id: letra, texto: `Alternativa ${letra}` }))
+    };
+
+    resposta.next(carregado);
+    fixture.detectChanges();
+
+    const tela: HTMLElement = fixture.nativeElement;
+    const campos = Array.from(tela.querySelectorAll<HTMLInputElement>('input[formControlName="texto"]'));
+    expect(campos.map(campo => campo.value)).toEqual(carregado.opcoes.map(opcao => opcao.texto));
+  });
+
+  it('deve manter o texto visível ligado à opção correta ao remover a primeira alternativa', () => {
+    id = desafio.id;
+    const resposta = new Subject<DesafioCacheResponse>();
+    api.obterPorId.mockReturnValue(resposta);
+    const fixture = TestBed.createComponent(AdminDesafiosSimuladorFormComponent);
+    fixture.detectChanges();
+    resposta.next({ ...desafio, opcoes: [
+      { id: 'A', texto: 'Primeira' }, { id: 'B', texto: 'Segunda' }, { id: 'C', texto: 'Terceira' }
+    ], opcaoCorretaId: 'B' });
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    component.removerOpcao(0);
+    fixture.detectChanges();
+    const tela: HTMLElement = fixture.nativeElement;
+    const campos = Array.from(tela.querySelectorAll<HTMLInputElement>('input[formControlName="texto"]'));
+    expect(campos.map(campo => campo.value)).toEqual(['Segunda', 'Terceira']);
+    campos[0].value = 'Segunda editada';
+    campos[0].dispatchEvent(new Event('input'));
+    component.salvar();
+    expect(api.atualizar).toHaveBeenCalledWith(desafio.id, expect.objectContaining({
+      opcoes: [{ id: 'B', texto: 'Segunda editada' }, { id: 'C', texto: 'Terceira' }]
+    }));
+  });
 });

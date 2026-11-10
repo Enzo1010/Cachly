@@ -87,7 +87,7 @@ export class AdminDesafiosSimuladorFormComponent implements OnInit {
   }
 
   get opcoesFormArray() {
-    return this.form.get('opcoes') as FormArray;
+    return this.form.get('opcoes') as FormArray<FormGroup>;
   }
 
   adicionarOpcao(id: string = '', texto: string = ''): void {
