@@ -133,12 +133,13 @@ import { SlicePipe } from '@angular/common';
     /* Tela 1: Grid de Categorias */
     .categorias-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
       gap: 1.25rem;
     }
 
     .categoria-card {
       display: flex;
+      min-width: 0;
       align-items: center;
       gap: 1.25rem;
       padding: 1.5rem;
@@ -181,6 +182,7 @@ import { SlicePipe } from '@angular/common';
       color: #102e45;
       font-size: 1.1rem;
       font-weight: 700;
+      overflow-wrap: anywhere;
     }
     .cat-info p {
       margin: 0;
@@ -193,6 +195,7 @@ import { SlicePipe } from '@angular/common';
     }
 
     .cat-arrow {
+      flex-shrink: 0;
       color: #c5d0d6;
       font-size: 1rem;
     }
@@ -428,7 +431,26 @@ import { SlicePipe } from '@angular/common';
       .cta-button { width: 100%; justify-content: center; }
       
       .categorias-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .categoria-card {
+        gap: 0.75rem;
+        padding: 1rem;
+      }
+      .cat-icon {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1.25rem;
+      }
+      .cat-info h3 {
+        font-size: 1rem;
+        line-height: 1.35;
+      }
+      .cat-info p {
+        white-space: normal;
+        overflow: visible;
+        overflow-wrap: anywhere;
+        text-overflow: clip;
       }
     }
   `]
